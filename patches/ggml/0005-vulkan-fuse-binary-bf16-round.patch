@@ -1,0 +1,112 @@
+diff --git a/src/ggml-vulkan/vulkan-shaders/add.comp b/src/ggml-vulkan/vulkan-shaders/add.comp
+--- a/src/ggml-vulkan/vulkan-shaders/add.comp
++++ b/src/ggml-vulkan/vulkan-shaders/add.comp
+@@ -41,3 +41,7 @@
++#if defined(ROUND_BF16)
++        data_d[get_doffset() + dst_idx(i00, i01, i02, i03)] = bf16_to_fp32(fp32_to_bf16(float(sum)));
++#else
+         data_d[get_doffset() + dst_idx(i00, i01, i02, i03)] = D_TYPE(sum);
++#endif
+ 
+         idx += num_threads;
+diff --git a/src/ggml-vulkan/vulkan-shaders/mul.comp b/src/ggml-vulkan/vulkan-shaders/mul.comp
+--- a/src/ggml-vulkan/vulkan-shaders/mul.comp
++++ b/src/ggml-vulkan/vulkan-shaders/mul.comp
+@@ -25,3 +25,7 @@
++#if defined(ROUND_BF16)
++        precise float product = float(data_a[get_aoffset() + src0_idx(i00, i01, i02, i03)]) * float(data_b[get_boffset() + src1_idx(i00, i01, i02, i03)]);
++        data_d[get_doffset() + dst_idx(i00, i01, i02, i03)] = bf16_to_fp32(fp32_to_bf16(product));
++#else
+         data_d[get_doffset() + dst_idx(i00, i01, i02, i03)] = D_TYPE(FLOAT_TYPE(data_a[get_aoffset() + src0_idx(i00, i01, i02, i03)]) * FLOAT_TYPE(data_b[get_boffset() + src1_idx(i00, i01, i02, i03)]));
++#endif
+ 
+         idx += num_threads;
+diff --git a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+--- a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -821,1 +821,3 @@
+     string_to_spv("contig_round_bf16", "contig_copy.comp", {{"A_TYPE", "float"}, {"D_TYPE", "float"}, {"ROUND_BF16", "1"}});
++    string_to_spv("add_round_bf16", "add.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}, {"FLOAT_TYPE", "float"}, {"ADD_RMS", "0"}, {"ROUND_BF16", "1"}});
++    string_to_spv("mul_round_bf16", "mul.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}, {"FLOAT_TYPE", "float"}, {"ROUND_BF16", "1"}});
+     string_to_spv("contig_cpy_f32_i32", "contig_copy.comp", {{"A_TYPE", "float"}, {"D_TYPE", "int"}});
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -990,1 +990,2 @@
+     vk_pipeline pipeline_round_bf16;
++    vk_pipeline pipeline_add_round_bf16, pipeline_mul_round_bf16;
+     vk_pipeline pipeline_contig_cpy_f32_f32, pipeline_contig_cpy_f32_f16, pipeline_contig_cpy_f16_f16, pipeline_contig_cpy_f16_f32, pipeline_contig_cpy_f32_bf16, pipeline_contig_cpy_bf16_f32, pipeline_contig_cpy_f32_i32, pipeline_contig_cpy_i32_f32;
+@@ -5608,1 +5608,3 @@
+     ggml_vk_create_pipeline(device, device->pipeline_round_bf16, "contig_round_bf16", contig_round_bf16_len, contig_round_bf16_data, "main", 2, sizeof(vk_op_unary_push_constants), {512, 1, 1}, {}, 1);
++    ggml_vk_create_pipeline(device, device->pipeline_add_round_bf16, "add_round_bf16", add_round_bf16_len, add_round_bf16_data, "main", 4, sizeof(vk_op_binary_push_constants), {512, 1, 1}, {}, 1);
++    ggml_vk_create_pipeline(device, device->pipeline_mul_round_bf16, "mul_round_bf16", mul_round_bf16_len, mul_round_bf16_data, "main", 3, sizeof(vk_op_binary_push_constants), {512, 1, 1}, {}, 1);
+     ggml_vk_create_pipeline(device, device->pipeline_cpy_f32_f16, "cpy_f32_f16", cpy_f32_f16_len, cpy_f32_f16_data, "main", 2, sizeof(vk_op_unary_push_constants), {512, 1, 1}, {}, 1);
+@@ -12175,1 +12175,3 @@
+     vk_pipeline pipeline = round_bf16 ? ctx->device->pipeline_round_bf16 : ggml_vk_op_get_pipeline(ctx, src0, src1, src2, dst, op);
++    if (round_bf16 && op == GGML_OP_ADD) pipeline = ctx->device->pipeline_add_round_bf16;
++    if (round_bf16 && op == GGML_OP_MUL) pipeline = ctx->device->pipeline_mul_round_bf16;
+ 
+     if (pipeline == nullptr) {
+@@ -12700,1 +12700,1 @@
+-static void ggml_vk_add(ggml_backend_vk_context * ctx, vk_context& subctx, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst) {
++static void ggml_vk_add(ggml_backend_vk_context * ctx, vk_context& subctx, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst, bool round_bf16 = false) {
+     const uint32_t src0_type_size = ggml_type_size(src0->type);
+@@ -12712,4 +12712,4 @@
+         0.0f, 0.0f, ctx->do_add_rms_partials,
+-    });
++    }, round_bf16);
+ }
+ 
+@@ -12748,1 +12748,1 @@
+-static void ggml_vk_mul(ggml_backend_vk_context * ctx, vk_context& subctx, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst) {
++static void ggml_vk_mul(ggml_backend_vk_context * ctx, vk_context& subctx, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst, bool round_bf16 = false) {
+     const uint32_t src0_type_size = ggml_type_size(src0->type);
+@@ -12759,5 +12759,5 @@
+         0.0f, 0.0f, 0,
+-    });
++    }, round_bf16);
+ }
+ 
+ static void ggml_vk_div(ggml_backend_vk_context * ctx, vk_context& subctx, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst) {
+@@ -15831,3 +15831,5 @@
+     case GGML_OP_ADD:
+-        if (ctx->num_additional_fused_ops) {
++        if (ctx->num_additional_fused_ops == 2 && cgraph->nodes[node_idx + 1]->op == GGML_OP_CPY) {
++            ggml_vk_add(ctx, compute_ctx, src0, src1, cgraph->nodes[node_idx + 2], true);
++        } else if (ctx->num_additional_fused_ops) {
+             ggml_vk_multi_add(ctx, compute_ctx, cgraph, node_idx);
+@@ -15844,3 +15844,5 @@
+     case GGML_OP_MUL:
+-        if (ctx->num_additional_fused_ops) {
++        if (ctx->num_additional_fused_ops == 2 && cgraph->nodes[node_idx + 1]->op == GGML_OP_CPY) {
++            ggml_vk_mul(ctx, compute_ctx, src0, src1, cgraph->nodes[node_idx + 2], true);
++        } else if (ctx->num_additional_fused_ops) {
+             ggml_vk_snake_dispatch_fused(ctx, compute_ctx, cgraph, node_idx);
+@@ -16940,1 +16940,18 @@
++// Only elide unobserved, single-use fresh F32 arithmetic immediately followed
++// by the already-checked narrowing/widening casts. Keep all aliases and padded
++// operands on the existing path. The shader performs the same F32 operation
++// before exact RNE BF16 conversion; this is not reduced-precision arithmetic.
++static bool ggml_vk_can_fuse_binary_bf16_round(const ggml_cgraph * graph, int i) {
++    if (getenv("GGML_VK_FUSE_BF16_BINARY") == nullptr || !ggml_vk_can_fuse_bf16_round(graph, i + 1)) return false;
++    const auto * node = graph->nodes[i];
++    return (node->op == GGML_OP_ADD || node->op == GGML_OP_MUL) &&
++        node->type == GGML_TYPE_F32 && node->src[0] && node->src[1] &&
++        node->src[0]->type == GGML_TYPE_F32 && node->src[1]->type == GGML_TYPE_F32 &&
++        graph->nodes[i + 1]->src[0] == node && !node->view_src &&
++        !(node->flags & GGML_TENSOR_FLAG_OUTPUT) &&
++        (node->flags & GGML_TENSOR_FLAG_COMPUTE) && ggml_node_get_use_count(graph, i) == 1 &&
++        ggml_is_contiguous(node->src[0]) && ggml_is_contiguous(node->src[1]) &&
++        ggml_is_contiguous(node);
++}
++
+ static bool ggml_vk_can_fuse(const ggml_backend_vk_context * ctx, const struct ggml_cgraph * cgraph, int node_idx, std::initializer_list<enum ggml_op> ops) {
+     if (!ggml_can_fuse(cgraph, node_idx, ops)) {
+@@ -17705,2 +17705,7 @@
+-            if (ggml_vk_can_fuse_bf16_round(cgraph, i)) {
++            if (ggml_vk_can_fuse_binary_bf16_round(cgraph, i)) {
++                ctx->num_additional_fused_ops = 2;
++                fusion_string = "BF16_BINARY_ROUND";
++                std::fill_n(op_srcs_fused_elementwise, 3, true);
++            } else if (ggml_vk_can_fuse_bf16_round(cgraph, i)) {
+                 ctx->num_additional_fused_ops = 1;

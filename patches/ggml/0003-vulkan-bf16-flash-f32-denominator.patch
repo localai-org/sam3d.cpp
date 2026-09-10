@@ -1,0 +1,35 @@
+diff --git a/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp b/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
+--- a/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
++++ b/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
+@@ -117,6 +117,10 @@
+     return x;
+ }
+ 
++ACC_TYPE sumReduce(const in ACC_TYPE x, const in ACC_TYPE y) {
++    return x + y;
++}
++
+ // Replace matrix elements >= numRows or numCols with 'replace'
+ ACC_TYPE replacePadding(const in uint32_t row, const in uint32_t col, const in ACC_TYPE elem, const in ACC_TYPE replace, const in uint32_t numRows, const in uint32_t numCols) {
+     if (row >= numRows || col >= numCols) {
+@@ -371,12 +375,21 @@
+ 
+         coopmat<FLOAT_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseA> P_A = coopmat<FLOAT_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseA>(P);
+ 
++#if defined(BFLOAT16)
++        // FlashAttention keeps the softmax denominator in accumulator
++        // precision. Rounding P to BF16 is needed for the P*V tensor-core
++        // product, not for its row sum. Summing P_A quantizes the normalizer
++        // as well and introduces an avoidable, correlated output-scale error.
++        // Reduce the original accumulator matrix after padding was cleared.
++        coopMatReduceNV(rowsum, P, gl_CooperativeMatrixReduceRowNV, sumReduce);
++#else
+         // compute rowsum by multiplying by matrix of all ones.
+         coopmat<FLOAT_TYPE, gl_ScopeWorkgroup, Bc, Bc, gl_MatrixUseB> One = coopmat<FLOAT_TYPE, gl_ScopeWorkgroup, Bc, Bc, gl_MatrixUseB>(1.0);
+ 
+         rowsum = coopmat<ACC_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseAccumulator>(0.0);
+         rowsum = coopMatMulAdd(P_A, One, rowsum);
++#endif
+ 
+         coopmat<FLOAT_TYPE, gl_ScopeWorkgroup, Bc, HSV_pad, gl_MatrixUseB> V;
+         uint32_t v_offset = iv2*p.nb22 + iv3*p.nb23;

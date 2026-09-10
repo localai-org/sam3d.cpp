@@ -1,0 +1,1118 @@
+{
+  "scope": "native-own raw RGBA/supplied XYZ -> preprocessing -> shared PointPatch -> fuser; explicit point-only config and synthetic weights, NOT MoGe/image encoder/checkpoint-conditioned generation",
+  "reference_manifest": {
+    "scope": "native-own raw RGBA/supplied XYZ -> preprocessing -> shared PointPatch -> fuser; explicit point-only config and synthetic weights, NOT MoGe/image encoder/checkpoint-conditioned generation",
+    "reference_preprocessing_device": "cpu",
+    "neural_device": "cpu",
+    "torch": "2.7.0+cu128",
+    "threads": 1,
+    "tf32": false,
+    "repeats": 3,
+    "observer_exact": true,
+    "full_size": false,
+    "script_sha256": "a9fb06ba6759be76a1fbe93fe44dffd4c084ac7bdc90afee19cdf06df9a6d7e9",
+    "preprocessing_manifest_sha256": "8e5a10aaac9e64989475e00466478572753e54785bc0c9eea96e57032b7d0241",
+    "pointpatch_loader_sha256": "6fab34c3dda4655716faea342814441c4df68f32b4e26e433ba54a17e02e2136",
+    "fuser_sources": {
+      "model/backbone/dit/embedder/embedder_fuser.py": "a4d2ef27bddbff542550a76ad5a46facf0a653bc8dbc71fa6e92676c805d3c29",
+      "model/layers/llama3/ff.py": "f3d6b9e6b60e71e00db34f9f3d6bbbf06e67e538e64a5ad796bf923af2c6e05d"
+    },
+    "cases": [
+      {
+        "prefix": "case.0000",
+        "preprocess_case": 0,
+        "preprocess_input": "case.0000.input",
+        "weights": "case.0000.weights",
+        "side": 8,
+        "patch": 2,
+        "dim": 32,
+        "remap": 2,
+        "drop_scene": false,
+        "taps": {
+          "00.prepared.image": {
+            "file": "case.0000.00.prepared.image.safetensors",
+            "shape": [
+              1,
+              3,
+              11,
+              11
+            ],
+            "sha256": "f776c08b35ccfab8afe886b090b84ab647f9b41b2c0af7ada2cb78d8756417c2"
+          },
+          "00.prepared.mask": {
+            "file": "case.0000.00.prepared.mask.safetensors",
+            "shape": [
+              1,
+              1,
+              11,
+              11
+            ],
+            "sha256": "8b13fc6647b4ba8ea4c3843c802cdebdebe6f0add3986ececdf8674739dc72d1"
+          },
+          "00.prepared.pointmap": {
+            "file": "case.0000.00.prepared.pointmap.safetensors",
+            "shape": [
+              1,
+              3,
+              8,
+              8
+            ],
+            "sha256": "1ef15d767d41a247ac3c6afb24ffa0bc87978a96e51d15ec54f1a77259f3a385"
+          },
+          "00.prepared.pointmap_scale": {
+            "file": "case.0000.00.prepared.pointmap_scale.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "d99df0962a84c415b5247bd600a029552773433847c9d8a0f518ddafe04f44f4"
+          },
+          "00.prepared.pointmap_shift": {
+            "file": "case.0000.00.prepared.pointmap_shift.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d"
+          },
+          "00.prepared.rgb_image": {
+            "file": "case.0000.00.prepared.rgb_image.safetensors",
+            "shape": [
+              1,
+              3,
+              11,
+              11
+            ],
+            "sha256": "97aff665a731d4e7f2a2241bbcfcd598def4dc98dee5aef0f80315c0b6229c39"
+          },
+          "00.prepared.rgb_image_mask": {
+            "file": "case.0000.00.prepared.rgb_image_mask.safetensors",
+            "shape": [
+              1,
+              1,
+              11,
+              11
+            ],
+            "sha256": "5c660f34a689e00d544648850690517b51d319e966eacec9acd3ec4696aafff8"
+          },
+          "00.prepared.rgb_pointmap": {
+            "file": "case.0000.00.prepared.rgb_pointmap.safetensors",
+            "shape": [
+              1,
+              3,
+              8,
+              8
+            ],
+            "sha256": "6a4853bf073e282e4f0274b2e5891871cb635dbe7af2646218d6efe42f4893fe"
+          },
+          "00.prepared.rgb_pointmap_scale": {
+            "file": "case.0000.00.prepared.rgb_pointmap_scale.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "d99df0962a84c415b5247bd600a029552773433847c9d8a0f518ddafe04f44f4"
+          },
+          "00.prepared.rgb_pointmap_shift": {
+            "file": "case.0000.00.prepared.rgb_pointmap_shift.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d"
+          },
+          "00.prepared.rgb_pointmap_unnorm": {
+            "file": "case.0000.00.prepared.rgb_pointmap_unnorm.safetensors",
+            "shape": [
+              1,
+              3,
+              8,
+              8
+            ],
+            "sha256": "953ea4bcb24a539214025e51e5214cbf98a88f9a145e62e899395beb0465b8c4"
+          },
+          "10.encoder.0.11.norm1": {
+            "file": "case.0000.10.encoder.0.11.norm1.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "0a96505e4804623b864991998c330d3c4e213501d31214a68d5e6467263bf24c"
+          },
+          "10.encoder.0.12.qkv": {
+            "file": "case.0000.10.encoder.0.12.qkv.safetensors",
+            "shape": [
+              16,
+              5,
+              96
+            ],
+            "sha256": "7985af1812cf98988fe34d7e5a4ecfb7f092a780f35fc6228cd3f5f22a2994d9"
+          },
+          "10.encoder.0.19.attn_projected": {
+            "file": "case.0000.10.encoder.0.19.attn_projected.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "71d17c74aa841b56b539f5b74cf4205186c3b578edf099221cc475e7565c9e5a"
+          },
+          "10.encoder.0.21.norm2": {
+            "file": "case.0000.10.encoder.0.21.norm2.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "9dccf29410ed602e06ecfb5f6a858cce8038e3a23a25e0c33bc1f364a75b15f6"
+          },
+          "10.encoder.0.22.fc1": {
+            "file": "case.0000.10.encoder.0.22.fc1.safetensors",
+            "shape": [
+              16,
+              5,
+              64
+            ],
+            "sha256": "04fe84a1ebeef944cad64e1876dd95cd29bfba561d3471a2b329f5dff6d8da2b"
+          },
+          "10.encoder.0.23.gelu": {
+            "file": "case.0000.10.encoder.0.23.gelu.safetensors",
+            "shape": [
+              16,
+              5,
+              64
+            ],
+            "sha256": "1eb751739e337f9327db3c7f9fce0f09208fdbc3fe40c82b6d9934591a65e130"
+          },
+          "10.encoder.0.24.fc2": {
+            "file": "case.0000.10.encoder.0.24.fc2.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "8b98b7f7c3aeddd083d704274da1c173d6daff63a179516db6330645eca79208"
+          },
+          "10.encoder.0.30.block_output": {
+            "file": "case.0000.10.encoder.0.30.block_output.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "b9d055898202c0146388fff99e8e3d0975e8feffd99665666baa6c20c7faf3d8"
+          },
+          "10.encoder.0.90.output": {
+            "file": "case.0000.10.encoder.0.90.output.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "18fd9ef50ddeeee8c908b1f788027971b3eab7f23ee1707d9b7f420e99d78222"
+          },
+          "20.fusion.10.modality.0.input": {
+            "file": "case.0000.20.fusion.10.modality.0.input.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "18fd9ef50ddeeee8c908b1f788027971b3eab7f23ee1707d9b7f420e99d78222"
+          },
+          "20.fusion.10.modality.0.projection.00.input": {
+            "file": "case.0000.20.fusion.10.modality.0.projection.00.input.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "18fd9ef50ddeeee8c908b1f788027971b3eab7f23ee1707d9b7f420e99d78222"
+          },
+          "20.fusion.10.modality.0.projection.01.norm": {
+            "file": "case.0000.20.fusion.10.modality.0.projection.01.norm.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "df9975d0d90b4a37809cbac9d10ca427aec49230a5afe8bc37ad3104eed80d89"
+          },
+          "20.fusion.10.modality.0.projection.02.w1": {
+            "file": "case.0000.20.fusion.10.modality.0.projection.02.w1.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "d8304f2905bb7805eb79283cfebe762c53fa8e9702c51a78454d762aec84a908"
+          },
+          "20.fusion.10.modality.0.projection.03.silu": {
+            "file": "case.0000.20.fusion.10.modality.0.projection.03.silu.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "48e3410d4017564750e6ec1bf3a61943fafbca640bdbad1fb58730a926595844"
+          },
+          "20.fusion.10.modality.0.projection.04.w3": {
+            "file": "case.0000.20.fusion.10.modality.0.projection.04.w3.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "9d93c4e5269025eda176e8f3b8dc5c184c2e90b141ca327700607f4975783af6"
+          },
+          "20.fusion.10.modality.0.projection.06.projected": {
+            "file": "case.0000.20.fusion.10.modality.0.projection.06.projected.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "423ce6593bf25ff8fd40249deda2bfe3e48a30d27f41f635acdb9e5ea31a7ebf"
+          },
+          "20.fusion.10.modality.0.projection.05.gated": {
+            "file": "case.0000.20.fusion.10.modality.0.projection.05.gated.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "c515622350a84e5f9ad1aa7328f7325b8eef01ab4192cc122459adc9fc15d5e4"
+          },
+          "10.encoder.1.11.norm1": {
+            "file": "case.0000.10.encoder.1.11.norm1.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "fab30e0d390a9c49a9e2c9610b022cb2aa28012d7425ad6292df54bd92ab6df9"
+          },
+          "10.encoder.1.12.qkv": {
+            "file": "case.0000.10.encoder.1.12.qkv.safetensors",
+            "shape": [
+              16,
+              5,
+              96
+            ],
+            "sha256": "c55c2c07e118942101d12f9980b82c8404a419c9afb1233cd3af578ecf9d960d"
+          },
+          "10.encoder.1.19.attn_projected": {
+            "file": "case.0000.10.encoder.1.19.attn_projected.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "31bf309f75b82f0d0d2bd6f97c42b4552bf6c7b72524f721d2b1d6f4a871a422"
+          },
+          "10.encoder.1.21.norm2": {
+            "file": "case.0000.10.encoder.1.21.norm2.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "248116ad5380807604316a91090298df3cdc345dbac207e9f1f94edd01f697a0"
+          },
+          "10.encoder.1.22.fc1": {
+            "file": "case.0000.10.encoder.1.22.fc1.safetensors",
+            "shape": [
+              16,
+              5,
+              64
+            ],
+            "sha256": "1234162c4de4a780dabe0a5c326adaad98a3dda05877270bbfc3c25f91ba7f40"
+          },
+          "10.encoder.1.23.gelu": {
+            "file": "case.0000.10.encoder.1.23.gelu.safetensors",
+            "shape": [
+              16,
+              5,
+              64
+            ],
+            "sha256": "128d17f62be4d684caecc0929fd77f7e5622aa116c502988469178279b551ac5"
+          },
+          "10.encoder.1.24.fc2": {
+            "file": "case.0000.10.encoder.1.24.fc2.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "ebce3cb5c8cc9d7654f3bcd03237561275d7e83c1b5f87b6fb9fc41cc095dc2f"
+          },
+          "10.encoder.1.30.block_output": {
+            "file": "case.0000.10.encoder.1.30.block_output.safetensors",
+            "shape": [
+              16,
+              5,
+              32
+            ],
+            "sha256": "bc796482ac883e6cea30cbd2b270092a578959fa201f34f8dd0db1f5cdcd767c"
+          },
+          "10.encoder.1.90.output": {
+            "file": "case.0000.10.encoder.1.90.output.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "60a5d02414be03b3d3c7f925304465c6b507c1d1933e12530b288fe5c27ada29"
+          },
+          "20.fusion.10.modality.1.input": {
+            "file": "case.0000.20.fusion.10.modality.1.input.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "60a5d02414be03b3d3c7f925304465c6b507c1d1933e12530b288fe5c27ada29"
+          },
+          "20.fusion.10.modality.1.projection.00.input": {
+            "file": "case.0000.20.fusion.10.modality.1.projection.00.input.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "60a5d02414be03b3d3c7f925304465c6b507c1d1933e12530b288fe5c27ada29"
+          },
+          "20.fusion.10.modality.1.projection.01.norm": {
+            "file": "case.0000.20.fusion.10.modality.1.projection.01.norm.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "ef2214a5efe2031e5b60b272b92c1e20b5ad855f874629de7acc1b38f31c355e"
+          },
+          "20.fusion.10.modality.1.projection.02.w1": {
+            "file": "case.0000.20.fusion.10.modality.1.projection.02.w1.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "6c27ba1ecb5d229e9462a8cc2b627463792e7cc41c58d10fc51294ea3b81fa8f"
+          },
+          "20.fusion.10.modality.1.projection.03.silu": {
+            "file": "case.0000.20.fusion.10.modality.1.projection.03.silu.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "cee5c90968f79f474943f6b76a6510e07e9503a52fe21a0cc6333f3ae0305b69"
+          },
+          "20.fusion.10.modality.1.projection.04.w3": {
+            "file": "case.0000.20.fusion.10.modality.1.projection.04.w3.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "f6a89f16b61ae070f159b592d5a7c646e65b7fafd27eba27ce4957f36eeba96f"
+          },
+          "20.fusion.10.modality.1.projection.06.projected": {
+            "file": "case.0000.20.fusion.10.modality.1.projection.06.projected.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "6ea6486d82b6746e03d953431d8e01df8da6fe3d32f551569bcf2b3a85ec24a0"
+          },
+          "20.fusion.10.modality.1.projection.05.gated": {
+            "file": "case.0000.20.fusion.10.modality.1.projection.05.gated.safetensors",
+            "shape": [
+              1,
+              16,
+              256
+            ],
+            "sha256": "d49f93bdc508317a32c74af4e2b59f7b77af19e5b71d5763961e9d8d3c9a8c70"
+          },
+          "20.fusion.10.modality.0.positioned": {
+            "file": "case.0000.20.fusion.10.modality.0.positioned.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "a2648a534e16dcbbde8beffe940f802d3dd12f23a41924532f800a3594c2dc2c"
+          },
+          "20.fusion.10.modality.1.positioned": {
+            "file": "case.0000.20.fusion.10.modality.1.positioned.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "b1fa5bfd48836cc89df3da1ecd0540098c34a541be7bf0d26851b77446806a60"
+          },
+          "20.fusion.10.modality.0.dropped": {
+            "file": "case.0000.20.fusion.10.modality.0.dropped.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "a2648a534e16dcbbde8beffe940f802d3dd12f23a41924532f800a3594c2dc2c"
+          },
+          "20.fusion.10.modality.1.dropped": {
+            "file": "case.0000.20.fusion.10.modality.1.dropped.safetensors",
+            "shape": [
+              1,
+              16,
+              32
+            ],
+            "sha256": "b1fa5bfd48836cc89df3da1ecd0540098c34a541be7bf0d26851b77446806a60"
+          },
+          "20.fusion.20.joined": {
+            "file": "case.0000.20.fusion.20.joined.safetensors",
+            "shape": [
+              1,
+              32,
+              32
+            ],
+            "sha256": "ffb0b8a5186165f83a07bec49e38e69ce4f3cccee378fabeecc449b2ca7ff2eb"
+          },
+          "20.fusion.90.output": {
+            "file": "case.0000.20.fusion.90.output.safetensors",
+            "shape": [
+              1,
+              32,
+              32
+            ],
+            "sha256": "ffb0b8a5186165f83a07bec49e38e69ce4f3cccee378fabeecc449b2ca7ff2eb"
+          }
+        },
+        "full": "case.0000.full.safetensors",
+        "point_fields": [
+          "pointmap",
+          "rgb_pointmap"
+        ]
+      },
+      {
+        "prefix": "case.0001",
+        "preprocess_case": 2,
+        "preprocess_input": "case.0002.input",
+        "weights": "case.0001.weights",
+        "side": 8,
+        "patch": 4,
+        "dim": 64,
+        "remap": 1,
+        "drop_scene": true,
+        "taps": {
+          "00.prepared.image": {
+            "file": "case.0001.00.prepared.image.safetensors",
+            "shape": [
+              1,
+              3,
+              13,
+              13
+            ],
+            "sha256": "d74809461a82f5ff3c741f89907a73e0abf0c65c27e3302f93a338bd6ae66277"
+          },
+          "00.prepared.mask": {
+            "file": "case.0001.00.prepared.mask.safetensors",
+            "shape": [
+              1,
+              1,
+              13,
+              13
+            ],
+            "sha256": "645826730a9c2fcbb5d50dc9bf1d78d261a17a11d9f81db9541fba0196af30ac"
+          },
+          "00.prepared.pointmap": {
+            "file": "case.0001.00.prepared.pointmap.safetensors",
+            "shape": [
+              1,
+              3,
+              10,
+              10
+            ],
+            "sha256": "1851a1f1adfbc21f989d2af57fc2528953ea72c80b33325ef273f0527fabb947"
+          },
+          "00.prepared.pointmap_scale": {
+            "file": "case.0001.00.prepared.pointmap_scale.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "c0713be69cbaaa178c30c90e24e80a53a5d3bd0e39a44e285caca7e60f5166ed"
+          },
+          "00.prepared.pointmap_shift": {
+            "file": "case.0001.00.prepared.pointmap_shift.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "90cdd7a6c59b13ab8461300e0091c5bab89ba5d82d7401f0638bb770e5ec6fb7"
+          },
+          "00.prepared.rgb_image": {
+            "file": "case.0001.00.prepared.rgb_image.safetensors",
+            "shape": [
+              1,
+              3,
+              13,
+              13
+            ],
+            "sha256": "21a29c948c6da257e97a4630be763877f084a05f903ea09d3e8921d762818283"
+          },
+          "00.prepared.rgb_image_mask": {
+            "file": "case.0001.00.prepared.rgb_image_mask.safetensors",
+            "shape": [
+              1,
+              1,
+              13,
+              13
+            ],
+            "sha256": "01c548cd84dda00a10ce3c5370444d49c744edf91a5caca49ee47cb99a4ad47e"
+          },
+          "00.prepared.rgb_pointmap": {
+            "file": "case.0001.00.prepared.rgb_pointmap.safetensors",
+            "shape": [
+              1,
+              3,
+              10,
+              10
+            ],
+            "sha256": "54c10f2267328cda480815ee82d09099bc72f8aacc4c479321dd2f729da7d3e8"
+          },
+          "00.prepared.rgb_pointmap_scale": {
+            "file": "case.0001.00.prepared.rgb_pointmap_scale.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "c0713be69cbaaa178c30c90e24e80a53a5d3bd0e39a44e285caca7e60f5166ed"
+          },
+          "00.prepared.rgb_pointmap_shift": {
+            "file": "case.0001.00.prepared.rgb_pointmap_shift.safetensors",
+            "shape": [
+              1,
+              3
+            ],
+            "sha256": "90cdd7a6c59b13ab8461300e0091c5bab89ba5d82d7401f0638bb770e5ec6fb7"
+          },
+          "00.prepared.rgb_pointmap_unnorm": {
+            "file": "case.0001.00.prepared.rgb_pointmap_unnorm.safetensors",
+            "shape": [
+              1,
+              3,
+              10,
+              10
+            ],
+            "sha256": "ffa15cab8cbf7eef6c869655f46ccc5f3ae13716cd984cdeed6befe1b39726fb"
+          },
+          "10.encoder.0.11.norm1": {
+            "file": "case.0001.10.encoder.0.11.norm1.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "3f11aa3404ecdde44f84e9784e1b437f3d4e41115c1ffdd7141025e8b5ef727a"
+          },
+          "10.encoder.0.12.qkv": {
+            "file": "case.0001.10.encoder.0.12.qkv.safetensors",
+            "shape": [
+              4,
+              17,
+              192
+            ],
+            "sha256": "8e167da3e7ded177d5eb7379e784ff5e6772ed636ad8d1f101afadc7deb313fc"
+          },
+          "10.encoder.0.19.attn_projected": {
+            "file": "case.0001.10.encoder.0.19.attn_projected.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "3bfc76bb6c1273999704e415c5ee285e0c5cfa2f65699b8cdc5b0f8d8e94a5b3"
+          },
+          "10.encoder.0.21.norm2": {
+            "file": "case.0001.10.encoder.0.21.norm2.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "2cdd73b69736b3a19ca87e68efe81543c54171afd550ce2d8ed8e5ddb6133d9d"
+          },
+          "10.encoder.0.22.fc1": {
+            "file": "case.0001.10.encoder.0.22.fc1.safetensors",
+            "shape": [
+              4,
+              17,
+              128
+            ],
+            "sha256": "2902fbcb81d043113e688fef68eee6139f34f1fd4b842e8738cbf8699b5b97dc"
+          },
+          "10.encoder.0.23.gelu": {
+            "file": "case.0001.10.encoder.0.23.gelu.safetensors",
+            "shape": [
+              4,
+              17,
+              128
+            ],
+            "sha256": "8de846d01210270b4dea19b0b9e38309b1d06731fe6a9e9816d6cb6002737ffd"
+          },
+          "10.encoder.0.24.fc2": {
+            "file": "case.0001.10.encoder.0.24.fc2.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "49640ac6b177eb58acf1216b62af831bbfef035b5ce16ebbbf5ec79938c344ab"
+          },
+          "10.encoder.0.30.block_output": {
+            "file": "case.0001.10.encoder.0.30.block_output.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "bd69c57a2d6361c6d10ef426ce4b5c43457e1f92fba18183cf254e84a8ae30e7"
+          },
+          "10.encoder.0.90.output": {
+            "file": "case.0001.10.encoder.0.90.output.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "176a127111c6e2e6e3f32bf8d42c676b46e52008e224df415b915e1df91b673b"
+          },
+          "20.fusion.10.modality.0.input": {
+            "file": "case.0001.20.fusion.10.modality.0.input.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "176a127111c6e2e6e3f32bf8d42c676b46e52008e224df415b915e1df91b673b"
+          },
+          "20.fusion.10.modality.0.projection.00.input": {
+            "file": "case.0001.20.fusion.10.modality.0.projection.00.input.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "176a127111c6e2e6e3f32bf8d42c676b46e52008e224df415b915e1df91b673b"
+          },
+          "20.fusion.10.modality.0.projection.01.norm": {
+            "file": "case.0001.20.fusion.10.modality.0.projection.01.norm.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "18ac4278165f21b49c9f72b056617bb583749357ede6f138d1bce6a37896bd82"
+          },
+          "20.fusion.10.modality.0.projection.02.w1": {
+            "file": "case.0001.20.fusion.10.modality.0.projection.02.w1.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "fee6e70cf7625df8bf19b94650461ec9500fe5704e022e03769af8798bbcf6d6"
+          },
+          "20.fusion.10.modality.0.projection.03.silu": {
+            "file": "case.0001.20.fusion.10.modality.0.projection.03.silu.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "4726473e6ff61735703c39711896579faadd7d5f6a1be2dd97caf8bf06951ce1"
+          },
+          "20.fusion.10.modality.0.projection.04.w3": {
+            "file": "case.0001.20.fusion.10.modality.0.projection.04.w3.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "542503d6244ff0ad16584a9035b310e5307cdc0f68ee4e09730d316dad7a2b67"
+          },
+          "20.fusion.10.modality.0.projection.06.projected": {
+            "file": "case.0001.20.fusion.10.modality.0.projection.06.projected.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "e07b6520b1530c4f6aeca11715c5ae94095f24aa7a77abbe7e5bbae5923bbe5f"
+          },
+          "20.fusion.10.modality.0.projection.05.gated": {
+            "file": "case.0001.20.fusion.10.modality.0.projection.05.gated.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "119044b15fcbe6b789ae744308a59ebe3d626be6161c5c49c246000961a43cbb"
+          },
+          "10.encoder.1.11.norm1": {
+            "file": "case.0001.10.encoder.1.11.norm1.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "ffcfd35c239b6bb4eb6d1c671c1629fec671b9caaf2ed3add97d8e02299aed3d"
+          },
+          "10.encoder.1.12.qkv": {
+            "file": "case.0001.10.encoder.1.12.qkv.safetensors",
+            "shape": [
+              4,
+              17,
+              192
+            ],
+            "sha256": "d21bc299161e48c31626a745a657a0444d0059211aca6f730f0c97e07df0ce40"
+          },
+          "10.encoder.1.19.attn_projected": {
+            "file": "case.0001.10.encoder.1.19.attn_projected.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "c20bf864d9e28daeb90942a919445ad6d54c00317fcbbc1f8cc66b2a5fad60f8"
+          },
+          "10.encoder.1.21.norm2": {
+            "file": "case.0001.10.encoder.1.21.norm2.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "30018703ac8c352ce058f12567469932009f0ebc53f18f78e53b1a83fb7b5a9e"
+          },
+          "10.encoder.1.22.fc1": {
+            "file": "case.0001.10.encoder.1.22.fc1.safetensors",
+            "shape": [
+              4,
+              17,
+              128
+            ],
+            "sha256": "533b452c34b5eae81f721c497a1a1b5e805bb7e4f870613a854ecc0779b6b58a"
+          },
+          "10.encoder.1.23.gelu": {
+            "file": "case.0001.10.encoder.1.23.gelu.safetensors",
+            "shape": [
+              4,
+              17,
+              128
+            ],
+            "sha256": "daca1637f7330afd57e10f912749787e8336ffddb5a1819d32dc2a7b0ecdaecd"
+          },
+          "10.encoder.1.24.fc2": {
+            "file": "case.0001.10.encoder.1.24.fc2.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "4ee0942afb0967bc06907417902301007cd43035408fdb0b26215ee370c080e5"
+          },
+          "10.encoder.1.30.block_output": {
+            "file": "case.0001.10.encoder.1.30.block_output.safetensors",
+            "shape": [
+              4,
+              17,
+              64
+            ],
+            "sha256": "077115553621bb5e7bf58f626d7bd4f05c755d1efcbfdb2bfb7557dccbd43d67"
+          },
+          "10.encoder.1.90.output": {
+            "file": "case.0001.10.encoder.1.90.output.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "270ab381a05ab030b49b46904bda79cdb736752021dc67ede2df193569fe6dee"
+          },
+          "20.fusion.10.modality.1.input": {
+            "file": "case.0001.20.fusion.10.modality.1.input.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "270ab381a05ab030b49b46904bda79cdb736752021dc67ede2df193569fe6dee"
+          },
+          "20.fusion.10.modality.1.projection.00.input": {
+            "file": "case.0001.20.fusion.10.modality.1.projection.00.input.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "270ab381a05ab030b49b46904bda79cdb736752021dc67ede2df193569fe6dee"
+          },
+          "20.fusion.10.modality.1.projection.01.norm": {
+            "file": "case.0001.20.fusion.10.modality.1.projection.01.norm.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "e92d80d82c129f22f50686e55d600bddb854285a5b157e8e0c3761db67ad45fc"
+          },
+          "20.fusion.10.modality.1.projection.02.w1": {
+            "file": "case.0001.20.fusion.10.modality.1.projection.02.w1.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "d8d239cf46686d00517e7e08bf31636028a9f61bc98b38ff98070ae9fdbce86a"
+          },
+          "20.fusion.10.modality.1.projection.03.silu": {
+            "file": "case.0001.20.fusion.10.modality.1.projection.03.silu.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "c8c1f6037b6320ba0f7e402696ee6c7be9e8f04f597a2abf3e01d4f9de99e4a7"
+          },
+          "20.fusion.10.modality.1.projection.04.w3": {
+            "file": "case.0001.20.fusion.10.modality.1.projection.04.w3.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "c8b5766298159cb86b9579b671c88c50bee31b98b0be3fb691c570ff45818171"
+          },
+          "20.fusion.10.modality.1.projection.06.projected": {
+            "file": "case.0001.20.fusion.10.modality.1.projection.06.projected.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "ddbfe5bf65bde265b00eb675c2b01e4210dc4464bb6284b6fa82f834621ccae1"
+          },
+          "20.fusion.10.modality.1.projection.05.gated": {
+            "file": "case.0001.20.fusion.10.modality.1.projection.05.gated.safetensors",
+            "shape": [
+              1,
+              4,
+              256
+            ],
+            "sha256": "e064d3583fc54db203631938301d823dedaacb11c7abfd7b5432ffcfa4bde220"
+          },
+          "20.fusion.10.modality.0.positioned": {
+            "file": "case.0001.20.fusion.10.modality.0.positioned.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "7d81112ae11d725180d646ac00ed9dfdb53e430a48f9d6b2d303b22e141d7995"
+          },
+          "20.fusion.10.modality.1.positioned": {
+            "file": "case.0001.20.fusion.10.modality.1.positioned.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "86e48ca7f19a1af716c9d064d0105bfd8a559f13a50dd01dec03919a7081a296"
+          },
+          "20.fusion.10.modality.0.dropped": {
+            "file": "case.0001.20.fusion.10.modality.0.dropped.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "7d81112ae11d725180d646ac00ed9dfdb53e430a48f9d6b2d303b22e141d7995"
+          },
+          "20.fusion.10.modality.1.dropped": {
+            "file": "case.0001.20.fusion.10.modality.1.dropped.safetensors",
+            "shape": [
+              1,
+              4,
+              64
+            ],
+            "sha256": "7145267d45ce85d2dded29823f27c18496001fad47f2b20e2dff9f33b6154e36"
+          },
+          "20.fusion.20.joined": {
+            "file": "case.0001.20.fusion.20.joined.safetensors",
+            "shape": [
+              1,
+              8,
+              64
+            ],
+            "sha256": "6bc645f048a9acdae07d0f8ed3e2aab21f5e77f7c2015b94d667521233f43c0c"
+          },
+          "20.fusion.90.output": {
+            "file": "case.0001.20.fusion.90.output.safetensors",
+            "shape": [
+              1,
+              8,
+              64
+            ],
+            "sha256": "6bc645f048a9acdae07d0f8ed3e2aab21f5e77f7c2015b94d667521233f43c0c"
+          }
+        },
+        "full": "case.0001.full.safetensors",
+        "point_fields": [
+          "pointmap",
+          "rgb_pointmap"
+        ]
+      }
+    ],
+    "invalid_configurations": [
+      {
+        "case": 1,
+        "first_nonfinite": "PointRemapper.forward exp/log1p",
+        "encoder_calls": [
+          {
+            "safe_input_finite": true,
+            "remapped_nonfinite": 0
+          },
+          {
+            "safe_input_finite": true,
+            "remapped_nonfinite": 4
+          }
+        ],
+        "output_nonfinite": 64,
+        "native_expected": "nonfinite PointPatch parameter/output"
+      }
+    ],
+    "artifacts": {
+      "case.0000.00.prepared.image.safetensors": "f776c08b35ccfab8afe886b090b84ab647f9b41b2c0af7ada2cb78d8756417c2",
+      "case.0000.00.prepared.mask.safetensors": "8b13fc6647b4ba8ea4c3843c802cdebdebe6f0add3986ececdf8674739dc72d1",
+      "case.0000.00.prepared.pointmap.safetensors": "1ef15d767d41a247ac3c6afb24ffa0bc87978a96e51d15ec54f1a77259f3a385",
+      "case.0000.00.prepared.pointmap_scale.safetensors": "d99df0962a84c415b5247bd600a029552773433847c9d8a0f518ddafe04f44f4",
+      "case.0000.00.prepared.pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+      "case.0000.00.prepared.rgb_image.safetensors": "97aff665a731d4e7f2a2241bbcfcd598def4dc98dee5aef0f80315c0b6229c39",
+      "case.0000.00.prepared.rgb_image_mask.safetensors": "5c660f34a689e00d544648850690517b51d319e966eacec9acd3ec4696aafff8",
+      "case.0000.00.prepared.rgb_pointmap.safetensors": "6a4853bf073e282e4f0274b2e5891871cb635dbe7af2646218d6efe42f4893fe",
+      "case.0000.00.prepared.rgb_pointmap_scale.safetensors": "d99df0962a84c415b5247bd600a029552773433847c9d8a0f518ddafe04f44f4",
+      "case.0000.00.prepared.rgb_pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+      "case.0000.00.prepared.rgb_pointmap_unnorm.safetensors": "953ea4bcb24a539214025e51e5214cbf98a88f9a145e62e899395beb0465b8c4",
+      "case.0000.10.encoder.0.11.norm1.safetensors": "0a96505e4804623b864991998c330d3c4e213501d31214a68d5e6467263bf24c",
+      "case.0000.10.encoder.0.12.qkv.safetensors": "7985af1812cf98988fe34d7e5a4ecfb7f092a780f35fc6228cd3f5f22a2994d9",
+      "case.0000.10.encoder.0.19.attn_projected.safetensors": "71d17c74aa841b56b539f5b74cf4205186c3b578edf099221cc475e7565c9e5a",
+      "case.0000.10.encoder.0.21.norm2.safetensors": "9dccf29410ed602e06ecfb5f6a858cce8038e3a23a25e0c33bc1f364a75b15f6",
+      "case.0000.10.encoder.0.22.fc1.safetensors": "04fe84a1ebeef944cad64e1876dd95cd29bfba561d3471a2b329f5dff6d8da2b",
+      "case.0000.10.encoder.0.23.gelu.safetensors": "1eb751739e337f9327db3c7f9fce0f09208fdbc3fe40c82b6d9934591a65e130",
+      "case.0000.10.encoder.0.24.fc2.safetensors": "8b98b7f7c3aeddd083d704274da1c173d6daff63a179516db6330645eca79208",
+      "case.0000.10.encoder.0.30.block_output.safetensors": "b9d055898202c0146388fff99e8e3d0975e8feffd99665666baa6c20c7faf3d8",
+      "case.0000.10.encoder.0.90.output.safetensors": "18fd9ef50ddeeee8c908b1f788027971b3eab7f23ee1707d9b7f420e99d78222",
+      "case.0000.20.fusion.10.modality.0.input.safetensors": "18fd9ef50ddeeee8c908b1f788027971b3eab7f23ee1707d9b7f420e99d78222",
+      "case.0000.20.fusion.10.modality.0.projection.00.input.safetensors": "18fd9ef50ddeeee8c908b1f788027971b3eab7f23ee1707d9b7f420e99d78222",
+      "case.0000.20.fusion.10.modality.0.projection.01.norm.safetensors": "df9975d0d90b4a37809cbac9d10ca427aec49230a5afe8bc37ad3104eed80d89",
+      "case.0000.20.fusion.10.modality.0.projection.02.w1.safetensors": "d8304f2905bb7805eb79283cfebe762c53fa8e9702c51a78454d762aec84a908",
+      "case.0000.20.fusion.10.modality.0.projection.03.silu.safetensors": "48e3410d4017564750e6ec1bf3a61943fafbca640bdbad1fb58730a926595844",
+      "case.0000.20.fusion.10.modality.0.projection.04.w3.safetensors": "9d93c4e5269025eda176e8f3b8dc5c184c2e90b141ca327700607f4975783af6",
+      "case.0000.20.fusion.10.modality.0.projection.06.projected.safetensors": "423ce6593bf25ff8fd40249deda2bfe3e48a30d27f41f635acdb9e5ea31a7ebf",
+      "case.0000.20.fusion.10.modality.0.projection.05.gated.safetensors": "c515622350a84e5f9ad1aa7328f7325b8eef01ab4192cc122459adc9fc15d5e4",
+      "case.0000.10.encoder.1.11.norm1.safetensors": "fab30e0d390a9c49a9e2c9610b022cb2aa28012d7425ad6292df54bd92ab6df9",
+      "case.0000.10.encoder.1.12.qkv.safetensors": "c55c2c07e118942101d12f9980b82c8404a419c9afb1233cd3af578ecf9d960d",
+      "case.0000.10.encoder.1.19.attn_projected.safetensors": "31bf309f75b82f0d0d2bd6f97c42b4552bf6c7b72524f721d2b1d6f4a871a422",
+      "case.0000.10.encoder.1.21.norm2.safetensors": "248116ad5380807604316a91090298df3cdc345dbac207e9f1f94edd01f697a0",
+      "case.0000.10.encoder.1.22.fc1.safetensors": "1234162c4de4a780dabe0a5c326adaad98a3dda05877270bbfc3c25f91ba7f40",
+      "case.0000.10.encoder.1.23.gelu.safetensors": "128d17f62be4d684caecc0929fd77f7e5622aa116c502988469178279b551ac5",
+      "case.0000.10.encoder.1.24.fc2.safetensors": "ebce3cb5c8cc9d7654f3bcd03237561275d7e83c1b5f87b6fb9fc41cc095dc2f",
+      "case.0000.10.encoder.1.30.block_output.safetensors": "bc796482ac883e6cea30cbd2b270092a578959fa201f34f8dd0db1f5cdcd767c",
+      "case.0000.10.encoder.1.90.output.safetensors": "60a5d02414be03b3d3c7f925304465c6b507c1d1933e12530b288fe5c27ada29",
+      "case.0000.20.fusion.10.modality.1.input.safetensors": "60a5d02414be03b3d3c7f925304465c6b507c1d1933e12530b288fe5c27ada29",
+      "case.0000.20.fusion.10.modality.1.projection.00.input.safetensors": "60a5d02414be03b3d3c7f925304465c6b507c1d1933e12530b288fe5c27ada29",
+      "case.0000.20.fusion.10.modality.1.projection.01.norm.safetensors": "ef2214a5efe2031e5b60b272b92c1e20b5ad855f874629de7acc1b38f31c355e",
+      "case.0000.20.fusion.10.modality.1.projection.02.w1.safetensors": "6c27ba1ecb5d229e9462a8cc2b627463792e7cc41c58d10fc51294ea3b81fa8f",
+      "case.0000.20.fusion.10.modality.1.projection.03.silu.safetensors": "cee5c90968f79f474943f6b76a6510e07e9503a52fe21a0cc6333f3ae0305b69",
+      "case.0000.20.fusion.10.modality.1.projection.04.w3.safetensors": "f6a89f16b61ae070f159b592d5a7c646e65b7fafd27eba27ce4957f36eeba96f",
+      "case.0000.20.fusion.10.modality.1.projection.06.projected.safetensors": "6ea6486d82b6746e03d953431d8e01df8da6fe3d32f551569bcf2b3a85ec24a0",
+      "case.0000.20.fusion.10.modality.1.projection.05.gated.safetensors": "d49f93bdc508317a32c74af4e2b59f7b77af19e5b71d5763961e9d8d3c9a8c70",
+      "case.0000.20.fusion.10.modality.0.positioned.safetensors": "a2648a534e16dcbbde8beffe940f802d3dd12f23a41924532f800a3594c2dc2c",
+      "case.0000.20.fusion.10.modality.1.positioned.safetensors": "b1fa5bfd48836cc89df3da1ecd0540098c34a541be7bf0d26851b77446806a60",
+      "case.0000.20.fusion.10.modality.0.dropped.safetensors": "a2648a534e16dcbbde8beffe940f802d3dd12f23a41924532f800a3594c2dc2c",
+      "case.0000.20.fusion.10.modality.1.dropped.safetensors": "b1fa5bfd48836cc89df3da1ecd0540098c34a541be7bf0d26851b77446806a60",
+      "case.0000.20.fusion.20.joined.safetensors": "ffb0b8a5186165f83a07bec49e38e69ce4f3cccee378fabeecc449b2ca7ff2eb",
+      "case.0000.20.fusion.90.output.safetensors": "ffb0b8a5186165f83a07bec49e38e69ce4f3cccee378fabeecc449b2ca7ff2eb",
+      "case.0000.full.safetensors": "64896b6159fbdabab935813948598edd2ff368d10bc3e6a255efe5a2008a7729",
+      "case.0000.weights": "9394847e0e1939ff9592073f7cc6a3784d1d07124270db31842ed57bc99e66d0",
+      "case.0001.00.prepared.image.safetensors": "d74809461a82f5ff3c741f89907a73e0abf0c65c27e3302f93a338bd6ae66277",
+      "case.0001.00.prepared.mask.safetensors": "645826730a9c2fcbb5d50dc9bf1d78d261a17a11d9f81db9541fba0196af30ac",
+      "case.0001.00.prepared.pointmap.safetensors": "1851a1f1adfbc21f989d2af57fc2528953ea72c80b33325ef273f0527fabb947",
+      "case.0001.00.prepared.pointmap_scale.safetensors": "c0713be69cbaaa178c30c90e24e80a53a5d3bd0e39a44e285caca7e60f5166ed",
+      "case.0001.00.prepared.pointmap_shift.safetensors": "90cdd7a6c59b13ab8461300e0091c5bab89ba5d82d7401f0638bb770e5ec6fb7",
+      "case.0001.00.prepared.rgb_image.safetensors": "21a29c948c6da257e97a4630be763877f084a05f903ea09d3e8921d762818283",
+      "case.0001.00.prepared.rgb_image_mask.safetensors": "01c548cd84dda00a10ce3c5370444d49c744edf91a5caca49ee47cb99a4ad47e",
+      "case.0001.00.prepared.rgb_pointmap.safetensors": "54c10f2267328cda480815ee82d09099bc72f8aacc4c479321dd2f729da7d3e8",
+      "case.0001.00.prepared.rgb_pointmap_scale.safetensors": "c0713be69cbaaa178c30c90e24e80a53a5d3bd0e39a44e285caca7e60f5166ed",
+      "case.0001.00.prepared.rgb_pointmap_shift.safetensors": "90cdd7a6c59b13ab8461300e0091c5bab89ba5d82d7401f0638bb770e5ec6fb7",
+      "case.0001.00.prepared.rgb_pointmap_unnorm.safetensors": "ffa15cab8cbf7eef6c869655f46ccc5f3ae13716cd984cdeed6befe1b39726fb",
+      "case.0001.10.encoder.0.11.norm1.safetensors": "3f11aa3404ecdde44f84e9784e1b437f3d4e41115c1ffdd7141025e8b5ef727a",
+      "case.0001.10.encoder.0.12.qkv.safetensors": "8e167da3e7ded177d5eb7379e784ff5e6772ed636ad8d1f101afadc7deb313fc",
+      "case.0001.10.encoder.0.19.attn_projected.safetensors": "3bfc76bb6c1273999704e415c5ee285e0c5cfa2f65699b8cdc5b0f8d8e94a5b3",
+      "case.0001.10.encoder.0.21.norm2.safetensors": "2cdd73b69736b3a19ca87e68efe81543c54171afd550ce2d8ed8e5ddb6133d9d",
+      "case.0001.10.encoder.0.22.fc1.safetensors": "2902fbcb81d043113e688fef68eee6139f34f1fd4b842e8738cbf8699b5b97dc",
+      "case.0001.10.encoder.0.23.gelu.safetensors": "8de846d01210270b4dea19b0b9e38309b1d06731fe6a9e9816d6cb6002737ffd",
+      "case.0001.10.encoder.0.24.fc2.safetensors": "49640ac6b177eb58acf1216b62af831bbfef035b5ce16ebbbf5ec79938c344ab",
+      "case.0001.10.encoder.0.30.block_output.safetensors": "bd69c57a2d6361c6d10ef426ce4b5c43457e1f92fba18183cf254e84a8ae30e7",
+      "case.0001.10.encoder.0.90.output.safetensors": "176a127111c6e2e6e3f32bf8d42c676b46e52008e224df415b915e1df91b673b",
+      "case.0001.20.fusion.10.modality.0.input.safetensors": "176a127111c6e2e6e3f32bf8d42c676b46e52008e224df415b915e1df91b673b",
+      "case.0001.20.fusion.10.modality.0.projection.00.input.safetensors": "176a127111c6e2e6e3f32bf8d42c676b46e52008e224df415b915e1df91b673b",
+      "case.0001.20.fusion.10.modality.0.projection.01.norm.safetensors": "18ac4278165f21b49c9f72b056617bb583749357ede6f138d1bce6a37896bd82",
+      "case.0001.20.fusion.10.modality.0.projection.02.w1.safetensors": "fee6e70cf7625df8bf19b94650461ec9500fe5704e022e03769af8798bbcf6d6",
+      "case.0001.20.fusion.10.modality.0.projection.03.silu.safetensors": "4726473e6ff61735703c39711896579faadd7d5f6a1be2dd97caf8bf06951ce1",
+      "case.0001.20.fusion.10.modality.0.projection.04.w3.safetensors": "542503d6244ff0ad16584a9035b310e5307cdc0f68ee4e09730d316dad7a2b67",
+      "case.0001.20.fusion.10.modality.0.projection.06.projected.safetensors": "e07b6520b1530c4f6aeca11715c5ae94095f24aa7a77abbe7e5bbae5923bbe5f",
+      "case.0001.20.fusion.10.modality.0.projection.05.gated.safetensors": "119044b15fcbe6b789ae744308a59ebe3d626be6161c5c49c246000961a43cbb",
+      "case.0001.10.encoder.1.11.norm1.safetensors": "ffcfd35c239b6bb4eb6d1c671c1629fec671b9caaf2ed3add97d8e02299aed3d",
+      "case.0001.10.encoder.1.12.qkv.safetensors": "d21bc299161e48c31626a745a657a0444d0059211aca6f730f0c97e07df0ce40",
+      "case.0001.10.encoder.1.19.attn_projected.safetensors": "c20bf864d9e28daeb90942a919445ad6d54c00317fcbbc1f8cc66b2a5fad60f8",
+      "case.0001.10.encoder.1.21.norm2.safetensors": "30018703ac8c352ce058f12567469932009f0ebc53f18f78e53b1a83fb7b5a9e",
+      "case.0001.10.encoder.1.22.fc1.safetensors": "533b452c34b5eae81f721c497a1a1b5e805bb7e4f870613a854ecc0779b6b58a",
+      "case.0001.10.encoder.1.23.gelu.safetensors": "daca1637f7330afd57e10f912749787e8336ffddb5a1819d32dc2a7b0ecdaecd",
+      "case.0001.10.encoder.1.24.fc2.safetensors": "4ee0942afb0967bc06907417902301007cd43035408fdb0b26215ee370c080e5",
+      "case.0001.10.encoder.1.30.block_output.safetensors": "077115553621bb5e7bf58f626d7bd4f05c755d1efcbfdb2bfb7557dccbd43d67",
+      "case.0001.10.encoder.1.90.output.safetensors": "270ab381a05ab030b49b46904bda79cdb736752021dc67ede2df193569fe6dee",
+      "case.0001.20.fusion.10.modality.1.input.safetensors": "270ab381a05ab030b49b46904bda79cdb736752021dc67ede2df193569fe6dee",
+      "case.0001.20.fusion.10.modality.1.projection.00.input.safetensors": "270ab381a05ab030b49b46904bda79cdb736752021dc67ede2df193569fe6dee",
+      "case.0001.20.fusion.10.modality.1.projection.01.norm.safetensors": "e92d80d82c129f22f50686e55d600bddb854285a5b157e8e0c3761db67ad45fc",
+      "case.0001.20.fusion.10.modality.1.projection.02.w1.safetensors": "d8d239cf46686d00517e7e08bf31636028a9f61bc98b38ff98070ae9fdbce86a",
+      "case.0001.20.fusion.10.modality.1.projection.03.silu.safetensors": "c8c1f6037b6320ba0f7e402696ee6c7be9e8f04f597a2abf3e01d4f9de99e4a7",
+      "case.0001.20.fusion.10.modality.1.projection.04.w3.safetensors": "c8b5766298159cb86b9579b671c88c50bee31b98b0be3fb691c570ff45818171",
+      "case.0001.20.fusion.10.modality.1.projection.06.projected.safetensors": "ddbfe5bf65bde265b00eb675c2b01e4210dc4464bb6284b6fa82f834621ccae1",
+      "case.0001.20.fusion.10.modality.1.projection.05.gated.safetensors": "e064d3583fc54db203631938301d823dedaacb11c7abfd7b5432ffcfa4bde220",
+      "case.0001.20.fusion.10.modality.0.positioned.safetensors": "7d81112ae11d725180d646ac00ed9dfdb53e430a48f9d6b2d303b22e141d7995",
+      "case.0001.20.fusion.10.modality.1.positioned.safetensors": "86e48ca7f19a1af716c9d064d0105bfd8a559f13a50dd01dec03919a7081a296",
+      "case.0001.20.fusion.10.modality.0.dropped.safetensors": "7d81112ae11d725180d646ac00ed9dfdb53e430a48f9d6b2d303b22e141d7995",
+      "case.0001.20.fusion.10.modality.1.dropped.safetensors": "7145267d45ce85d2dded29823f27c18496001fad47f2b20e2dff9f33b6154e36",
+      "case.0001.20.fusion.20.joined.safetensors": "6bc645f048a9acdae07d0f8ed3e2aab21f5e77f7c2015b94d667521233f43c0c",
+      "case.0001.20.fusion.90.output.safetensors": "6bc645f048a9acdae07d0f8ed3e2aab21f5e77f7c2015b94d667521233f43c0c",
+      "case.0001.full.safetensors": "7f9e507916247ddc31b3aad99fa1cab79dd94c4e70a667c178cb1438b958fb5f",
+      "case.0001.weights": "27e427d369983e70350d5f96924dd8d89edbb40ce480655fc530816452a12769"
+    }
+  },
+  "artifacts": {
+    "point-condition-0.txt": "627046081950564c2979895b9f49666ce95b9b8fcd31a4a4458c3c05f0d185de",
+    "point-condition-0.input": "0ec1a0a3aa6e557b2e53560d6437faf4da3d1015c567d9f4a31d6cabce1c732c",
+    "point-condition-0.weights": "9394847e0e1939ff9592073f7cc6a3784d1d07124270db31842ed57bc99e66d0",
+    "point-condition-1.txt": "fcfa9e63e1d43614e15e8dd2de7ff2bbabeb79d63532466ea8cc216e7b47d6bf",
+    "point-condition-1.input": "0393c200ad8cce6d9667fdb8f15baf9c9d903ae57ba7093de30a6d22e68e9289",
+    "point-condition-1.weights": "27e427d369983e70350d5f96924dd8d89edbb40ce480655fc530816452a12769"
+  },
+  "packager_sha256": "cbc4240f834b089220bd76042b3a1b10f7f448d4070ff92ef60508c47783c34d"
+}

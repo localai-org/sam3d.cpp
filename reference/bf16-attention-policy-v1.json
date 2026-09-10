@@ -1,0 +1,1104 @@
+{
+  "schema_version": 1,
+  "boundary": "isolated trained BF16 attention on original Q/K/V: not full own-intermediate inference",
+  "native_candidate_used": false,
+  "policy": "two times independent original SDPA kernel variation, with 5% relative and 10%-of-peak absolute caps",
+  "torch": "2.7.0+cu128",
+  "cuda": "12.8",
+  "tf32": false,
+  "records": [
+    {
+      "name": "block.00",
+      "input_sha256": "277c70e98b174cd50425f80ff3174ddf69293bf3906388ad58a122edc1bd44e9",
+      "source_sha256": "18bf02652cb6463111a2b8f742cae2f2fad7b468f93b70889db57e0c427bd237",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 3.478603674600226e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.0625,
+          "relative_l2": 0.0006263554760685397
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.0625,
+          "relative_l2": 0.0006197753166961521
+        }
+      ]
+    },
+    {
+      "name": "block.01",
+      "input_sha256": "27f4f9f09ab909741d3cd646a93647730a803a23fed0fdeb70d23e196b9df7d8",
+      "source_sha256": "c99e71746feac072f24132bf86040645811c4d77644ca6920e2f0c647fe7592d",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 2.8034870308859247e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0006113230721111875
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0006110525686845969
+        }
+      ]
+    },
+    {
+      "name": "block.02",
+      "input_sha256": "96319355bd6b6582833d6f8cd2231a812d628821d2c538181417c9f0d1e6c8a1",
+      "source_sha256": "33c48402c5155b7fce38e98ef8b8c0c1938ad74b5a230fa4d2d1ce227485affd",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.9387919978203637e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0009360924214833552
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0009403657371473678
+        }
+      ]
+    },
+    {
+      "name": "block.03",
+      "input_sha256": "5e301220ed150ba96b59139e4e22e6b8961218bb0084b6578f3dbe48b138f630",
+      "source_sha256": "cc3c4f4cce641b582b15b271eb67d3f54c01c12deb43b129da8067a4198b4b6e",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.00390625,
+          "relative_l2": 3.624506894248187e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.001059570645690674
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0010487433200714288
+        }
+      ]
+    },
+    {
+      "name": "block.04",
+      "input_sha256": "599e5879cf6e965a0e6fd82404d5e8251fae148bb57157b56d6c0862baa1991f",
+      "source_sha256": "a6bd1685a87d0839e31d19a45d7549a87c40d362b88c75dcfe184636f5d13017",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.773899218014965e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.001011200244411582
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0010190539626315498
+        }
+      ]
+    },
+    {
+      "name": "block.05",
+      "input_sha256": "5a302347f8632445a418a6695265a98524c94324233fc75cba6acbc26e1b8386",
+      "source_sha256": "3791c8a9cbc28e28c5fe90e8b5d2059dc7f711bac88e2bb53568d9d9721e8b07",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.00390625,
+          "relative_l2": 3.2145707022625604e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0009871715171799944
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0009937556223103398
+        }
+      ]
+    },
+    {
+      "name": "block.06",
+      "input_sha256": "c3b1ee0423a192b702dad1f8b4aa8e0274ac58c4200035a5505e2d51c9a2edc7",
+      "source_sha256": "c6a1baf2a5afba7a615fea7467507f12a9e0ae53f9dce810046cafd24d53e32d",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 3.790353319187971e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0009224271869005405
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0009247372755786205
+        }
+      ]
+    },
+    {
+      "name": "block.07",
+      "input_sha256": "fab61c84b231efaed937eaf3abf524f7d56d010145145797d0c78115c429bd8a",
+      "source_sha256": "a912d6f2be3026134ed65dd7e94bdbea42794fbdde1cdc9a6c6e4071c61b9b54",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 3.783795038409711e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.001027681690679425
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0010310549480788069
+        }
+      ]
+    },
+    {
+      "name": "block.08",
+      "input_sha256": "8ed611a4215e060cd0ff988e5f11156c831199eeed421b836671e532ceee22b4",
+      "source_sha256": "45f4b55fb413b538ab3ce0bfbb28bab3dba86e9a36d5c8b7be16ff920b9703ee",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.323246490072449e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.000998821751235887
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.000989505133179048
+        }
+      ]
+    },
+    {
+      "name": "block.09",
+      "input_sha256": "a7970360129a39fd71150ecdafca89c6eaf01004f2ab7fc73af8631798df1f88",
+      "source_sha256": "3998bedc90521fadcfa96ca3f15bdd5468c2d4c2f38b06df27ca20e2a6cfe5f4",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 3.386403638731844e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0010271361286031161
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0010068396616263915
+        }
+      ]
+    },
+    {
+      "name": "block.10",
+      "input_sha256": "b5e6a788bb886ef6a44ea5b966220713f285ebc22b7bd4114ae38cc72a415ae4",
+      "source_sha256": "2ec767ae976e21ef7cce4a8eff62e8a8dd697d383bbbbcd59088dc960aff2085",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 3.96324655152005e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012247806769422119
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012259040766314018
+        }
+      ]
+    },
+    {
+      "name": "block.11",
+      "input_sha256": "f8a172494a9d44214ac35af465ed172915b8e2d5d9ee3c5e1ecbf52bf88223a3",
+      "source_sha256": "dee6fb6fb4034aa268b105da2d639818bcf801fd992987908e7d29e2e201763f",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 3.370188542470838e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0010437711636264461
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0010584441667190942
+        }
+      ]
+    },
+    {
+      "name": "block.12",
+      "input_sha256": "2a5830a09b16c0ab8ed77f4155611e826cb746ffd4086a21e033a139723fce76",
+      "source_sha256": "1cd2f8d34f043d351efa810d872c5c1e30e15b8f45807f24e93b6e07eab24926",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 3.394604108803639e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012230788029028933
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012133874997596761
+        }
+      ]
+    },
+    {
+      "name": "block.13",
+      "input_sha256": "aa3216f947f46600444b9535b5ff090456bb2bc060686c3ad394dfecda2d89d6",
+      "source_sha256": "275cbf591e193e2fecaa9640df69854af28782aad8f52cbf2391207f7e2edfe2",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 4.247540786920825e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0011581327179228298
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0011516233259104415
+        }
+      ]
+    },
+    {
+      "name": "block.14",
+      "input_sha256": "69b37c02ccec0dec23293b15d5ff139985465b4cd882f65453258c49d2d73b30",
+      "source_sha256": "f5203221dc1049b555c7add5c3a0c4aa704c659755040b67eeb7906fcc7c0653",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 5.567701169222163e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0013574382357666068
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0013611948055935635
+        }
+      ]
+    },
+    {
+      "name": "block.15",
+      "input_sha256": "ffdc09615af05c6995cbc57a6cc108343b0c340b1736c05ff84dfa4789b9e038",
+      "source_sha256": "88faa226546532b6fdbab5e1cf211df31ff0c3c33d88ee811e18c5bfefe1a924",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 5.693522653490138e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0013609408356095372
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0013377808859206916
+        }
+      ]
+    },
+    {
+      "name": "block.16",
+      "input_sha256": "c54508cc4b2c6d3510449f5e2480505c38c657f3a5a5eb0cb253bb7cf983a1bd",
+      "source_sha256": "422e7a72b59f62d98a4f5dfa349bd1f513ca6d52d51d229ad7efeba5aaed48f5",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.903301286595379e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0012994514907022445
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.001283114352151645
+        }
+      ]
+    },
+    {
+      "name": "block.17",
+      "input_sha256": "aaf5cfa32927e9772307caf73d393d4f7aec553f49bbb0992f90d18c5a741a60",
+      "source_sha256": "fa52a49ddc3dd0f53697b307fcf9ef71aa57dfcb68f492635a0e3a25c529e56d",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 7.001778638626732e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0013954568081906305
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.001368970396439027
+        }
+      ]
+    },
+    {
+      "name": "block.18",
+      "input_sha256": "967387f1f8f4bbbb9e2da164e704bafb01cf39f1b8ffffc19687066f5b325249",
+      "source_sha256": "efa53dcc281b21b9ec276109d39264a3d5054d3a057388dd0ce3ce09e3f517ce",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 5.486569688567883e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0013617665249718407
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0013357017078838684
+        }
+      ]
+    },
+    {
+      "name": "block.19",
+      "input_sha256": "94c385daaebf310a348b8670711e6f2f998fa8d977eb34503398aed0f4480bc6",
+      "source_sha256": "e9a25b262682e3c4497c5ac7a49f8ddfcdb70766c482b55c5da901eba09ada63",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 5.790732866064375e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0013916426482256867
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.001355235567639218
+        }
+      ]
+    },
+    {
+      "name": "block.20",
+      "input_sha256": "e14838c1477fa0574f732fddfd7255fa5766a6fb7c6a10fb6ce1964ab2dd4264",
+      "source_sha256": "e361122f7c4f858f6c17ab05850fefcd1261f53d5a3aaf699a978539fa1ca55e",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.9489014612836555e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0013302494386776703
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0013053735556681797
+        }
+      ]
+    },
+    {
+      "name": "block.21",
+      "input_sha256": "74d1f6f5ce3908c7f898b8f922e46fc539c1bc8c108bec36f396c49b906dbbe8",
+      "source_sha256": "4b4c6f8bdf32cd003c7272dec90a56b2418d0b25f3e1aaac5b9dd15417185da5",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.6426435273599945e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0013952168248229527
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0013555438710188528
+        }
+      ]
+    },
+    {
+      "name": "block.22",
+      "input_sha256": "fc15ec0e4baebe9db24270ba46e053743afe4aea35fe8e56f0f443bbb4c1b740",
+      "source_sha256": "5a749592f8f12362365dec84d8a9add484a23af93c494c58ca02fdddd04acfc3",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 5.1673940496572275e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0011943739425925243
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0011713222474731065
+        }
+      ]
+    },
+    {
+      "name": "block.23",
+      "input_sha256": "eecdb27145804fef16995a6463a09fe35660f1a3fe32ce2615b0140e0b607505",
+      "source_sha256": "4392f2f9262092f6fde7e75393faa795604c179c8acac85b616fb5ed12b7bad4",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 5.116661073977058e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0013115155919056927
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0012930104130010186
+        }
+      ]
+    },
+    {
+      "name": "block.24",
+      "input_sha256": "90d3839e00e0182033b47b8f35f8611c6553035167c9afa42764614c332a7163",
+      "source_sha256": "a9fa7395225818daf3986f293fef7b85dadf3d3334ac2ce7ecd21f71fedb3d4f",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.998051963289015e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012762094497044442
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012720285020594569
+        }
+      ]
+    },
+    {
+      "name": "block.25",
+      "input_sha256": "23fa74ef6ae0eb3bcfa577e31dd8b025bbce1728817c088ffe026eb5dd5f4743",
+      "source_sha256": "c0c1551f905bc28659415752c6fd76396c6a602f2a993a0a055893c91adadd60",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 5.428825517926489e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0012550746124467633
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.015625,
+          "relative_l2": 0.0012315945634521865
+        }
+      ]
+    },
+    {
+      "name": "block.26",
+      "input_sha256": "efa01af30e8700b898fa6029e0600d4561f8cca823def809fe31598ef741f013",
+      "source_sha256": "535001eb5f7acd7fff90463b7b24cfb105025f21ddc6c358e7745135cd32424e",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 5.298477570026013e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012431018479607528
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012491256714339117
+        }
+      ]
+    },
+    {
+      "name": "block.27",
+      "input_sha256": "9fb86f02d922c6c9fce6b02f7fb9b4d511ff99a7515f3eab8d4052c9be312662",
+      "source_sha256": "3ee851468c2a215aad9b8214b09483bc3f55ea39b2f0a1804658852a5ba251fc",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 6.154248201784271e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012520862953825877
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012467065801711305
+        }
+      ]
+    },
+    {
+      "name": "block.28",
+      "input_sha256": "dc48786479d7e90be39053506dd471c472e41c0d54b365fdf26b9f4c5c8a1e4f",
+      "source_sha256": "da89e52392af6e14fe29255effffb92df9d0477b9fe71d0b46df9f7ffe553d1c",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.0078125,
+          "relative_l2": 4.161845205514833e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.00114048066328028
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.001138104981442527
+        }
+      ]
+    },
+    {
+      "name": "block.29",
+      "input_sha256": "a9fa3133b99eddd23b1241b78acae8b84820c5d3f79505571330fc352ea9d32f",
+      "source_sha256": "e0674dbfafd3f327402a277b1cdb1b054e1ca223b69ef52fd96453f3e53d76ce",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 5.6296634213011865e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.001297471520911807
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0013014342886611312
+        }
+      ]
+    },
+    {
+      "name": "block.30",
+      "input_sha256": "caf2a405a77e36f943918cc95ad593a77f135e0eeab1c890a9c95ec908e33236",
+      "source_sha256": "0b2ea6a74dbc886c3bce8f95904a3e868e3dcad36d42c40e997c44a3f82f7be8",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 5.6284622952023894e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.001244511695408249
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0012305927460064278
+        }
+      ]
+    },
+    {
+      "name": "block.31",
+      "input_sha256": "0a9abcc76238bc8e621d7035bd837837a2a7aac15fef64623c621d808bd2f020",
+      "source_sha256": "273f6fad53027b6d9c3946935df6d6b483e62f7a99b4604c4b2db293a7ca3ab8",
+      "shape": [
+        1,
+        1029,
+        1280
+      ],
+      "controls": [
+        {
+          "mode": "cpu_math",
+          "max_abs": 0.015625,
+          "relative_l2": 5.986373435926628e-05
+        },
+        {
+          "mode": "cuda_efficient",
+          "max_abs": 0.03125,
+          "relative_l2": 0.0011905430172431076
+        },
+        {
+          "mode": "cuda_flash",
+          "max_abs": 0.03125,
+          "relative_l2": 0.001181851817498791
+        }
+      ]
+    }
+  ],
+  "tensors": [
+    {
+      "name": "block.00",
+      "mode": "float",
+      "max_abs": 0.125,
+      "relative_l2": 0.0012527109521370794,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.01",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.001222646144222375,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.02",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0018807314742947355,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.03",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.002119141291381348,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.04",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.0020381079252630996,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.05",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0019875112446206796,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.06",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.001849474551157241,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.07",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0020621098961576137,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.08",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.001997643502471774,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.09",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0020542722572062322,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.10",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0024518081532628037,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.11",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0021168883334381884,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.12",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0024461576058057866,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.13",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0023162654358456596,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.14",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.002722389611187127,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.15",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0027218816712190745,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.16",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.002598902981404489,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.17",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.002790913616381261,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.18",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.0027235330499436813,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.19",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.0027832852964513734,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.20",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.0026604988773553406,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.21",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0027904336496459054,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.22",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.0023887478851850486,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.23",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.0026230311838113854,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.24",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0025524188994088884,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.25",
+      "mode": "float",
+      "max_abs": 0.03125,
+      "relative_l2": 0.0025101492248935267,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.26",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0024982513428678235,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.27",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0025041725907651753,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.28",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.00228096132656056,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.29",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0026028685773222624,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.30",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.002489023390816498,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "block.31",
+      "mode": "float",
+      "max_abs": 0.0625,
+      "relative_l2": 0.0023810860344862152,
+      "zero_reference_floor": 1e-12
+    }
+  ],
+  "source_manifest_sha256": "8a30d62b0a3c3c5c309aed37f0b855fab227aae303cdfd029e5bf285263b5bc9",
+  "script_sha256": "d7a6ca689ff77219b1e1962ae8900b224087f5c72f179a845adee5ecf584a2f8",
+  "upstream_sha256": "1d7228a68ed1b7a41151720092644c00a48533fd354305f11a84859577fe271c"
+}

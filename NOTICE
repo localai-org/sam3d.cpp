@@ -1,0 +1,16 @@
+sam3d.cpp
+Copyright 2026 sam3d.cpp contributors.
+
+Original contributions are licensed under Apache-2.0. This is a mixed-license
+distribution: the Apache grant does not replace licenses of third-party material
+or adaptations. See LICENSING.md and THIRD_PARTY_NOTICES.md for boundaries,
+upstream copyright notices, source revisions and descriptions of modifications.
+
+Contains adaptations of SAM and DINOv3 material, Copyright (c) Meta Platforms,
+Inc. and affiliates, under the SAM and DINOv3 licenses respectively.
+MHR geometry is Apache-2.0; Momentum adaptations are MIT. GGML is MIT.
+Other retained third-party notices include PyTorch, PyTorch3D, OpenCV, RoMa,
+SciPy (within the RoMa notice), timm, Trellis2cpp and Three.js.
+
+LocalAI branding does not imply Meta endorsement. No rights to third-party
+trademarks or model weights are granted by the project's Apache license.

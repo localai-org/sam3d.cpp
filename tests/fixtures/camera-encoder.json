@@ -1,0 +1,88 @@
+{
+  "boundary": "original CameraEncoder synthetic component; not trained or image-to-pose parity",
+  "revision": "b5c765a0d89d789985e186d396315e7590887b94",
+  "source_hashes": {
+    "camera_embed.py": "42f2483368fa3249557464aaa188c5d422f4e2faeb29ecd6facc131a97141539",
+    "transformer.py": "0cc343878ba8cdf28f9061de53ac0bc0fd6f829889ade96341729db5860ecbe4",
+    "swiglu_ffn.py": "7a25fff5fa99c910c8daea7737f3650881a92da11388ddfbfd57794dc9de5355",
+    "layer_scale.py": "ef4e0f769dd072425384f354c9527e2fdd7346843379e5f3b0cb2110a72c1c81",
+    "drop_path.py": "04c2f8bf7f13382c3d5c992fca00692a0591d187a2d271f49afaa5bce2ec9525"
+  },
+  "capture_script_sha256": "78b48da2bdbd26c612c713a398ac1bdc9df3a5f4ceca670c431729d523fe840a",
+  "device": "cpu",
+  "cuda_device": null,
+  "torch": "2.7.0+cu128",
+  "numpy": "2.2.6",
+  "threads": 1,
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "unobserved_vs_observed": "exact_equal_all_cases",
+  "auxiliary_taps": [
+    "02.frequencies"
+  ],
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "order": [
+        "00.rays_downsampled",
+        "01.positions",
+        "02.frequencies",
+        "03.fourier",
+        "04.joined",
+        "05.projection",
+        "06.normalized",
+        "07.output"
+      ],
+      "shapes": {
+        "01.positions": [
+          2,
+          6,
+          3
+        ],
+        "03.fourier": [
+          2,
+          6,
+          99
+        ],
+        "04.joined": [
+          2,
+          6,
+          103
+        ],
+        "05.projection": [
+          2,
+          6,
+          4
+        ],
+        "06.normalized": [
+          2,
+          6,
+          4
+        ],
+        "07.output": [
+          2,
+          4,
+          2,
+          3
+        ],
+        "00.rays_downsampled": [
+          2,
+          2,
+          2,
+          3
+        ],
+        "02.frequencies": [
+          3,
+          16
+        ]
+      }
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "5229542135305c32bd8672a49755ca0f2663a184187add561d9afd84b43ddf79",
+    "regression.txt": "b92e94f887ef35cbaa63b1ebcb2d066c327794eec18f054843efe56ee8ac3a25",
+    "rules.json": "60568a06e677662776007aa061558ccab0ce7ed090386a924d5a438b95dc7c17",
+    "upstream.safetensors": "2e43d9fdd89101340c9bc4d58c153de9bcc443db69bd509e44430e52823e0a77"
+  }
+}

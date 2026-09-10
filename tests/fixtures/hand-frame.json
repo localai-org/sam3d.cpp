@@ -1,0 +1,11 @@
+{
+  "fixture_sha256": "d4462abdb2493e2da04fbba588215d753066f498e0683e801baef8389c148dbe",
+  "bytes": 86446,
+  "original_manifest_sha256": "7f226375e2ac94e9fcfc6117fae6b4708b1d227a01da94d3d514b404f830159f",
+  "original_head_sha256": "03793d51ef82484c5d9906358c6314981c0bff9dbcc6f6e6b175bd977a251b35",
+  "roma_sha256": "79c3a07ab94c0e784e8de2ecc878645a5cf0aff312f7b1e281ca1be7c5f0b7e8",
+  "scope": "Synthetic inputs/buffers and original component outputs only; no trained parameters.",
+  "geometry_max_abs": 0.0001,
+  "geometry_relative_l2": 2e-05,
+  "masks": "byte-exact FNV-1a regression"
+}

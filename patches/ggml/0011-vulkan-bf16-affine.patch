@@ -1,0 +1,143 @@
+diff --git a/src/ggml-vulkan/vulkan-shaders/affine_round_bf16.comp b/src/ggml-vulkan/vulkan-shaders/affine_round_bf16.comp
+new file mode 100644
+--- /dev/null
++++ b/src/ggml-vulkan/vulkan-shaders/affine_round_bf16.comp
+@@ -0,0 +1,24 @@
++#version 450
++// GGML-derived indexing and RNE BF16 conversion; keep separate F32 operations.
++#include "types.glsl"
++#include "utils.glsl"
++layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
++layout(push_constant) uniform parameter {
++    uint ne; uint nb; uint nc; uint round_mul;
++    uint ao; uint bo; uint co; uint dst;
++} p;
++layout(binding=0) readonly buffer A { float a[]; };
++layout(binding=1) readonly buffer B { float b[]; };
++layout(binding=2) readonly buffer C { float c[]; };
++layout(binding=3) writeonly buffer D { float d[]; };
++void main() {
++    uint idx=gl_GlobalInvocationID.z*262144+gl_GlobalInvocationID.y*512+gl_GlobalInvocationID.x;
++    for(uint k=0;k<2;++k,idx+=256) if(idx<p.ne) {
++        uint bi=p.nb==p.ne?idx:fastmod(idx,p.nb);
++        uint ci=p.nc==p.ne?idx:fastmod(idx,p.nc);
++        precise float product=a[p.ao+idx]*b[p.bo+bi];
++        float rounded=p.round_mul!=0?bf16_to_fp32(fp32_to_bf16(product)):product;
++        precise float value=rounded+c[p.co+ci];
++        d[p.dst+idx]=bf16_to_fp32(fp32_to_bf16(value));
++    }
++}
+diff --git a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+--- a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -821,2 +821,3 @@
+     string_to_spv("silu_gate_bf16", "binary_round_bf16.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}, {"BINARY_MUL", "1"}, {"SILU_GATE", "1"}});
++    string_to_spv("affine_round_bf16", "affine_round_bf16.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}});
+     string_to_spv("contig_cpy_f32_i32", "contig_copy.comp", {{"A_TYPE", "float"}, {"D_TYPE", "int"}});
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -991,2 +991,3 @@
+     vk_pipeline pipeline_silu_gate_bf16;
++    vk_pipeline pipeline_affine_bf16;
+     vk_pipeline pipeline_contig_cpy_f32_f32, pipeline_contig_cpy_f32_f16, pipeline_contig_cpy_f16_f16, pipeline_contig_cpy_f16_f32, pipeline_contig_cpy_f32_bf16, pipeline_contig_cpy_bf16_f32, pipeline_contig_cpy_f32_i32, pipeline_contig_cpy_i32_f32;
+@@ -5609,2 +5609,3 @@
+     ggml_vk_create_pipeline(device, device->pipeline_silu_gate_bf16, "silu_gate_bf16", silu_gate_bf16_len, silu_gate_bf16_data, "main", 3, sizeof(vk_op_binary_push_constants), {512, 1, 1}, {0, 0}, 1);
++    ggml_vk_create_pipeline(device, device->pipeline_affine_bf16, "affine_round_bf16", affine_round_bf16_len, affine_round_bf16_data, "main", 4, 8*sizeof(uint32_t), {512, 1, 1}, {}, 1);
+     for (uint32_t mode = 0; mode < 3; ++mode) {
+@@ -12748,2 +12748,3 @@
++struct vk_affine_bf16_push_constants {
++    uint32_t ne, nb, nc, round_mul, ao, bo, co, dst;
++};
++static_assert(sizeof(vk_affine_bf16_push_constants)==8*sizeof(uint32_t));
++static void ggml_vk_affine_bf16(ggml_backend_vk_context * ctx, vk_context & subctx,
++                              ggml_cgraph * graph, int i) {
++    const int add_index=i+(ctx->num_additional_fused_ops==5?3:1);
++    const auto * mul=graph->nodes[i];
++    const auto * add=graph->nodes[add_index];
++    const auto * previous=graph->nodes[add_index-1];
++    const auto * bias=add->src[add->src[0]==previous?1:0];
++    const auto * dst=graph->nodes[i+ctx->num_additional_fused_ops];
++    const auto * a=mul->src[0]; const auto * b=mul->src[1];
++    vk_affine_bf16_push_constants pc{
++        (uint32_t)ggml_nelements(dst),(uint32_t)ggml_nelements(b),(uint32_t)ggml_nelements(bias),
++        ctx->num_additional_fused_ops==5?1u:0u,
++        get_misalign_bytes(ctx,a)/4,get_misalign_bytes(ctx,b)/4,
++        get_misalign_bytes(ctx,bias)/4,get_misalign_bytes(ctx,dst)/4};
++    auto pipeline=ctx->device->pipeline_affine_bf16;
++    ggml_pipeline_request_descriptor_sets(ctx,pipeline,1);
++    std::array<uint32_t,3> elements=pc.ne>262144?std::array<uint32_t,3>{512,512,CEIL_DIV(pc.ne,262144)}:
++        pc.ne>512?std::array<uint32_t,3>{512,CEIL_DIV(pc.ne,512),1}:std::array<uint32_t,3>{pc.ne,1,1};
++    ggml_vk_dispatch_pipeline(ctx,subctx,pipeline,{
++        ggml_vk_tensor_subbuffer(ctx,a,true),ggml_vk_tensor_subbuffer(ctx,b,true),
++        ggml_vk_tensor_subbuffer(ctx,bias,true),ggml_vk_tensor_subbuffer(ctx,dst,true)},pc,elements);
++}
+ static void ggml_vk_mul(ggml_backend_vk_context * ctx, vk_context& subctx, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst, bool round_bf16 = false, bool silu_gate = false) {
+     const uint32_t src0_type_size = ggml_type_size(src0->type);
+@@ -15953,3 +15953,7 @@
+     case GGML_OP_MUL:
+-        if (ctx->num_additional_fused_ops == 2 && cgraph->nodes[node_idx + 1]->op == GGML_OP_CPY) {
++        if ((ctx->num_additional_fused_ops == 3 || ctx->num_additional_fused_ops == 5) &&
++            cgraph->nodes[node_idx + ctx->num_additional_fused_ops]->op == GGML_OP_CPY) {
++            ggml_vk_affine_bf16(ctx, compute_ctx, cgraph, node_idx);
++        } else if (ctx->num_additional_fused_ops == 2 && cgraph->nodes[node_idx + 1]->op == GGML_OP_CPY) {
+             ggml_vk_mul(ctx, compute_ctx, src0, src1, cgraph->nodes[node_idx + 2], true);
+@@ -17070,2 +17070,3 @@
++static bool ggml_vk_tensors_overlap(const ggml_tensor * a, const ggml_tensor * b, bool elementwise);
++// A dense leading block may repeat; reject column/interior-dimension broadcasts.
++static bool ggml_vk_affine_operand(const ggml_tensor * a,const ggml_tensor * full) {
++    if (!a || a->type!=GGML_TYPE_F32 || !ggml_is_contiguous(a)) return false;
++    bool repeating=false;
++    for(int d=0;d<4;++d) {
++        if(!repeating && a->ne[d]==full->ne[d]) continue;
++        if(a->ne[d]!=1) return false;
++        repeating=true;
++    }
++    return true;
++}
++static int ggml_vk_affine_bf16_length(const ggml_cgraph * graph,int i) {
++    const char * enabled=getenv("GGML_VK_FUSE_BF16_AFFINE");
++    if(!enabled || strcmp(enabled,"1")!=0 || i+3>=graph->n_nodes) return 0;
++    const auto * mul=graph->nodes[i];
++    if(mul->op!=GGML_OP_MUL || mul->type!=GGML_TYPE_F32 || mul->view_src ||
++       !(mul->flags&GGML_TENSOR_FLAG_COMPUTE) || (mul->flags&GGML_TENSOR_FLAG_OUTPUT) ||
++       ggml_node_get_use_count(graph,i)!=1 || !ggml_is_contiguous(mul) ||
++       !mul->src[0] || !ggml_are_same_shape(mul,mul->src[0]) ||
++       !ggml_vk_affine_operand(mul->src[0],mul) || !ggml_vk_affine_operand(mul->src[1],mul)) return 0;
++    int ai=i+1;
++    if(graph->nodes[ai]->op==GGML_OP_CPY) {
++        if(i+5>=graph->n_nodes || !ggml_vk_can_fuse_bf16_round(graph,ai) ||
++           graph->nodes[ai]->src[0]!=mul || (graph->nodes[ai+1]->flags&GGML_TENSOR_FLAG_OUTPUT) ||
++           ggml_node_get_use_count(graph,ai+1)!=2) return 0;
++        ai+=2;
++    }
++    const auto * add=graph->nodes[ai];
++    const auto * previous=graph->nodes[ai-1];
++    if(add->op!=GGML_OP_ADD || !ggml_vk_can_fuse_binary_bf16_round(graph,ai) ||
++       (add->src[0]!=previous && add->src[1]!=previous) || !ggml_are_same_shape(add,mul)) return 0;
++    const auto * bias=add->src[add->src[0]==previous?1:0];
++    const auto * dst=graph->nodes[ai+2];
++    if(bias==previous || !ggml_vk_affine_operand(bias,mul) ||
++       ggml_nelements(dst)>UINT32_MAX || !dst->buffer || ggml_backend_buffer_is_host(dst->buffer)) return 0;
++    // Check real inputs including leaf tensors; exact same-size alias is safe,
++    // but partial overlap or a broadcast input overwritten by output is not.
++    for(const auto * src:std::array<const ggml_tensor *,3>{mul->src[0],mul->src[1],bias})
++        if(!src->buffer || ggml_backend_buffer_is_host(src->buffer) || ggml_vk_tensors_overlap(src,dst,true)) return 0;
++    return ai+2-i;
++}
+ static bool ggml_vk_can_fuse_silu_gate_bf16(const ggml_cgraph * graph, int i) {
+     const char * enabled = getenv("GGML_VK_FUSE_BF16_SILU_GATE");
+@@ -17885,2 +17885,6 @@
+-            if (ggml_vk_can_fuse_silu_gate_bf16(cgraph, i)) {
++            if (const int affine_length=ggml_vk_affine_bf16_length(cgraph,i)) {
++                ctx->num_additional_fused_ops=affine_length;
++                fusion_string="BF16_AFFINE";
++                std::fill_n(op_srcs_fused_elementwise,affine_length+1,true);
++            } else if (ggml_vk_can_fuse_silu_gate_bf16(cgraph, i)) {
+                 ctx->num_additional_fused_ops = 5;
+@@ -18085,3 +18085,3 @@
+-                            if (fusion_string && strcmp(fusion_string, "BF16_SILU_GATE") == 0 &&
+-                                k > 0 && k < 5 && s == 1 &&
++                            if (fusion_string && (strcmp(fusion_string, "BF16_SILU_GATE") == 0 || strcmp(fusion_string, "BF16_AFFINE") == 0) &&
++                                k > 0 && k < ctx->num_additional_fused_ops && s == 1 &&
+                                 cgraph->nodes[i + k]->op == GGML_OP_CPY &&

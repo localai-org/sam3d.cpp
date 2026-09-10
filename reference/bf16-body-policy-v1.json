@@ -1,0 +1,1035 @@
+{
+  "schema_version": 1,
+  "boundary": "single original dancer image: complete own-intermediate BF16 Body final outputs v1",
+  "native_candidate_used": false,
+  "policy": "two times maximum original math/auto or compiled/auto variation; strict floors and independent safety ceilings",
+  "scope_limit": "one named image, no detector or hand refinement; separate layer, held-out image and visual acceptance still required",
+  "reference_sha256": "852a2ba8f843df9f63918859308171aaa4eb0c6dd4ad46ef874543fad423e916",
+  "original_manifests_sha256": [
+    "f9051b484bb1e4b15d3feb9a4ff18b2ad95b548a06f47e795294c1612f5b6408",
+    "bc568fc73575905b59b142bd8c2b3fef1a66ae15401e665598582f7aecc783fe",
+    "61e230155919b0ea02691d2b56f1d4e87d02d39d889757460b60b9cedbe5fd1c"
+  ],
+  "original_output_sha256": [
+    "852a2ba8f843df9f63918859308171aaa4eb0c6dd4ad46ef874543fad423e916",
+    "8479bf8188e6e64667d81068b4344fedd7fb69c18930c3af102bae0228e6a753",
+    "f3562471467c5f7a55a69389b11b3a593e3449e06779af4aa698b7fd40a94ad4"
+  ],
+  "source": {
+    "photo_sha256": "0112b0a32ea5860db6a6fc700804751528341a02bf07fed0329a0c2610f905d3",
+    "bbox_xyxy": [
+      600.0,
+      80.0,
+      1330.0,
+      1250.0
+    ],
+    "bbox_origin": "manually selected explicit box, not upstream detector output",
+    "intrinsics_fx_fy_cx_cy": [
+      2704.16357421875,
+      2704.16357421875,
+      1125.0,
+      750.0
+    ],
+    "backbone_source_manifest_sha256": "71855a2ed3a6cfc9f4df57f7a24b061be9a617a1e0a476ebb2395000d66d25e9",
+    "backbone_safetensors_sha256": "98afde8ac5c13c68f3b7c7baf7cc8fa525df901fe1cec44b57d018fba11d53cc",
+    "source_hashes": {
+      "models/meta_arch/sam3d_body.py": "851b7475f18b56891aa02606e7c0ee9e03120fa208cc85df5127b792e1abfeee",
+      "models/meta_arch/base_model.py": "baf4c93ab865e6e9f4f498056a673698e59bafe89b17f969833884a3b352e8bc",
+      "data/utils/prepare_batch.py": "c0555035944f02cfdb9d811b377a3c1ffdd2bfbfe256ee6dc501c8d9409298d0",
+      "data/transforms/common.py": "165697629df2fe23a62bb90daa2ac8a0f67cac09d70f36844b3c089a9af5a45f",
+      "data/transforms/bbox_utils.py": "0f49a3f857a09f98d1fd9c609df42f875899515f5e10a0ea6b25acd7a9197d79"
+    },
+    "dino_hashes": {
+      "layers/block.py": "809a3615ec93019042ab440f31c21d5242186d9e503c67ac0f42a324ceae1950",
+      "layers/attention.py": "dfc21def6ba17d00cba18ea23a8726e7f1dd5a0dc8e43510852c999a173d37a8",
+      "layers/ffn_layers.py": "fa2caadb52ff43a7e6888966a00ee07842fed9fd05c68305962cc1577d221fbe",
+      "layers/layer_scale.py": "f9a10ee763a62136f9e814bfe2f2209c2cb501dfdc5573f858ab01ba9a69c23f",
+      "layers/rope_position_encoding.py": "af8ea35acb76d18ad4d53b844d5057bf01472a848375c51d70583a87f044efd1",
+      "utils/__init__.py": "83e6ec1f0cea862f18ae111560e2eadf2fff1873e3fdd7d358dee8d32d0ade8d",
+      "utils/utils.py": "d6fe7fe621b2ae3db89e3af588fbee0c78afe2130f4548dff87c94cbd734fe40",
+      "utils/dtype.py": "0c53f5cc155ea7e9899bc611493193fef9b985f23cb7d990401e22c363ac4419",
+      "layers/patch_embed.py": "c592c7262779c8e1789ed502aee81bdd55eba4607065f8d04ae95eea683d0ef1",
+      "layers/rms_norm.py": "8509ffc53f0bbe9e353a8b9e57ca2396795640b4ecc85140c27b17127c971869",
+      "models/vision_transformer.py": "1af05405e19bc42188f80bfcb204b87ed1ec72af998e0bbd4658a85d7fae93f2",
+      "hub/backbones.py": "6c9a18aca0b5fcb1fce439213a94a528e072376a6023718e03dbd9fcfaa10deb",
+      "hub/utils.py": "24d0e4bd083510bb00677ebd0082dd486a1f9c8b8467f98b7fe6109aefc4712d"
+    },
+    "body_wrapper_sha256": "53ae01ccdffa647f16b0fefe366f947162874a9e593d510864d52ffcd259e0e8",
+    "script_sha256": "f649309e722a6211beb2da9548b6e7a808112f5dd7ce5d3b28e223c8e66e35d8",
+    "reference_weight_residency": "original layers with pre/post-hook weight loading/release; no neural operation replacement",
+    "ray_device": "original hardcoded CUDA calculation, then transfer to selected neural device; not a CPU-only performance baseline"
+  },
+  "original_harnesses": [
+    {
+      "script_sha256": "f649309e722a6211beb2da9548b6e7a808112f5dd7ce5d3b28e223c8e66e35d8",
+      "residency_description": "original layers with pre/post-hook weight loading/release; no neural operation replacement"
+    },
+    {
+      "script_sha256": "51a41a86b5cbe36db7127fd1dd4326d884c01e20fad63e8f106bac2221543122",
+      "residency_description": "all original layers resident; no loading/observer hooks"
+    },
+    {
+      "script_sha256": "f649309e722a6211beb2da9548b6e7a808112f5dd7ce5d3b28e223c8e66e35d8",
+      "residency_description": "original layers with pre/post-hook weight loading/release; no neural operation replacement"
+    }
+  ],
+  "script_sha256": "ea2c5eb03f2f6eed6dcebeba8d3a0a3b4d725e10eb8accc7b97ca7b813aa22de",
+  "controls": [
+    {
+      "name": "vertices",
+      "reference_peak": 1.7595391273498535,
+      "controls": [
+        {
+          "name": "vertices",
+          "pass": true,
+          "reference_shape": [
+            1,
+            18439,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            18439,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0013438761234283447,
+          "relative_l2": 0.00040949587305197876,
+          "reference_l2": 178.30180578159323,
+          "worst_flat_index": 49157
+        },
+        {
+          "name": "vertices",
+          "pass": true,
+          "reference_shape": [
+            1,
+            18439,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            18439,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0010585896670818329,
+          "relative_l2": 0.0003715847754407822,
+          "reference_l2": 178.30180578159323,
+          "worst_flat_index": 33671
+        }
+      ]
+    },
+    {
+      "name": "joints",
+      "reference_peak": 1.75261652469635,
+      "controls": [
+        {
+          "name": "joints",
+          "pass": true,
+          "reference_shape": [
+            1,
+            127,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            127,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0013396888971328735,
+          "relative_l2": 0.0004851333135443951,
+          "reference_l2": 14.466418391227197,
+          "worst_flat_index": 179
+        },
+        {
+          "name": "joints",
+          "pass": true,
+          "reference_shape": [
+            1,
+            127,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            127,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0010421350598335266,
+          "relative_l2": 0.00041825050276018527,
+          "reference_l2": 14.466418391227197,
+          "worst_flat_index": 302
+        }
+      ]
+    },
+    {
+      "name": "joint_rotations",
+      "reference_peak": 1.0,
+      "controls": [
+        {
+          "name": "joint_rotations",
+          "pass": true,
+          "reference_shape": [
+            1,
+            127,
+            3,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            127,
+            3,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.002087220549583435,
+          "relative_l2": 0.0014441990084012452,
+          "reference_l2": 19.519221473193504,
+          "worst_flat_index": 392
+        },
+        {
+          "name": "joint_rotations",
+          "pass": true,
+          "reference_shape": [
+            1,
+            127,
+            3,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            127,
+            3,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0058252811431884766,
+          "relative_l2": 0.002768548844688191,
+          "reference_l2": 19.519221473193504,
+          "worst_flat_index": 760
+        }
+      ]
+    },
+    {
+      "name": "keypoints",
+      "reference_peak": 1.75261652469635,
+      "controls": [
+        {
+          "name": "keypoints",
+          "pass": true,
+          "reference_shape": [
+            1,
+            70,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            70,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0013396888971328735,
+          "relative_l2": 0.0005658728965902394,
+          "reference_l2": 11.179174576573322,
+          "worst_flat_index": 77
+        },
+        {
+          "name": "keypoints",
+          "pass": true,
+          "reference_shape": [
+            1,
+            70,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            70,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0010421350598335266,
+          "relative_l2": 0.0004974602867288574,
+          "reference_l2": 11.179174576573322,
+          "worst_flat_index": 128
+        }
+      ]
+    },
+    {
+      "name": "keypoints_pixels",
+      "reference_peak": 1501.5247802734375,
+      "controls": [
+        {
+          "name": "keypoints_pixels",
+          "pass": true,
+          "reference_shape": [
+            1,
+            70,
+            2
+          ],
+          "candidate_shape": [
+            1,
+            70,
+            2
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.185791015625,
+          "relative_l2": 8.184516067553871e-05,
+          "reference_l2": 9815.668832322905,
+          "worst_flat_index": 37
+        },
+        {
+          "name": "keypoints_pixels",
+          "pass": true,
+          "reference_shape": [
+            1,
+            70,
+            2
+          ],
+          "candidate_shape": [
+            1,
+            70,
+            2
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.20501708984375,
+          "relative_l2": 0.00010131750408125052,
+          "reference_l2": 9815.668832322905,
+          "worst_flat_index": 105
+        }
+      ]
+    },
+    {
+      "name": "vertices_pixels",
+      "reference_peak": 1521.525146484375,
+      "controls": [
+        {
+          "name": "vertices_pixels",
+          "pass": true,
+          "reference_shape": [
+            1,
+            18439,
+            2
+          ],
+          "candidate_shape": [
+            1,
+            18439,
+            2
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.19573974609375,
+          "relative_l2": 8.049542950611166e-05,
+          "reference_l2": 164963.28344367442,
+          "worst_flat_index": 15809
+        },
+        {
+          "name": "vertices_pixels",
+          "pass": true,
+          "reference_shape": [
+            1,
+            18439,
+            2
+          ],
+          "candidate_shape": [
+            1,
+            18439,
+            2
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.23583984375,
+          "relative_l2": 9.751724211509727e-05,
+          "reference_l2": 164963.28344367442,
+          "worst_flat_index": 36820
+        }
+      ]
+    },
+    {
+      "name": "camera_translation",
+      "reference_peak": 3.8161654472351074,
+      "controls": [
+        {
+          "name": "camera_translation",
+          "pass": true,
+          "reference_shape": [
+            1,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0001971721649169922,
+          "relative_l2": 5.5062389008753076e-05,
+          "reference_l2": 3.9169915307292187,
+          "worst_flat_index": 2
+        },
+        {
+          "name": "camera_translation",
+          "pass": true,
+          "reference_shape": [
+            1,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0005500316619873047,
+          "relative_l2": 0.0001412546396105852,
+          "reference_l2": 3.9169915307292187,
+          "worst_flat_index": 2
+        }
+      ]
+    },
+    {
+      "name": "camera_parameters",
+      "reference_peak": 0.9927206039428711,
+      "controls": [
+        {
+          "name": "camera_parameters",
+          "pass": true,
+          "reference_shape": [
+            1,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 9.486079216003418e-05,
+          "relative_l2": 7.619367839885762e-05,
+          "reference_l2": 1.4331943511574792,
+          "worst_flat_index": 1
+        },
+        {
+          "name": "camera_parameters",
+          "pass": true,
+          "reference_shape": [
+            1,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.00013959407806396484,
+          "relative_l2": 0.00010162783432505763,
+          "reference_l2": 1.4331943511574792,
+          "worst_flat_index": 0
+        }
+      ]
+    },
+    {
+      "name": "pose_raw",
+      "reference_peak": 16.643566131591797,
+      "controls": [
+        {
+          "name": "pose_raw",
+          "pass": true,
+          "reference_shape": [
+            1,
+            266
+          ],
+          "candidate_shape": [
+            1,
+            266
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0029468536376953125,
+          "relative_l2": 0.00020589856185279827,
+          "reference_l2": 78.92730820896173,
+          "worst_flat_index": 96
+        },
+        {
+          "name": "pose_raw",
+          "pass": true,
+          "reference_shape": [
+            1,
+            266
+          ],
+          "candidate_shape": [
+            1,
+            266
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.003840923309326172,
+          "relative_l2": 0.0001707478527187563,
+          "reference_l2": 78.92730820896173,
+          "worst_flat_index": 170
+        }
+      ]
+    },
+    {
+      "name": "global_rotation",
+      "reference_peak": 0.9222923517227173,
+      "controls": [
+        {
+          "name": "global_rotation",
+          "pass": true,
+          "reference_shape": [
+            1,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0008058547973632812,
+          "relative_l2": 0.000754236903366762,
+          "reference_l2": 1.1524726289727725,
+          "worst_flat_index": 1
+        },
+        {
+          "name": "global_rotation",
+          "pass": true,
+          "reference_shape": [
+            1,
+            3
+          ],
+          "candidate_shape": [
+            1,
+            3
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0009250640869140625,
+          "relative_l2": 0.0011338666969448895,
+          "reference_l2": 1.1524726289727725,
+          "worst_flat_index": 1
+        }
+      ]
+    },
+    {
+      "name": "body_pose",
+      "reference_peak": 2.3801679611206055,
+      "controls": [
+        {
+          "name": "body_pose",
+          "pass": true,
+          "reference_shape": [
+            1,
+            133
+          ],
+          "candidate_shape": [
+            1,
+            133
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.002599000930786133,
+          "relative_l2": 0.0013888803001316735,
+          "reference_l2": 4.123979059662222,
+          "worst_flat_index": 41
+        },
+        {
+          "name": "body_pose",
+          "pass": true,
+          "reference_shape": [
+            1,
+            133
+          ],
+          "candidate_shape": [
+            1,
+            133
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0036728382110595703,
+          "relative_l2": 0.0018566024540652235,
+          "reference_l2": 4.123979059662222,
+          "worst_flat_index": 41
+        }
+      ]
+    },
+    {
+      "name": "shape",
+      "reference_peak": 1.4408541917800903,
+      "controls": [
+        {
+          "name": "shape",
+          "pass": true,
+          "reference_shape": [
+            1,
+            45
+          ],
+          "candidate_shape": [
+            1,
+            45
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0013431459665298462,
+          "relative_l2": 0.0010334593882265258,
+          "reference_l2": 3.5370229894407985,
+          "worst_flat_index": 4
+        },
+        {
+          "name": "shape",
+          "pass": true,
+          "reference_shape": [
+            1,
+            45
+          ],
+          "candidate_shape": [
+            1,
+            45
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.003090381622314453,
+          "relative_l2": 0.0020776353375669145,
+          "reference_l2": 3.5370229894407985,
+          "worst_flat_index": 0
+        }
+      ]
+    },
+    {
+      "name": "scale",
+      "reference_peak": 1.4088648557662964,
+      "controls": [
+        {
+          "name": "scale",
+          "pass": true,
+          "reference_shape": [
+            1,
+            28
+          ],
+          "candidate_shape": [
+            1,
+            28
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.002232789993286133,
+          "relative_l2": 0.0015651908925425444,
+          "reference_l2": 2.5884367778920114,
+          "worst_flat_index": 12
+        },
+        {
+          "name": "scale",
+          "pass": true,
+          "reference_shape": [
+            1,
+            28
+          ],
+          "candidate_shape": [
+            1,
+            28
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0077075958251953125,
+          "relative_l2": 0.00469785364378004,
+          "reference_l2": 2.5884367778920114,
+          "worst_flat_index": 9
+        }
+      ]
+    },
+    {
+      "name": "hand",
+      "reference_peak": 0.4102010130882263,
+      "controls": [
+        {
+          "name": "hand",
+          "pass": true,
+          "reference_shape": [
+            1,
+            108
+          ],
+          "candidate_shape": [
+            1,
+            108
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0007444471120834351,
+          "relative_l2": 0.0013968443079597128,
+          "reference_l2": 1.6453577898751006,
+          "worst_flat_index": 91
+        },
+        {
+          "name": "hand",
+          "pass": true,
+          "reference_shape": [
+            1,
+            108
+          ],
+          "candidate_shape": [
+            1,
+            108
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0007094740867614746,
+          "relative_l2": 0.0016437076092821559,
+          "reference_l2": 1.6453577898751006,
+          "worst_flat_index": 106
+        }
+      ]
+    },
+    {
+      "name": "face",
+      "reference_peak": 0.0,
+      "controls": [
+        {
+          "name": "face",
+          "pass": true,
+          "reference_shape": [
+            1,
+            72
+          ],
+          "candidate_shape": [
+            1,
+            72
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0,
+          "relative_l2": 0.0,
+          "reference_l2": 0.0,
+          "worst_flat_index": 0
+        },
+        {
+          "name": "face",
+          "pass": true,
+          "reference_shape": [
+            1,
+            72
+          ],
+          "candidate_shape": [
+            1,
+            72
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0,
+          "relative_l2": 0.0,
+          "reference_l2": 0.0,
+          "worst_flat_index": 0
+        }
+      ]
+    },
+    {
+      "name": "mhr_model_parameters",
+      "reference_peak": 2.3801679611206055,
+      "controls": [
+        {
+          "name": "mhr_model_parameters",
+          "pass": true,
+          "reference_shape": [
+            1,
+            204
+          ],
+          "candidate_shape": [
+            1,
+            204
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.002599000930786133,
+          "relative_l2": 0.0011332873915906746,
+          "reference_l2": 5.512544652087136,
+          "worst_flat_index": 47
+        },
+        {
+          "name": "mhr_model_parameters",
+          "pass": true,
+          "reference_shape": [
+            1,
+            204
+          ],
+          "candidate_shape": [
+            1,
+            204
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0036728382110595703,
+          "relative_l2": 0.0015099938279778734,
+          "reference_l2": 5.512544652087136,
+          "worst_flat_index": 47
+        }
+      ]
+    },
+    {
+      "name": "hand_boxes",
+      "reference_peak": 0.6635869145393372,
+      "controls": [
+        {
+          "name": "hand_boxes",
+          "pass": true,
+          "reference_shape": [
+            1,
+            2,
+            4
+          ],
+          "candidate_shape": [
+            1,
+            2,
+            4
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 7.006525993347168e-05,
+          "relative_l2": 0.00014216889321006147,
+          "reference_l2": 0.907850728524526,
+          "worst_flat_index": 0
+        },
+        {
+          "name": "hand_boxes",
+          "pass": true,
+          "reference_shape": [
+            1,
+            2,
+            4
+          ],
+          "candidate_shape": [
+            1,
+            2,
+            4
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 4.826486110687256e-05,
+          "relative_l2": 0.00010530466081450393,
+          "reference_l2": 0.907850728524526,
+          "worst_flat_index": 7
+        }
+      ]
+    },
+    {
+      "name": "hand_logits",
+      "reference_peak": 10.482479095458984,
+      "controls": [
+        {
+          "name": "hand_logits",
+          "pass": true,
+          "reference_shape": [
+            1,
+            2,
+            2
+          ],
+          "candidate_shape": [
+            1,
+            2,
+            2
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.001064300537109375,
+          "relative_l2": 5.3283089460372376e-05,
+          "reference_l2": 20.56780512893426,
+          "worst_flat_index": 0
+        },
+        {
+          "name": "hand_logits",
+          "pass": true,
+          "reference_shape": [
+            1,
+            2,
+            2
+          ],
+          "candidate_shape": [
+            1,
+            2,
+            2
+          ],
+          "reference_dtype": "float32",
+          "candidate_dtype": "float32",
+          "max_abs": 0.0008821487426757812,
+          "relative_l2": 5.279036682449371e-05,
+          "reference_l2": 20.56780512893426,
+          "worst_flat_index": 1
+        }
+      ]
+    }
+  ],
+  "tensors": [
+    {
+      "name": "vertices",
+      "reference_key": "pred_vertices",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.0026877522468566895,
+      "relative_l2": 0.0008189917461039575,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "joints",
+      "reference_key": "pred_joint_coords",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.002679377794265747,
+      "relative_l2": 0.0009702666270887902,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "joint_rotations",
+      "reference_key": "joint_global_rots",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.011650562286376953,
+      "relative_l2": 0.005537097689376382,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "keypoints",
+      "reference_key": "pred_keypoints_3d",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.002679377794265747,
+      "relative_l2": 0.0011317457931804787,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "keypoints_pixels",
+      "reference_key": "pred_keypoints_2d",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.4100341796875,
+      "relative_l2": 0.00020263500816250103,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "vertices_pixels",
+      "reference_key": "pred_keypoints_2d_verts",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.4716796875,
+      "relative_l2": 0.00019503448423019453,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "camera_translation",
+      "reference_key": "pred_cam_t",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.0011000633239746094,
+      "relative_l2": 0.0002825092792211704,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "camera_parameters",
+      "reference_key": "pred_cam",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.0002791881561279297,
+      "relative_l2": 0.00020325566865011526,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "pose_raw",
+      "reference_key": "pred_pose_raw",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.007681846618652344,
+      "relative_l2": 0.00041179712370559654,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "global_rotation",
+      "reference_key": "global_rot",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.001850128173828125,
+      "relative_l2": 0.002267733393889779,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "body_pose",
+      "reference_key": "body_pose",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.007345676422119141,
+      "relative_l2": 0.003713204908130447,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "shape",
+      "reference_key": "shape",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.006180763244628906,
+      "relative_l2": 0.004155270675133829,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "scale",
+      "reference_key": "scale",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.015415191650390625,
+      "relative_l2": 0.00939570728756008,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "hand",
+      "reference_key": "hand",
+      "mode": "float",
+      "blocking": false,
+      "max_abs": 0.0014888942241668701,
+      "relative_l2": 0.0032874152185643117,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "face",
+      "reference_key": "face",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.0001,
+      "relative_l2": 2e-05,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "mhr_model_parameters",
+      "reference_key": "mhr_model_params",
+      "mode": "float",
+      "blocking": true,
+      "max_abs": 0.007345676422119141,
+      "relative_l2": 0.0030199876559557468,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "hand_boxes",
+      "reference_key": "hand_box",
+      "mode": "float",
+      "blocking": false,
+      "max_abs": 0.00014013051986694336,
+      "relative_l2": 0.00028433778642012294,
+      "zero_reference_floor": 1e-12
+    },
+    {
+      "name": "hand_logits",
+      "reference_key": "hand_logits",
+      "mode": "float",
+      "blocking": false,
+      "max_abs": 0.00212860107421875,
+      "relative_l2": 0.00010656617892074475,
+      "zero_reference_floor": 1e-12
+    }
+  ]
+}

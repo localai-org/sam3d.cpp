@@ -1,0 +1,135 @@
+diff --git a/src/ggml-vulkan/vulkan-shaders/norm_affine_bf16.comp b/src/ggml-vulkan/vulkan-shaders/norm_affine_bf16.comp
+new file mode 100644
+--- /dev/null
++++ b/src/ggml-vulkan/vulkan-shaders/norm_affine_bf16.comp
+@@ -0,0 +1,42 @@
++#version 450
++// Normalization reduction adapted from pinned GGML norm.comp (MIT).
++#include "types.glsl"
++#include "utils.glsl"
++#extension GL_EXT_control_flow_attributes : enable
++#define BLOCK_SIZE 512
++layout(local_size_x=BLOCK_SIZE,local_size_y=1,local_size_z=1) in;
++layout(push_constant) uniform parameter {
++    uint cols; uint rows; uint nb; uint nc;
++    uint ao; uint bo; uint co; uint dst; float eps;
++} p;
++layout(binding=0) readonly buffer A { float a[]; };
++layout(binding=1) readonly buffer B { float b[]; };
++layout(binding=2) readonly buffer C { float c[]; };
++layout(binding=3) writeonly buffer D { float d[]; };
++shared vec2 sum[BLOCK_SIZE];
++// Keep NoContraction local: propagating precise through normalization changes
++// upstream's reduction/variance arithmetic. This boundary survives inlining.
++float apply_affine(float value,float weight,float bias) {
++    precise float product=value*weight;
++    precise float sum=product+bias;
++    return bf16_to_fp32(fp32_to_bf16(sum));
++}
++void main() {
++    uint row=gl_WorkGroupID.z*262144+gl_WorkGroupID.y*512+gl_WorkGroupID.x;
++    if(row>=p.rows)return;
++    uint tid=gl_LocalInvocationID.x;
++    uint base=row*p.cols;
++    sum[tid]=vec2(0.0f,0.0f);
++    [[unroll]] for(uint j=tid;j<p.cols;j+=BLOCK_SIZE) {
++        float xi=a[p.ao+base+j];
++        sum[tid].x+=xi;
++        sum[tid].y+=xi*xi;
++    }
++    barrier();
++    [[unroll]] for(int s=BLOCK_SIZE/2;s>0;s>>=1) {
++        if(tid<s)sum[tid]+=sum[tid+s];
++        barrier();
++    }
++    float mean=sum[0].x/p.cols;
++    float var=sum[0].y/p.cols-mean*mean;
++    float inv_std=inversesqrt(var+p.eps);
++    [[unroll]] for(uint j=tid;j<p.cols;j+=BLOCK_SIZE) {
++        uint idx=base+j;
++        float normalized=(a[p.ao+idx]-mean)*inv_std;
++        d[p.dst+idx]=apply_affine(normalized,b[p.bo+fastmod(idx,p.nb)],c[p.co+fastmod(idx,p.nc)]);
++    }
++}
+diff --git a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+--- a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -821,2 +821,3 @@
+     string_to_spv("affine_round_bf16", "affine_round_bf16.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}});
++    string_to_spv("norm_affine_bf16", "norm_affine_bf16.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}});
+     string_to_spv("contig_cpy_f32_i32", "contig_copy.comp", {{"A_TYPE", "float"}, {"D_TYPE", "int"}});
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -991,2 +991,3 @@
+     vk_pipeline pipeline_affine_bf16;
++    vk_pipeline pipeline_norm_affine_bf16;
+     vk_pipeline pipeline_contig_cpy_f32_f32, pipeline_contig_cpy_f32_f16, pipeline_contig_cpy_f16_f16, pipeline_contig_cpy_f16_f32, pipeline_contig_cpy_f32_bf16, pipeline_contig_cpy_bf16_f32, pipeline_contig_cpy_f32_i32, pipeline_contig_cpy_i32_f32;
+@@ -5609,2 +5609,3 @@
+     ggml_vk_create_pipeline(device, device->pipeline_affine_bf16, "affine_round_bf16", affine_round_bf16_len, affine_round_bf16_data, "main", 4, 8*sizeof(uint32_t), {512, 1, 1}, {}, 1);
++    ggml_vk_create_pipeline(device, device->pipeline_norm_affine_bf16, "norm_affine_bf16", norm_affine_bf16_len, norm_affine_bf16_data, "main", 4, 9*sizeof(uint32_t), {1, 1, 1}, {}, 1);
+     for (uint32_t mode = 0; mode < 3; ++mode) {
+@@ -13537,2 +13537,3 @@
++struct vk_norm_affine_bf16_pc {
++    uint32_t cols,rows,nb,nc,ao,bo,co,dst;
++    float eps;
++};
++static_assert(sizeof(vk_norm_affine_bf16_pc)==9*sizeof(uint32_t));
++static void ggml_vk_norm_affine_bf16(ggml_backend_vk_context *ctx,vk_context &subctx,ggml_cgraph *graph,int i) {
++    const auto *norm=graph->nodes[i];
++    const auto *mul=graph->nodes[i+1];
++    const auto *add=graph->nodes[i+2];
++    const auto *bias=add->src[add->src[0]==mul?1:0];
++    const auto *a=norm->src[0];const auto *b=mul->src[1];const auto *dst=graph->nodes[i+4];
++    float eps;memcpy(&eps,norm->op_params,sizeof(eps));
++    vk_norm_affine_bf16_pc pc{
++        (uint32_t)a->ne[0],(uint32_t)ggml_nrows(a),(uint32_t)ggml_nelements(b),(uint32_t)ggml_nelements(bias),
++        get_misalign_bytes(ctx,a)/4,get_misalign_bytes(ctx,b)/4,
++        get_misalign_bytes(ctx,bias)/4,get_misalign_bytes(ctx,dst)/4,eps};
++    auto pipeline=ctx->device->pipeline_norm_affine_bf16;
++    ggml_pipeline_request_descriptor_sets(ctx,pipeline,1);
++    std::array<uint32_t,3> elements=pc.rows>262144?std::array<uint32_t,3>{512,512,CEIL_DIV(pc.rows,262144)}:
++        pc.rows>512?std::array<uint32_t,3>{512,CEIL_DIV(pc.rows,512),1}:std::array<uint32_t,3>{pc.rows,1,1};
++    ggml_vk_dispatch_pipeline(ctx,subctx,pipeline,{
++        ggml_vk_tensor_subbuffer(ctx,a,true),ggml_vk_tensor_subbuffer(ctx,b,true),
++        ggml_vk_tensor_subbuffer(ctx,bias,true),ggml_vk_tensor_subbuffer(ctx,dst,true)},pc,elements);
++}
+ static void ggml_vk_norm(ggml_backend_vk_context * ctx, vk_context& subctx, const ggml_tensor * src0, ggml_tensor * dst) {
+     float * op_params = (float *)dst->op_params;
+@@ -16088,2 +16088,3 @@
+     case GGML_OP_NORM:
+-        ggml_vk_norm(ctx, compute_ctx, src0, node);
++        if(ctx->num_additional_fused_ops==4) ggml_vk_norm_affine_bf16(ctx,compute_ctx,cgraph,node_idx);
++        else ggml_vk_norm(ctx, compute_ctx, src0, node);
+ 
+         break;
+@@ -17143,2 +17143,3 @@
++static bool ggml_vk_can_fuse_norm_affine_bf16(const ggml_cgraph *graph,int i) {
++    const char *flag=getenv("GGML_VK_FUSE_BF16_NORM_AFFINE");
++    if(!flag || strcmp(flag,"1") || i+4>=graph->n_nodes) return false;
++    const auto *norm=graph->nodes[i];const auto *mul=graph->nodes[i+1];
++    if(norm->op!=GGML_OP_NORM || norm->type!=GGML_TYPE_F32 || norm->view_src ||
++       !(norm->flags&GGML_TENSOR_FLAG_COMPUTE) || (norm->flags&GGML_TENSOR_FLAG_OUTPUT) ||
++       ggml_node_get_use_count(graph,i)!=1 || !norm->src[0] ||
++       norm->src[0]->type!=GGML_TYPE_F32 || !ggml_is_contiguous(norm->src[0]) ||
++       mul->src[0]!=norm || ggml_vk_affine_bf16_length(graph,i+1)!=3) return false;
++    const auto *a=norm->src[0];const auto *dst=graph->nodes[i+4];
++    // Reductions are not elementwise: reject even equal-buffer overlaps.
++    return a->buffer && !ggml_backend_buffer_is_host(a->buffer) &&
++        !ggml_vk_tensors_overlap(a,dst,false);
++}
+ static bool ggml_vk_can_fuse_silu_gate_bf16(const ggml_cgraph * graph, int i) {
+     const char * enabled = getenv("GGML_VK_FUSE_BF16_SILU_GATE");
+@@ -17968,2 +17968,7 @@
+-            if (const int affine_length=ggml_vk_affine_bf16_length(cgraph,i)) {
++            if (ggml_vk_can_fuse_norm_affine_bf16(cgraph,i)) {
++                ctx->num_additional_fused_ops=4;
++                fusion_string="BF16_NORM_AFFINE";
++                std::fill_n(op_srcs_fused_elementwise,5,true);
++                op_srcs_fused_elementwise[0]=false;
++            } else if (const int affine_length=ggml_vk_affine_bf16_length(cgraph,i)) {
+                 ctx->num_additional_fused_ops=affine_length;
+@@ -18171,2 +18171,2 @@
+-                            if (fusion_string && (strcmp(fusion_string, "BF16_SILU_GATE") == 0 || strcmp(fusion_string, "BF16_AFFINE") == 0) &&
++                            if (fusion_string && (strcmp(fusion_string, "BF16_SILU_GATE") == 0 || strcmp(fusion_string, "BF16_AFFINE") == 0 || strcmp(fusion_string, "BF16_NORM_AFFINE") == 0) &&
+                                 k > 0 && k < ctx->num_additional_fused_ops && s == 1 &&

@@ -1,0 +1,65 @@
+diff --git a/src/dino_backbone.cpp b/src/dino_backbone.cpp
+--- a/src/dino_backbone.cpp
++++ b/src/dino_backbone.cpp
+@@ -8,2 +8,3 @@
+ #include <cmath>
++#include <cstdlib>
+ #include <memory>
+@@ -174,6 +175,17 @@
+         auto x=input;uint64_t weight_bytes=0;
++        const char *packed_flag=std::getenv("SAM3D_BF16_PACKED_FFN");
++        const bool packed_ffn=bf16 && packed_flag && std::string_view(packed_flag)=="1";
+         for(uint32_t i=0;i<s.depth;++i){
+-            weights layer;layer.context.reset(ggml_init({ggml_tensor_overhead()*32,nullptr,true}));
++            weights layer;layer.context.reset(ggml_init({ggml_tensor_overhead()*40,nullptr,true}));
+             if(!layer.context)throw std::bad_alloc();
+             named_tensors p;
++            // One immutable allocation, populated through the original two
++            // parameter views. No duplicate weights or per-request concat.
++            ggml_tensor *packed_weight=nullptr,*packed_bias=nullptr;
++            if(packed_ffn){
++                packed_weight=ggml_new_tensor_1d(layer.context.get(),GGML_TYPE_BF16,2*int64_t(s.hidden)*s.dim);
++                packed_bias=ggml_new_tensor_1d(layer.context.get(),GGML_TYPE_F32,2*int64_t(s.hidden));
++            }
+             for(auto &[name,count]:dino_parameter_sizes(bs))if(name!="periods"){
+@@ -181,3 +193,9 @@
+                 require(weight_bytes<=uint64_t(4)*1024*1024*1024,"resident backbone weights exceed 4 GiB budget");
++                if(packed_ffn && (name=="mlp.w1.weight" || name=="mlp.w2.weight" || name=="mlp.w1.bias" || name=="mlp.w2.bias")){
++                    auto parent=name.ends_with(".weight")?packed_weight:packed_bias;
++                    const size_t offset=name.starts_with("mlp.w2.")?count*ggml_type_size(parent->type):0;
++                    p[name]=ggml_view_1d(layer.context.get(),parent,count,offset);
++                    continue;
++                }
+                 p[name]=ggml_new_tensor_1d(layer.context.get(),bf16 && name.ends_with(".weight") && !name.starts_with("norm")?GGML_TYPE_BF16:GGML_TYPE_F32,count);
+             }
+@@ -200,2 +218,3 @@
++            if(packed_ffn){p["mlp.w12.weight"]=packed_weight;p["mlp.w12.bias"]=packed_bias;}
+             layers.push_back(std::move(layer));
+             x=dino_block_graph(session,c,bs,x,p,angles,false,bf16).at("21.output");
+diff --git a/src/dino_block.cpp b/src/dino_block.cpp
+--- a/src/dino_block.cpp
++++ b/src/dino_block.cpp
+@@ -164,3 +164,11 @@
+-    auto w1=tap("16.w1",linear(norm2,"mlp.w1",d,s.hidden));
+-    auto w2=tap("17.w2",linear(norm2,"mlp.w2",d,s.hidden));
++    ggml_tensor *w1=nullptr,*w2=nullptr;
++    if(bf16 && p.contains("mlp.w12.weight")){
++        auto both=linear(norm2,"mlp.w12",d,2*int64_t(s.hidden));
++        auto half=[&](size_t offset){return ggml_view_3d(c,both,s.hidden,n,s.batch,both->nb[1],both->nb[2],offset);};
++        w1=tap("16.w1",half(0));
++        w2=tap("17.w2",half(s.hidden*sizeof(float)));
++    }else{
++        w1=tap("16.w1",linear(norm2,"mlp.w1",d,s.hidden));
++        w2=tap("17.w2",linear(norm2,"mlp.w2",d,s.hidden));
++    }
+     auto hidden=tap("18.hidden",rounded(ggml_mul(c,rounded(ggml_silu(c,w1)),w2)));
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -354,3 +354,6 @@
+   add_test(NAME dino_backbone_upstream_regression COMMAND sam3d-backbone-test
+     $<TARGET_FILE:ggml-cpu> ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/dino-backbone.txt)
++  add_test(NAME dino_backbone_packed_ffn_regression COMMAND sam3d-backbone-test
++    $<TARGET_FILE:ggml-cpu> ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/dino-backbone.txt)
++  set_tests_properties(dino_backbone_packed_ffn_regression PROPERTIES ENVIRONMENT "SAM3D_BF16_PACKED_FFN=1")
+   add_executable(sam3d-gguf-verify tests/gguf_verify.cpp)

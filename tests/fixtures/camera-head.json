@@ -1,0 +1,275 @@
+{
+  "boundary": "original PerspectiveHead FFN and complete perspective reprojection; synthetic token/state/3D points, no MHR or full Body inference",
+  "revision": "b5c765a0d89d789985e186d396315e7590887b94",
+  "source_hashes": {
+    "models/modules/camera_embed.py": "42f2483368fa3249557464aaa188c5d422f4e2faeb29ecd6facc131a97141539",
+    "models/modules/transformer.py": "0cc343878ba8cdf28f9061de53ac0bc0fd6f829889ade96341729db5860ecbe4",
+    "models/modules/swiglu_ffn.py": "7a25fff5fa99c910c8daea7737f3650881a92da11388ddfbfd57794dc9de5355",
+    "models/modules/layer_scale.py": "ef4e0f769dd072425384f354c9527e2fdd7346843379e5f3b0cb2110a72c1c81",
+    "models/modules/drop_path.py": "04c2f8bf7f13382c3d5c992fca00692a0591d187a2d271f49afaa5bce2ec9525",
+    "models/heads/camera_head.py": "84a14112e5c4b216559c1f9a39c3a33d6fa277182c2037f44a76a9cb538de55e",
+    "models/modules/geometry_utils.py": "2553899d9a0f781da1a1d73e8d49dcdd08376c5c0e471d6262e662229b645ef1",
+    "models/modules/__init__.py": "ddad96a6a9bf09d36156ba82ebaa9ee6798045fe1fc715174cec4c0b4bd2ead1",
+    "models/modules/misc.py": "f942d181ee8578c67a9ab4c0828d030aefdadd8891450ab1319b33a8237891eb"
+  },
+  "capture_script_sha256": "527494a320692b92f05a602eb166fb132e94ae42214ae094d9d5dbf9cddd5cca",
+  "device": "cpu",
+  "torch": "2.7.0+cu128",
+  "numpy": "2.2.6",
+  "threads": 1,
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "cuda_device": null,
+  "unobserved_vs_observed": "exact_equal_all_head_and_projection_outputs",
+  "observation": "original module hooks, Python return-local capture and non-replacing ATen division observer",
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "order": [
+        "00.ffn.0.linear",
+        "10.pred_cam",
+        "11.corrected_cam",
+        "12.scaled_box",
+        "13.focal",
+        "14.offset",
+        "15.translation",
+        "16.camera_points",
+        "17.depth",
+        "18.normalized",
+        "19.intrinsic_projection",
+        "20.pixels"
+      ],
+      "shapes": {
+        "00.ffn.0.linear": [
+          2,
+          3
+        ],
+        "10.pred_cam": [
+          2,
+          3
+        ],
+        "18.normalized": [
+          2,
+          5,
+          3
+        ],
+        "19.intrinsic_projection": [
+          2,
+          5,
+          3
+        ],
+        "11.corrected_cam": [
+          2,
+          3
+        ],
+        "12.scaled_box": [
+          2
+        ],
+        "13.focal": [
+          2
+        ],
+        "15.translation": [
+          2,
+          3
+        ],
+        "16.camera_points": [
+          2,
+          5,
+          3
+        ],
+        "14.offset": [
+          2,
+          2
+        ],
+        "17.depth": [
+          2,
+          5
+        ],
+        "20.pixels": [
+          2,
+          5,
+          2
+        ]
+      }
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "order": [
+        "00.ffn.0.linear",
+        "00.ffn.0.relu",
+        "00.ffn.1.linear",
+        "10.pred_cam",
+        "11.corrected_cam",
+        "12.scaled_box",
+        "13.focal",
+        "14.offset",
+        "15.translation",
+        "16.camera_points",
+        "17.depth",
+        "18.normalized",
+        "19.intrinsic_projection",
+        "20.pixels"
+      ],
+      "shapes": {
+        "00.ffn.0.linear": [
+          1,
+          8
+        ],
+        "00.ffn.0.relu": [
+          1,
+          8
+        ],
+        "00.ffn.1.linear": [
+          1,
+          3
+        ],
+        "10.pred_cam": [
+          1,
+          3
+        ],
+        "18.normalized": [
+          1,
+          7,
+          3
+        ],
+        "19.intrinsic_projection": [
+          1,
+          7,
+          3
+        ],
+        "11.corrected_cam": [
+          1,
+          3
+        ],
+        "12.scaled_box": [
+          1
+        ],
+        "13.focal": [
+          1
+        ],
+        "15.translation": [
+          1,
+          3
+        ],
+        "16.camera_points": [
+          1,
+          7,
+          3
+        ],
+        "14.offset": [
+          1,
+          2
+        ],
+        "17.depth": [
+          1,
+          7
+        ],
+        "20.pixels": [
+          1,
+          7,
+          2
+        ]
+      }
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "order": [
+        "00.ffn.0.linear",
+        "00.ffn.0.relu",
+        "00.ffn.1.linear",
+        "00.ffn.1.relu",
+        "00.ffn.2.linear",
+        "10.pred_cam",
+        "11.corrected_cam",
+        "12.scaled_box",
+        "13.focal",
+        "14.offset",
+        "15.translation",
+        "16.camera_points",
+        "17.depth",
+        "18.normalized",
+        "19.intrinsic_projection",
+        "20.pixels"
+      ],
+      "shapes": {
+        "00.ffn.0.linear": [
+          2,
+          8
+        ],
+        "00.ffn.0.relu": [
+          2,
+          8
+        ],
+        "00.ffn.1.linear": [
+          2,
+          8
+        ],
+        "00.ffn.1.relu": [
+          2,
+          8
+        ],
+        "00.ffn.2.linear": [
+          2,
+          3
+        ],
+        "10.pred_cam": [
+          2,
+          3
+        ],
+        "18.normalized": [
+          2,
+          3,
+          3
+        ],
+        "19.intrinsic_projection": [
+          2,
+          3,
+          3
+        ],
+        "11.corrected_cam": [
+          2,
+          3
+        ],
+        "12.scaled_box": [
+          2
+        ],
+        "13.focal": [
+          2
+        ],
+        "15.translation": [
+          2,
+          3
+        ],
+        "16.camera_points": [
+          2,
+          3,
+          3
+        ],
+        "14.offset": [
+          2,
+          2
+        ],
+        "17.depth": [
+          2,
+          3
+        ],
+        "20.pixels": [
+          2,
+          3,
+          2
+        ]
+      }
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "53d5ea3e3a02e0047105af4478b2075c213267c77244d5df7a75b0b3224513f6",
+    "case.0001.input": "1a29ae44e4c32ce1c0c5e86e2f04ccb3b5afd44ce38f7eeec2e64fbecc39aa7c",
+    "case.0002.input": "3dd612a725eb2340224fa1af4639e3cac1834c1c2031d47c7bbd5c4093bcf4ae",
+    "regression.txt": "d37b3a15aa84004c88e9d00fec3d3e2a9da2b11eac9e53bc06c0d0ee0ea61136",
+    "rules.json": "f69aad9ff420000ed8be974f365540a4c302b4c3f8303866f7e61eb9c4329367",
+    "upstream.safetensors": "c6f1b7ea5a64b458c120eea5f0c3c88209161dc613ad1c093c1384d00923195c"
+  }
+}

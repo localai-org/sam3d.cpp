@@ -1,0 +1,412 @@
+{
+  "boundary": "original prepare_batch/crop metadata + unmodified ray and CLIFF method ASTs; not full model",
+  "revision": "b5c765a0d89d789985e186d396315e7590887b94",
+  "source_hashes": {
+    "models/meta_arch/sam3d_body.py": "851b7475f18b56891aa02606e7c0ee9e03120fa208cc85df5127b792e1abfeee",
+    "models/meta_arch/base_model.py": "baf4c93ab865e6e9f4f498056a673698e59bafe89b17f969833884a3b352e8bc",
+    "data/utils/prepare_batch.py": "c0555035944f02cfdb9d811b377a3c1ffdd2bfbfe256ee6dc501c8d9409298d0",
+    "data/transforms/common.py": "165697629df2fe23a62bb90daa2ac8a0f67cac09d70f36844b3c089a9af5a45f",
+    "data/transforms/bbox_utils.py": "0f49a3f857a09f98d1fd9c609df42f875899515f5e10a0ea6b25acd7a9197d79"
+  },
+  "selected_methods": [
+    "get_ray_condition",
+    "_get_decoder_condition"
+  ],
+  "method_changes": "none; isolated unchanged AST bodies with original BaseModel flatten",
+  "capture_script_sha256": "c1ee9d37e65da23bed3cf28d8037cd8c50bd32f7cef5a086908490408cfe265d",
+  "torch": "2.7.0+cu128",
+  "numpy": "2.2.6",
+  "device": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "float32",
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          1,
+          1
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          4,
+          4
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          8,
+          8
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          8,
+          8
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0004",
+      "input": "case.0004.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          1,
+          1
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0005",
+      "input": "case.0005.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          4,
+          4
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0006",
+      "input": "case.0006.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          8,
+          8
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0007",
+      "input": "case.0007.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          8,
+          8
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0008",
+      "input": "case.0008.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          1,
+          1
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0009",
+      "input": "case.0009.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          4,
+          4
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0010",
+      "input": "case.0010.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          8,
+          8
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    },
+    {
+      "prefix": "case.0011",
+      "input": "case.0011.input",
+      "order": [
+        "00.center",
+        "01.scale",
+        "02.affine",
+        "03.rays",
+        "04.cliff"
+      ],
+      "shapes": {
+        "00.center": [
+          2
+        ],
+        "01.scale": [
+          2
+        ],
+        "02.affine": [
+          2,
+          3
+        ],
+        "03.rays": [
+          2,
+          8,
+          8
+        ],
+        "04.cliff": [
+          3
+        ]
+      }
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "e6ebc8d368e0419f43d257fdc8694e3aec89d4d5d64599718e9f66eb279ae378",
+    "case.0001.input": "63575c6893e3e33f059019ecc6336ed40880bd426f733a0bb2a84fd9cc2d6ab2",
+    "case.0002.input": "fe79b305bd5cf6e433dd1b0249ece023291427fa247dbb4a1650edcc7dc63aa8",
+    "case.0003.input": "ba2890f04c55a1454b25b185e1c510f679b27024eeff5eb167cc0da39f120d9c",
+    "case.0004.input": "2f31eb513bbe0839bb6a6a4fff7a593cf995ddd723399fdde034b1653030636a",
+    "case.0005.input": "8e91ae3d8e67ef4e969fabeae1dcc7087351cb8f987e1eb9a387cee8b86ecc2c",
+    "case.0006.input": "9f965acbdafaf58327ed548688574c545bc89444279e2dd61a17a9e78699cb82",
+    "case.0007.input": "47619766f8dc6d31aa4d919e17cf0f8246cd9ae3c54b38770ee9574a3d2aaff6",
+    "case.0008.input": "79222dd266656bef0b6f20f3e2037f74e3ac895b118216bb3505acedbf1dfe66",
+    "case.0009.input": "8581b4a016e99fab3ff2babd73eeef9b157be605f888f24e3194f7689511fb48",
+    "case.0010.input": "04be99780321fd475ecc6d6af57cf4f76df72e9da77f6d242fc084b37f9cb4c4",
+    "case.0011.input": "2fc1d24892111ed1705d478b9d16492f38112c6972b653d6cc81fa9af3a7ec7d",
+    "regression.txt": "a7736be56080f682dafddc3c463cedfdd32a0db589f8e17469cc7b46a6b83dcb",
+    "upstream.safetensors": "aac298852a96e7073566f16783b4b219277465e1b51774b7cb4f4fad93f67a71",
+    "rules.json": "4e3119fc5170816fb78e4ea477b183518d8fd5acea5e59efde1910525d5393e2"
+  }
+}

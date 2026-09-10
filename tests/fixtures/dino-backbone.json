@@ -1,0 +1,92 @@
+{
+  "boundary": "original Body wrapper and complete DINO synthetic backbone; not trained-model parity",
+  "revision": "6876159a11b4df116f30f667f8c9888617df0751",
+  "source_hashes": {
+    "layers/block.py": "809a3615ec93019042ab440f31c21d5242186d9e503c67ac0f42a324ceae1950",
+    "layers/attention.py": "dfc21def6ba17d00cba18ea23a8726e7f1dd5a0dc8e43510852c999a173d37a8",
+    "layers/ffn_layers.py": "fa2caadb52ff43a7e6888966a00ee07842fed9fd05c68305962cc1577d221fbe",
+    "layers/layer_scale.py": "f9a10ee763a62136f9e814bfe2f2209c2cb501dfdc5573f858ab01ba9a69c23f",
+    "layers/rope_position_encoding.py": "af8ea35acb76d18ad4d53b844d5057bf01472a848375c51d70583a87f044efd1",
+    "utils/__init__.py": "83e6ec1f0cea862f18ae111560e2eadf2fff1873e3fdd7d358dee8d32d0ade8d",
+    "utils/utils.py": "d6fe7fe621b2ae3db89e3af588fbee0c78afe2130f4548dff87c94cbd734fe40",
+    "utils/dtype.py": "0c53f5cc155ea7e9899bc611493193fef9b985f23cb7d990401e22c363ac4419",
+    "layers/patch_embed.py": "c592c7262779c8e1789ed502aee81bdd55eba4607065f8d04ae95eea683d0ef1",
+    "layers/rms_norm.py": "8509ffc53f0bbe9e353a8b9e57ca2396795640b4ecc85140c27b17127c971869",
+    "models/vision_transformer.py": "1af05405e19bc42188f80bfcb204b87ed1ec72af998e0bbd4658a85d7fae93f2",
+    "hub/backbones.py": "6c9a18aca0b5fcb1fce439213a94a528e072376a6023718e03dbd9fcfaa10deb",
+    "hub/utils.py": "24d0e4bd083510bb00677ebd0082dd486a1f9c8b8467f98b7fe6109aefc4712d"
+  },
+  "body_source_hashes": {
+    "sam_3d_body/models/backbones/dinov3.py": "53ae01ccdffa647f16b0fefe366f947162874a9e593d510864d52ffcd259e0e8"
+  },
+  "body_revision": "b5c765a0d89d789985e186d396315e7590887b94",
+  "device": "cpu",
+  "dtype": "float32",
+  "torch": "2.7.0+cu128",
+  "numpy": "2.2.6",
+  "threads": 1,
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "synthetic_weights": true,
+  "unobserved_vs_observed": "exact_equal_all_cases",
+  "full_body_backbone_shape": false,
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "order": [
+        "00.patch",
+        "01.tokens",
+        "02.block.00",
+        "02.block.01",
+        "02.block.02",
+        "03.norm",
+        "04.features"
+      ],
+      "shapes": {
+        "00.patch": [
+          2,
+          6,
+          8
+        ],
+        "01.tokens": [
+          2,
+          11,
+          8
+        ],
+        "02.block.00": [
+          2,
+          11,
+          8
+        ],
+        "02.block.01": [
+          2,
+          11,
+          8
+        ],
+        "02.block.02": [
+          2,
+          11,
+          8
+        ],
+        "03.norm": [
+          2,
+          11,
+          8
+        ],
+        "04.features": [
+          2,
+          8,
+          2,
+          3
+        ]
+      }
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "5ec96ea1288b9904010dab310957fee3ec37b21fb05f2692275fc2a70bb93ff5",
+    "regression.txt": "97d22dfac669ff6012d3c49b08f98c027f3af1a39deb318fe94f8accc6a21355",
+    "rules.json": "69a26913bb6daea928208ded0dc3594fab46c5497a9dbef69ebf3522072595ed",
+    "upstream.safetensors": "63234982b75580e9af19f36656ea6cd2e064b39fd4d96f3b102f2ac7a639a392"
+  }
+}

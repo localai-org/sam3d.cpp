@@ -1,0 +1,15 @@
+{
+  "scope": "Tiny BF16 original-module/math-SDPA fixture; not trained-model parity.",
+  "precision": "bfloat16",
+  "device": "cuda",
+  "torch": "2.7.0+cu128",
+  "original_observed_equal": true,
+  "input_sha256": "c489f427c99899fff58d90ee34c0be172cdf8f264d2e5af50c488e4a8685acfc",
+  "source_sha256": "5efdb7eb05509b831e677a93d0d04084ac570da142091a4b4afed730511651fb",
+  "regression_sha256": "859226d16cebf1123501efc8edc09904038b8bfaa4d2bbea347ea59b413522d7",
+  "script_sha256": "ab12125ce04fd21b4ae420c9bd39295f50ba1d2fb7a3e84a376dc8ff9bee8358",
+  "reference": "Original pinned DINO SelfAttentionBlock and Body BF16 conversion helper; actual math SDPA observations. Synthetic weights, not full-model parity.",
+  "fixture": "dino-block-bf16.txt",
+  "source_fixture": "dino-block.txt",
+  "acceptance": "Exact BF16-valued boundaries; F32 trig/logits/softmax retain 1e-4 max_abs and 2e-5 relative_L2. CPU and NVIDIA Vulkan checked."
+}

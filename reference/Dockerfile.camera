@@ -1,0 +1,6 @@
+ARG BASE_REFERENCE=sam3d-reference-image
+FROM ${BASE_REFERENCE}
+COPY requirements-camera.txt /tmp/requirements-camera.txt
+RUN python -m pip install --no-cache-dir --only-binary=:all: --no-deps \
+    --require-hashes -r /tmp/requirements-camera.txt
+ENTRYPOINT ["python", "/work/reference/capture_camera_encoder.py"]

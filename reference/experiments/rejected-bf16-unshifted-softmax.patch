@@ -1,0 +1,15 @@
+diff --git a/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp b/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
+--- a/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
++++ b/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
+@@ -351,7 +351,13 @@
+         coopMatReduceNV(rowmax, S, gl_CooperativeMatrixReduceRowNV, maxReduce);
+ 
++#if !defined(BFLOAT16)
+         rowmax += coopmat<ACC_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseAccumulator>(FATTN_KQ_MAX_OFFSET);
++#endif
++        // The offset is an F16 range workaround. BF16 uses F32 accumulators
++        // and has a wide exponent range; retain the original row maximum.
++        // A non-power-of-two scaling cancels in exact softmax arithmetic,
++        // but changes BF16 rounding of P before the tensor-core P*V product.
+ 
+         coopmat<ACC_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseAccumulator> Mold = M;

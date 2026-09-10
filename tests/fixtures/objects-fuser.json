@@ -1,0 +1,1101 @@
+{
+  "scope": "original EmbedderFuser post-encoder eval, supplied embeddings and synthetic state; NOT complete/learned conditioning",
+  "device": "cpu",
+  "torch": "2.7.0+cu128",
+  "threads": 1,
+  "tf32": false,
+  "repeats": 3,
+  "observer_exact": true,
+  "max_abs": 0.0001,
+  "relative_l2": 2e-05,
+  "source_hashes": {
+    "model/backbone/dit/embedder/embedder_fuser.py": "a4d2ef27bddbff542550a76ad5a46facf0a653bc8dbc71fa6e92676c805d3c29",
+    "model/layers/llama3/ff.py": "f3d6b9e6b60e71e00db34f9f3d6bbbf06e67e538e64a5ad796bf923af2c6e05d"
+  },
+  "script_sha256": "4b3b24273cc39a1c67decce9db5ed77fdaa9ca054d976d3be756c6d0b27af305",
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "batch": 2,
+      "dims": [
+        16,
+        24
+      ],
+      "modalities": [
+        [
+          0,
+          5,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          1,
+          1
+        ],
+        [
+          1,
+          7,
+          0,
+          0
+        ]
+      ],
+      "pre_norm": true,
+      "random_position": false,
+      "projection": 4.0,
+      "compression": 0.0,
+      "shapes": {
+        "10.modality.0.input": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.projection.00.input": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.projection.01.norm": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.projection.02.w1": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.0.projection.03.silu": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.0.projection.04.w3": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.0.projection.06.projected": [
+          2,
+          5,
+          24
+        ],
+        "10.modality.0.projection.05.gated": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.1.input": [
+          2,
+          3,
+          16
+        ],
+        "10.modality.1.projection.00.input": [
+          2,
+          3,
+          16
+        ],
+        "10.modality.1.projection.01.norm": [
+          2,
+          3,
+          16
+        ],
+        "10.modality.1.projection.02.w1": [
+          2,
+          3,
+          256
+        ],
+        "10.modality.1.projection.03.silu": [
+          2,
+          3,
+          256
+        ],
+        "10.modality.1.projection.04.w3": [
+          2,
+          3,
+          256
+        ],
+        "10.modality.1.projection.06.projected": [
+          2,
+          3,
+          24
+        ],
+        "10.modality.1.projection.05.gated": [
+          2,
+          3,
+          256
+        ],
+        "10.modality.2.input": [
+          2,
+          7,
+          24
+        ],
+        "10.modality.2.projection.00.input": [
+          2,
+          7,
+          24
+        ],
+        "10.modality.2.projection.01.norm": [
+          2,
+          7,
+          24
+        ],
+        "10.modality.2.projection.02.w1": [
+          2,
+          7,
+          256
+        ],
+        "10.modality.2.projection.03.silu": [
+          2,
+          7,
+          256
+        ],
+        "10.modality.2.projection.04.w3": [
+          2,
+          7,
+          256
+        ],
+        "10.modality.2.projection.06.projected": [
+          2,
+          7,
+          24
+        ],
+        "10.modality.2.projection.05.gated": [
+          2,
+          7,
+          256
+        ],
+        "10.modality.0.positioned": [
+          2,
+          5,
+          24
+        ],
+        "10.modality.1.positioned": [
+          2,
+          3,
+          24
+        ],
+        "10.modality.2.positioned": [
+          2,
+          7,
+          24
+        ],
+        "10.modality.0.dropped": [
+          2,
+          5,
+          24
+        ],
+        "10.modality.1.dropped": [
+          2,
+          3,
+          24
+        ],
+        "10.modality.2.dropped": [
+          2,
+          7,
+          24
+        ],
+        "20.joined": [
+          2,
+          15,
+          24
+        ],
+        "90.output": [
+          2,
+          15,
+          24
+        ]
+      },
+      "parameter_shapes": {
+        "idx_emb": [
+          3,
+          24
+        ],
+        "projection_nets.0.0.weight": [
+          16
+        ],
+        "projection_nets.0.0.bias": [
+          16
+        ],
+        "projection_nets.0.1.w1.weight": [
+          256,
+          16
+        ],
+        "projection_nets.0.1.w2.weight": [
+          24,
+          256
+        ],
+        "projection_nets.0.1.w3.weight": [
+          256,
+          16
+        ],
+        "projection_nets.1.0.weight": [
+          24
+        ],
+        "projection_nets.1.0.bias": [
+          24
+        ],
+        "projection_nets.1.1.w1.weight": [
+          256,
+          24
+        ],
+        "projection_nets.1.1.w2.weight": [
+          24,
+          256
+        ],
+        "projection_nets.1.1.w3.weight": [
+          256,
+          24
+        ]
+      },
+      "taps_sha256": "cdfa12d928532f7eab0a95cc3f3f0e04a15a12445d8397bbd968cf2f72ac7726",
+      "full_sha256": "63cff150a18908c92909dfbc613d344b6c3e51cb687650f0108fefd02570aba9"
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "batch": 1,
+      "dims": [
+        32
+      ],
+      "modalities": [
+        [
+          0,
+          3,
+          -1,
+          0
+        ],
+        [
+          0,
+          5,
+          0,
+          0
+        ]
+      ],
+      "pre_norm": false,
+      "random_position": true,
+      "projection": 1.5,
+      "compression": 0.0,
+      "shapes": {
+        "10.modality.0.input": [
+          1,
+          3,
+          32
+        ],
+        "10.modality.0.projection.00.input": [
+          1,
+          3,
+          32
+        ],
+        "10.modality.0.projection.01.norm": [
+          1,
+          3,
+          32
+        ],
+        "10.modality.0.projection.02.w1": [
+          1,
+          3,
+          256
+        ],
+        "10.modality.0.projection.03.silu": [
+          1,
+          3,
+          256
+        ],
+        "10.modality.0.projection.04.w3": [
+          1,
+          3,
+          256
+        ],
+        "10.modality.0.projection.06.projected": [
+          1,
+          3,
+          32
+        ],
+        "10.modality.0.projection.05.gated": [
+          1,
+          3,
+          256
+        ],
+        "10.modality.1.input": [
+          1,
+          5,
+          32
+        ],
+        "10.modality.1.projection.00.input": [
+          1,
+          5,
+          32
+        ],
+        "10.modality.1.projection.01.norm": [
+          1,
+          5,
+          32
+        ],
+        "10.modality.1.projection.02.w1": [
+          1,
+          5,
+          256
+        ],
+        "10.modality.1.projection.03.silu": [
+          1,
+          5,
+          256
+        ],
+        "10.modality.1.projection.04.w3": [
+          1,
+          5,
+          256
+        ],
+        "10.modality.1.projection.06.projected": [
+          1,
+          5,
+          32
+        ],
+        "10.modality.1.projection.05.gated": [
+          1,
+          5,
+          256
+        ],
+        "10.modality.0.positioned": [
+          1,
+          3,
+          32
+        ],
+        "10.modality.1.positioned": [
+          1,
+          5,
+          32
+        ],
+        "10.modality.0.dropped": [
+          1,
+          3,
+          32
+        ],
+        "10.modality.1.dropped": [
+          1,
+          5,
+          32
+        ],
+        "20.joined": [
+          1,
+          8,
+          32
+        ],
+        "90.output": [
+          1,
+          8,
+          32
+        ]
+      },
+      "parameter_shapes": {
+        "idx_emb": [
+          2,
+          1,
+          32
+        ],
+        "projection_nets.0.1.w1.weight": [
+          256,
+          32
+        ],
+        "projection_nets.0.1.w2.weight": [
+          32,
+          256
+        ],
+        "projection_nets.0.1.w3.weight": [
+          256,
+          32
+        ]
+      },
+      "taps_sha256": "c0e950f27164212ef20ea918c5cc003608b809b3ec5241c023ea48fd6bc4dd90",
+      "full_sha256": "add014d92663ea2c3d331579d043d509cf8ef22e801416b498bc33a41e2da535"
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "batch": 2,
+      "dims": [
+        16,
+        16
+      ],
+      "modalities": [
+        [
+          0,
+          5,
+          0,
+          1
+        ],
+        [
+          1,
+          5,
+          1,
+          0
+        ]
+      ],
+      "pre_norm": true,
+      "random_position": false,
+      "projection": 2.0,
+      "compression": 3.0,
+      "shapes": {
+        "10.modality.0.input": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.projection.00.input": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.projection.01.norm": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.projection.02.w1": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.0.projection.03.silu": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.0.projection.04.w3": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.0.projection.06.projected": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.projection.05.gated": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.1.input": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.1.projection.00.input": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.1.projection.01.norm": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.1.projection.02.w1": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.1.projection.03.silu": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.1.projection.04.w3": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.1.projection.06.projected": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.1.projection.05.gated": [
+          2,
+          5,
+          256
+        ],
+        "10.modality.0.positioned": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.1.positioned": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.0.dropped": [
+          2,
+          5,
+          16
+        ],
+        "10.modality.1.dropped": [
+          2,
+          5,
+          16
+        ],
+        "30.compression.00.input": [
+          2,
+          5,
+          32
+        ],
+        "20.joined": [
+          2,
+          5,
+          32
+        ],
+        "30.compression.01.norm": [
+          2,
+          5,
+          32
+        ],
+        "30.compression.02.w1": [
+          2,
+          5,
+          256
+        ],
+        "30.compression.03.silu": [
+          2,
+          5,
+          256
+        ],
+        "30.compression.04.w3": [
+          2,
+          5,
+          256
+        ],
+        "30.compression.06.projected": [
+          2,
+          5,
+          16
+        ],
+        "30.compression.05.gated": [
+          2,
+          5,
+          256
+        ],
+        "90.output": [
+          2,
+          5,
+          16
+        ]
+      },
+      "parameter_shapes": {
+        "idx_emb": [
+          3,
+          16
+        ],
+        "projection_nets.0.0.weight": [
+          16
+        ],
+        "projection_nets.0.0.bias": [
+          16
+        ],
+        "projection_nets.0.1.w1.weight": [
+          256,
+          16
+        ],
+        "projection_nets.0.1.w2.weight": [
+          16,
+          256
+        ],
+        "projection_nets.0.1.w3.weight": [
+          256,
+          16
+        ],
+        "projection_nets.1.0.weight": [
+          16
+        ],
+        "projection_nets.1.0.bias": [
+          16
+        ],
+        "projection_nets.1.1.w1.weight": [
+          256,
+          16
+        ],
+        "projection_nets.1.1.w2.weight": [
+          16,
+          256
+        ],
+        "projection_nets.1.1.w3.weight": [
+          256,
+          16
+        ],
+        "compression_projector.0.weight": [
+          32
+        ],
+        "compression_projector.0.bias": [
+          32
+        ],
+        "compression_projector.1.w1.weight": [
+          256,
+          32
+        ],
+        "compression_projector.1.w2.weight": [
+          16,
+          256
+        ],
+        "compression_projector.1.w3.weight": [
+          256,
+          32
+        ]
+      },
+      "taps_sha256": "733abf4b65ff33ea34f2dc68cb337aff7b80eb3e92eb0a6627d2c60c5e3ccfca",
+      "full_sha256": "79dba65b03d6c6c4500abcfe725109013cd90cbbef337b4ad204984ba08800ca"
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "batch": 1,
+      "dims": [
+        16,
+        24
+      ],
+      "modalities": [
+        [
+          0,
+          5,
+          -1,
+          0
+        ],
+        [
+          1,
+          5,
+          -1,
+          1
+        ]
+      ],
+      "pre_norm": false,
+      "random_position": true,
+      "projection": 0.0,
+      "compression": 2.0,
+      "shapes": {
+        "10.modality.0.input": [
+          1,
+          5,
+          16
+        ],
+        "10.modality.1.input": [
+          1,
+          5,
+          24
+        ],
+        "10.modality.0.positioned": [
+          1,
+          5,
+          16
+        ],
+        "10.modality.1.positioned": [
+          1,
+          5,
+          24
+        ],
+        "10.modality.0.dropped": [
+          1,
+          5,
+          16
+        ],
+        "10.modality.1.dropped": [
+          1,
+          5,
+          24
+        ],
+        "30.compression.00.input": [
+          1,
+          5,
+          40
+        ],
+        "20.joined": [
+          1,
+          5,
+          40
+        ],
+        "30.compression.01.norm": [
+          1,
+          5,
+          40
+        ],
+        "30.compression.02.w1": [
+          1,
+          5,
+          256
+        ],
+        "30.compression.03.silu": [
+          1,
+          5,
+          256
+        ],
+        "30.compression.04.w3": [
+          1,
+          5,
+          256
+        ],
+        "30.compression.06.projected": [
+          1,
+          5,
+          24
+        ],
+        "30.compression.05.gated": [
+          1,
+          5,
+          256
+        ],
+        "90.output": [
+          1,
+          5,
+          24
+        ]
+      },
+      "parameter_shapes": {
+        "idx_emb": [
+          1,
+          1,
+          24
+        ],
+        "compression_projector.1.w1.weight": [
+          256,
+          40
+        ],
+        "compression_projector.1.w2.weight": [
+          24,
+          256
+        ],
+        "compression_projector.1.w3.weight": [
+          256,
+          40
+        ]
+      },
+      "taps_sha256": "ee01e3535d0f1f0a607509dae5a5151d2a4d6d1328d54fd385cafe523a9915c5",
+      "full_sha256": "ea63b5ab68dd4e06c9c97c5a012139cb8c0de826aeea2a072c75df77bcc5cd67"
+    },
+    {
+      "prefix": "case.0004",
+      "input": "case.0004.input",
+      "batch": 2,
+      "dims": [
+        16
+      ],
+      "modalities": [
+        [
+          0,
+          3,
+          -1,
+          0
+        ],
+        [
+          0,
+          2,
+          -1,
+          1
+        ]
+      ],
+      "pre_norm": false,
+      "random_position": false,
+      "projection": 0.0,
+      "compression": 0.0,
+      "shapes": {
+        "10.modality.0.input": [
+          2,
+          3,
+          16
+        ],
+        "10.modality.1.input": [
+          2,
+          2,
+          16
+        ],
+        "10.modality.0.positioned": [
+          2,
+          3,
+          16
+        ],
+        "10.modality.1.positioned": [
+          2,
+          2,
+          16
+        ],
+        "10.modality.0.dropped": [
+          2,
+          3,
+          16
+        ],
+        "10.modality.1.dropped": [
+          2,
+          2,
+          16
+        ],
+        "20.joined": [
+          2,
+          5,
+          16
+        ],
+        "90.output": [
+          2,
+          5,
+          16
+        ]
+      },
+      "parameter_shapes": {
+        "idx_emb": [
+          1,
+          16
+        ]
+      },
+      "taps_sha256": "32eae2740983f000e70737a6595567c9fb8b4fc5d181c0d8111ff16bada32c53",
+      "full_sha256": "565f917400e4e7e8699be52f674f2865fbced86904d943ec43eaaf644409fb2a"
+    },
+    {
+      "prefix": "case.0005",
+      "input": "case.0005.input",
+      "batch": 1,
+      "dims": [
+        32
+      ],
+      "modalities": [
+        [
+          0,
+          5,
+          0,
+          0
+        ]
+      ],
+      "pre_norm": true,
+      "random_position": false,
+      "projection": 0.0,
+      "compression": 0.0,
+      "shapes": {
+        "10.modality.0.input": [
+          1,
+          5,
+          32
+        ],
+        "10.modality.0.positioned": [
+          1,
+          5,
+          32
+        ],
+        "10.modality.0.dropped": [
+          1,
+          5,
+          32
+        ],
+        "20.joined": [
+          1,
+          5,
+          32
+        ],
+        "90.output": [
+          1,
+          5,
+          32
+        ]
+      },
+      "parameter_shapes": {
+        "idx_emb": [
+          2,
+          32
+        ]
+      },
+      "taps_sha256": "490dcad2306205e29b1d48477e23283280f268f614e2af06fa4cb7d1572fc5d5",
+      "full_sha256": "604fcdf87a5343b7fa13b4468da41a8a10fd831f92f0d52f9a7a2961bd9a0aab"
+    },
+    {
+      "prefix": "case.0006",
+      "input": "case.0006.input",
+      "batch": 1,
+      "dims": [
+        768,
+        1024
+      ],
+      "modalities": [
+        [
+          0,
+          1024,
+          0,
+          0
+        ],
+        [
+          1,
+          1024,
+          1,
+          0
+        ]
+      ],
+      "pre_norm": true,
+      "random_position": false,
+      "projection": 4.0,
+      "compression": 0.0,
+      "shapes": {
+        "10.modality.0.input": [
+          1,
+          1024,
+          768
+        ],
+        "10.modality.0.projection.00.input": [
+          1,
+          1024,
+          768
+        ],
+        "10.modality.0.projection.01.norm": [
+          1,
+          1024,
+          768
+        ],
+        "10.modality.0.projection.02.w1": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.0.projection.03.silu": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.0.projection.04.w3": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.0.projection.06.projected": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.0.projection.05.gated": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.1.input": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.1.projection.00.input": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.1.projection.01.norm": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.1.projection.02.w1": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.1.projection.03.silu": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.1.projection.04.w3": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.1.projection.06.projected": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.1.projection.05.gated": [
+          1,
+          1024,
+          2816
+        ],
+        "10.modality.0.positioned": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.1.positioned": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.0.dropped": [
+          1,
+          1024,
+          1024
+        ],
+        "10.modality.1.dropped": [
+          1,
+          1024,
+          1024
+        ],
+        "20.joined": [
+          1,
+          2048,
+          1024
+        ],
+        "90.output": [
+          1,
+          2048,
+          1024
+        ]
+      },
+      "parameter_shapes": {
+        "idx_emb": [
+          3,
+          1024
+        ],
+        "projection_nets.0.0.weight": [
+          768
+        ],
+        "projection_nets.0.0.bias": [
+          768
+        ],
+        "projection_nets.0.1.w1.weight": [
+          2816,
+          768
+        ],
+        "projection_nets.0.1.w2.weight": [
+          1024,
+          2816
+        ],
+        "projection_nets.0.1.w3.weight": [
+          2816,
+          768
+        ],
+        "projection_nets.1.0.weight": [
+          1024
+        ],
+        "projection_nets.1.0.bias": [
+          1024
+        ],
+        "projection_nets.1.1.w1.weight": [
+          2816,
+          1024
+        ],
+        "projection_nets.1.1.w2.weight": [
+          1024,
+          2816
+        ],
+        "projection_nets.1.1.w3.weight": [
+          2816,
+          1024
+        ]
+      },
+      "taps_sha256": "7e446ffa0da8d8e6f3a47bd4f5d7f090e4f457baefd6fc1a0301eb7d0150de5c",
+      "full_sha256": "e3d6ffda99e22afd8543f176d26430de8e793916569a7533c685e3362395afb0"
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "914b3f45d381593c2d8c3d4cca2ee91db40b5a8a41f2959b50f6ca1949fe2e2a",
+    "case.0001.input": "f501cfd88da076acd21e2d991eee5b3b44f28928dcdf245e87717e7849b6d982",
+    "case.0002.input": "8b31dd0bf46e1763631e452c6e1a15d1f239d95435ca4623b5b3839fe7df4ff7",
+    "case.0003.input": "3682ff5ba3b142840435be21f0c2cd4154013c73e5a8c8cee0726c08096a4f4f",
+    "case.0004.input": "a260cdc7c760a9d19c1ba3cd737484e3929a37419e1108d74d864ae7903b80c5",
+    "case.0005.input": "0a2b985b489d09816631ba2a6ac5b8a3239f0820116a0d55e40884e48ab6dfab",
+    "case.0006.input": "15a297b5f8e4f577ff26bba62914717d99e666e38818da2ae7f6e4280d333412",
+    "regression.txt": "7325ac82d1f8fd9c6c3b4d4a57ce4d260450d0545a322cec5be43fa6a26406e4"
+  }
+}

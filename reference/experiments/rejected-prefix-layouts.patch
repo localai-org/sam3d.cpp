@@ -1,0 +1,35 @@
+diff --git a/src/dino_block.cpp b/src/dino_block.cpp
+--- a/src/dino_block.cpp
++++ b/src/dino_block.cpp
+@@ -139,3 +139,30 @@
+             auto probabilities=ggml_soft_max(c,logits);
+-            auto prefix_attended=mm(ggml_cont(c,ggml_transpose(c,v)),probabilities);
++            auto values=ggml_cont(c,ggml_transpose(c,v));
++            const auto pad_env=std::getenv("SAM3D_BF16_PREFIX_PAD");
++            if(pad_env && std::string_view(pad_env)=="1" && n%4){
++                // Pad the reduction AFTER softmax, never the logits: no new
++                // key contributes probability mass. Aligned F32 vector loads
++                // avoid the slow odd-width matrix-vector path on Vulkan.
++                // This preserves the real-valued sum but may change F32
++                // accumulation rounding; validate against the frozen policy.
++                const auto tail=4-n%4;
++                values=ggml_pad(c,values,tail,0,0,0);
++                probabilities=ggml_pad(c,probabilities,tail,0,0,0);
++            }
++            ggml_tensor *prefix_attended=nullptr;
++            const auto mv_env=std::getenv("SAM3D_BF16_PREFIX_MV");
++            const auto transpose_env=std::getenv("SAM3D_BF16_PREFIX_TRANSPOSE");
++            if(mv_env && std::string_view(mv_env)=="1"){
++                // GGML's vector path supports batched single-column products,
++                // but not multiple columns plus head batches. Put the queries
++                // in a broadcast batch axis, leaving each head's V unchanged.
++                // [K,D,H,B] x [K,Q,H,B] -> [K,D,1,H*B] x [K,1,Q,H*B].
++                auto left=ggml_reshape_4d(c,values,values->ne[0],dh,1,s.heads*s.batch);
++                auto right=ggml_reshape_4d(c,probabilities,probabilities->ne[0],1,precise_prefix,s.heads*s.batch);
++                prefix_attended=ggml_reshape_4d(c,mm(left,right),dh,precise_prefix,s.heads,s.batch);
++            }else if(transpose_env && std::string_view(transpose_env)=="1"){
++                // (V^T P)^T = P^T V: exchange the two operands and transpose
++                // the small output, exposing a wider N dimension to GEMM.
++                prefix_attended=ggml_cont(c,ggml_transpose(c,mm(probabilities,values)));
++            }else prefix_attended=mm(values,probabilities);
+             prefix_output=ggml_reshape_3d(c,ggml_cont(c,ggml_permute(c,prefix_attended,0,2,1,3)),d,precise_prefix,s.batch);

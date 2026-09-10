@@ -1,0 +1,3 @@
+@PACKAGE_INIT@
+include("${CMAKE_CURRENT_LIST_DIR}/sam3dTargets.cmake")
+check_required_components(sam3d)

@@ -1,0 +1,29 @@
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -8881,3 +8881,25 @@
+     const bool mm_s = is_q8_1 ? ctx->device->mul_mat_s_int[src0_type] : ctx->device->mul_mat_s[src0_type];
+ 
++    // Opt-in exploration of the EXISTING CM2 BF16 kernels. Never select these
++    // for F32/F16/quantized kernels or other backend architectures. Keep
++    // the original alignment/availability decisions and split-K machinery.
++    // Unknown values retain the ordinary heuristic (as does an unset flag).
++    // Inspect the selected kernel, not the RHS carrier type: GGML converts
++    // an F32 RHS to BF16 before this product when the LHS is BF16.
++    if (ctx->device->coopmat2 && src0_type == GGML_TYPE_BF16 && mmp == ctx->device->pipeline_matmul_bf16) {
++        const char * mode = getenv("GGML_VK_BF16_MATMUL_TILE");
++        vk_pipeline selected;
++        if (mode && strcmp(mode, "small") == 0 && mm_s) selected = aligned ? mmp->a_s : mmp->s;
++        if (mode && strcmp(mode, "medium") == 0 && mm_m) selected = aligned ? mmp->a_m : mmp->m;
++        if (mode && strcmp(mode, "large") == 0 && mm_l) selected = aligned ? mmp->a_l : mmp->l;
++        if (selected) {
++            if (getenv("GGML_VK_BF16_MATMUL_TRACE")) {
++                std::cerr << "BF16_MATMUL_TILE mode=" << mode << " m=" << m << " n=" << n
++                          << " aligned=" << aligned << " tile=" << selected->wg_denoms[0]
++                          << "x" << selected->wg_denoms[1] << std::endl;
++            }
++            return selected;
++        }
++    }
++
+     if (ctx->device->coopmat2 && mmp != ctx->device->pipeline_matmul_f32) {

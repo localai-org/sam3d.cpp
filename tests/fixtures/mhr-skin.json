@@ -1,0 +1,955 @@
+{
+  "scope": "isolated original skinning of 16 selected actual vertices; not whole geometry projection coverage",
+  "model_sha256": "352e271a6c42729c68554ceaea0c955e866970160c31e35506d782dc0f7377bc",
+  "full_reference_sha256": "81a4e53fb79a49a9dc20d4868fbfa42db6622f6f448c7faf9e52b01c789760a3",
+  "script_sha256": "1607e229b960fc8ec9c38a11d31a2d0a713f1f8eabfd4368fac2ab43fca7c3d7",
+  "observer_sha256": "d32ef921f0850777747161febe7b1a4ffaa3454eda081f5ed23ea21ac977856a",
+  "selected_original_vertices": [
+    0,
+    1229,
+    2458,
+    3687,
+    4916,
+    6146,
+    7375,
+    8604,
+    9833,
+    11062,
+    12292,
+    13521,
+    14750,
+    15979,
+    17208,
+    18438
+  ],
+  "subset_vs_original_full_vertices": {
+    "changed": 0,
+    "max_abs": 0.0,
+    "relative_l2": 0.0
+  },
+  "fixture_sha256": "b0d6e423fd19e1b1adf996ba860a40d5dff4462a711570b313415227fecd9fd3",
+  "operations": [
+    {
+      "name": "op.00000.output",
+      "operation": "aten.lift_fresh.default",
+      "shape": [
+        2,
+        127,
+        8
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00001.output",
+      "operation": "aten.lift_fresh.default",
+      "shape": [
+        2,
+        16,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00002.output",
+      "operation": "aten.unsqueeze.default",
+      "shape": [
+        1,
+        127,
+        8
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00003.output",
+      "operation": "aten.expand.default",
+      "shape": [
+        2,
+        16,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00004.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00005.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        2,
+        127,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00006.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        2,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00008.output",
+      "operation": "aten.norm.ScalarOpt_dim",
+      "shape": [
+        2,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00009.output",
+      "operation": "aten.clamp_min.default",
+      "shape": [
+        2,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00010.output",
+      "operation": "aten.expand_as.default",
+      "shape": [
+        2,
+        127,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00011.output",
+      "operation": "aten.div.Tensor",
+      "shape": [
+        2,
+        127,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00012.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        1,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00013.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        1,
+        127,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00014.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        1,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00016.output",
+      "operation": "aten.norm.ScalarOpt_dim",
+      "shape": [
+        1,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00017.output",
+      "operation": "aten.clamp_min.default",
+      "shape": [
+        1,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00018.output",
+      "operation": "aten.expand_as.default",
+      "shape": [
+        1,
+        127,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00019.output",
+      "operation": "aten.div.Tensor",
+      "shape": [
+        1,
+        127,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00022.output",
+      "operation": "aten.narrow.default",
+      "shape": [
+        2,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00023.output",
+      "operation": "aten.narrow.default",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00024.output",
+      "operation": "aten.cross.default",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00025.output",
+      "operation": "aten.cross.default",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00026.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00027.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00028.output",
+      "operation": "aten.mul.Scalar",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00029.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00030.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00031.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00032.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00035.output.0",
+      "operation": "aten.unbind.int",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00035.output.1",
+      "operation": "aten.unbind.int",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00035.output.2",
+      "operation": "aten.unbind.int",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00035.output.3",
+      "operation": "aten.unbind.int",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00036.output.0",
+      "operation": "aten.unbind.int",
+      "shape": [
+        1,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00036.output.1",
+      "operation": "aten.unbind.int",
+      "shape": [
+        1,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00036.output.2",
+      "operation": "aten.unbind.int",
+      "shape": [
+        1,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00036.output.3",
+      "operation": "aten.unbind.int",
+      "shape": [
+        1,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00037.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00038.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00039.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00040.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00041.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00042.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00043.output",
+      "operation": "aten.sub.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00044.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00045.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00046.output",
+      "operation": "aten.sub.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00047.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00048.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00049.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00050.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00051.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00052.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00053.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00054.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00055.output",
+      "operation": "aten.sub.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00056.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00057.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00058.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00059.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00060.output",
+      "operation": "aten.sub.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00061.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00062.output",
+      "operation": "aten.sub.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00063.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00064.output",
+      "operation": "aten.sub.Tensor",
+      "shape": [
+        2,
+        127
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00065.output",
+      "operation": "aten.stack.default",
+      "shape": [
+        2,
+        127,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00066.output",
+      "operation": "aten.cat.default",
+      "shape": [
+        2,
+        127,
+        8
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00067.output",
+      "operation": "aten.zeros_like.default",
+      "shape": [
+        2,
+        16,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00068.output",
+      "operation": "aten.index_select.default",
+      "shape": [
+        2,
+        46,
+        8
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00069.output",
+      "operation": "aten.index_select.default",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00070.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00071.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        2,
+        46,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00072.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        2,
+        46,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00074.output",
+      "operation": "aten.norm.ScalarOpt_dim",
+      "shape": [
+        2,
+        46,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00075.output",
+      "operation": "aten.clamp_min.default",
+      "shape": [
+        2,
+        46,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00076.output",
+      "operation": "aten.expand_as.default",
+      "shape": [
+        2,
+        46,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00077.output",
+      "operation": "aten.div.Tensor",
+      "shape": [
+        2,
+        46,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00078.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00080.output",
+      "operation": "aten.norm.ScalarOpt_dim",
+      "shape": [
+        2,
+        46,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00081.output",
+      "operation": "aten.clamp_min.default",
+      "shape": [
+        2,
+        46,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00082.output",
+      "operation": "aten.expand_as.default",
+      "shape": [
+        2,
+        46,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00083.output",
+      "operation": "aten.div.Tensor",
+      "shape": [
+        2,
+        46,
+        4
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00086.output",
+      "operation": "aten.narrow.default",
+      "shape": [
+        2,
+        46,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00087.output",
+      "operation": "aten.narrow.default",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00088.output",
+      "operation": "aten.cross.default",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00089.output",
+      "operation": "aten.cross.default",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00090.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00091.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00092.output",
+      "operation": "aten.mul.Scalar",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00093.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00094.output",
+      "operation": "aten.add.Tensor",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00095.output",
+      "operation": "aten.unsqueeze.default",
+      "shape": [
+        1,
+        46
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00096.output",
+      "operation": "aten.slice.Tensor",
+      "shape": [
+        1,
+        46
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00097.output",
+      "operation": "aten.unsqueeze.default",
+      "shape": [
+        1,
+        46,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00098.output",
+      "operation": "aten.mul.Tensor",
+      "shape": [
+        2,
+        46,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "op.00099.output",
+      "operation": "aten.index_add.default",
+      "shape": [
+        2,
+        16,
+        3
+      ],
+      "dtype": "torch.float32"
+    }
+  ]
+}

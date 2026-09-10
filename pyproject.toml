@@ -1,0 +1,15 @@
+[project]
+name = "sam3d-reference-tools"
+version = "0.0.1"
+description = "Data-only validation tools for the sam3d.cpp reference workflow"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy==2.2.6",
+  "safetensors==0.6.2",
+]
+
+[project.optional-dependencies]
+download = ["huggingface-hub==0.36.0"]
+
+[tool.uv]
+package = false

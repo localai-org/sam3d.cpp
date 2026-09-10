@@ -1,0 +1,18 @@
+SAM 3D Body DINOv3 GGUF conversion
+
+SAM and DINOv3 material: Copyright (c) Meta Platforms, Inc. and affiliates.
+SAM material and derivatives remain under LICENSE (the SAM License).
+DINO material and derivatives remain under LICENSES/DINOv3.md.
+MHR assets: Apache-2.0, retained in LICENSES/MHR-Apache-2.0.txt.
+Momentum-derived material: LICENSES/Momentum.txt (MIT).
+Original conversion documentation: Copyright 2026 sam3d.cpp contributors,
+Apache-2.0, retained in LICENSES/Apache-2.0.txt. This does not relicense weights.
+
+Changes: verified safe extraction, selected Body pose-branch/MHR tensors,
+F32 storage and bounded I32 indices, renamed GGML tensors/dimension descriptors,
+and provenance metadata. An unused mask token is synthesized as zero for
+unmasked evaluation. Hand refinement and unused MHR solver state are omitted.
+No retraining or low-bit quantization. See README.md and MANIFEST.json for
+component identities, source revisions and limitations.
+
+This is an independent conversion, not an official Meta release or endorsement.

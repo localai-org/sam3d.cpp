@@ -1,0 +1,36 @@
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -924,2 +924,3 @@
+     vk_matmul_pipeline pipeline_matmul_f32 {};
++    vk_pipeline pipeline_matmul_f32_narrow;
+     vk_matmul_pipeline pipeline_matmul_f32_f16 {};
+@@ -4710,2 +4711,7 @@
+         scalar(device->pipeline_matmul_f32->a_s,"matmul_f32_f32_aligned_s",{32,32,1},ss,true,32);
++        // Same scalar shader, K tile and ordered dot products, but less
++        // wasted N work for small multi-column, multi-head F32 products.
++        if (device->vendor_id == VK_VENDOR_ID_NVIDIA && device->subgroup_size == 32) {
++            scalar(device->pipeline_matmul_f32_narrow,"matmul_f32_f32_narrow",{16,8,1},
++                {32,16,8,16,16,8,1,2,2,1,32},false,1);
++        }
+         auto const &ggml_vk_mul_mm_cm2_spec = [](std::vector<uint32_t> spec, bool aligned, bool mul_mat_id) {
+@@ -8842,3 +8849,3 @@
+-    if (disable_split_k) {
++    if (disable_split_k || pipeline == ctx->device->pipeline_matmul_f32_narrow) {
+         return 1;
+     }
+@@ -8881,3 +8888,16 @@
+     const bool mm_s = is_q8_1 ? ctx->device->mul_mat_s_int[src0_type] : ctx->device->mul_mat_s[src0_type];
+ 
++    const char * narrow = getenv("GGML_VK_F32_NARROW_MATMUL");
++    if (narrow && strcmp(narrow, "1") == 0 && n <= 8 &&
++        ctx->device->coopmat2 && mmp == ctx->device->pipeline_matmul_f32 &&
++        src0_type == GGML_TYPE_F32 && src1_type == GGML_TYPE_F32 &&
++        ctx->device->pipeline_matmul_f32_narrow) {
++        if (getenv("GGML_VK_F32_NARROW_TRACE")) {
++            std::cerr << "F32_NARROW_MATMUL m=" << m << " n=" << n << std::endl;
++        }
++        return ctx->device->pipeline_matmul_f32_narrow;
++    }
++
+     // Opt-in exploration of the EXISTING CM2 BF16 kernels. Never select these

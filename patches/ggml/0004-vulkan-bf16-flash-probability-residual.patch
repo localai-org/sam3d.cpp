@@ -1,0 +1,22 @@
+diff --git a/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp b/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
+--- a/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
++++ b/src/ggml-vulkan/vulkan-shaders/flash_attn_cm2.comp
+@@ -405,6 +405,17 @@
+ 
+         O *= coopmat<O_TYPE, gl_ScopeWorkgroup, Br, HSV_pad, gl_MatrixUseAccumulator>(eMdiag);
+         O = coopMatMulAdd(P_A, V, O);
++#if defined(BFLOAT16)
++        // Approximate the F32-probability math-SDPA numerator without
++        // materializing its full score matrix. Retain the BF16 high product,
++        // then accumulate the probability's BF16 residual with the same V.
++        // Q/K/V and outputs retain their existing types and precision rules.
++        // The denominator above is still reduced from the original F32 P.
++        coopmat<ACC_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseAccumulator> P_hi =
++            coopmat<ACC_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseAccumulator>(P_A);
++        coopmat<FLOAT_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseA> P_lo =
++            coopmat<FLOAT_TYPE, gl_ScopeWorkgroup, Br, Bc, gl_MatrixUseA>(P - P_hi);
++        O = coopMatMulAdd(P_lo, V, O);
++#endif
+     }
+ 
+     // If there is split_k, then the split_k resolve shader does the final

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "upstream": {
+    "repository": "facebook/sam-3d-body-dinov3",
+    "revision": "11aaa346c7204874a1cbafe3d39a979080b2c55a",
+    "checkpoint_sha256": "b5a2f9d305dd02626b967aa2e86021fba07065df66ce7a7e00ffb9664f150abf",
+    "config_sha256": "1012fc3f39cb5e90e3f8fbadf7bded31604bfafdce0321d17a7c1a2d3f08b88d",
+    "body_code_revision": "b5c765a0d89d789985e186d396315e7590887b94",
+    "dinov3_code_revision": "6876159a11b4df116f30f667f8c9888617df0751",
+    "mhr_release": "https://github.com/facebookresearch/MHR/releases/tag/v1.0.1",
+    "mhr_asset_sha256": "352e271a6c42729c68554ceaea0c955e866970160c31e35506d782dc0f7377bc"
+  },
+  "files": {
+    "body-dinov3-f32.gguf": {
+      "bytes": 3363058592,
+      "sha256": "9228c12b5b34cdb3627fce731a3e3d5890c54dc78ca7eb357d66056893f5bf1f",
+      "precision": "F32",
+      "licenses": ["SAM", "DINOv3"]
+    },
+    "body-pose-branch-f32.gguf": {
+      "bytes": 231353792,
+      "sha256": "eebd51ac66bab764b52c7c51a47671bfa6152980a5bc7da6ea7fe20f6ae61431",
+      "precision": "F32/I32",
+      "licenses": ["SAM", "MHR-Apache-2.0"]
+    },
+    "mhr-lod1-f32.gguf": {
+      "bytes": 693111264,
+      "sha256": "d52ab772628fb6d851550381b428185a32da6398793f0ff70299bad1999ba8f8",
+      "precision": "F32/I32",
+      "licenses": ["MHR-Apache-2.0", "Momentum-MIT"]
+    }
+  }
+}

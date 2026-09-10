@@ -1,0 +1,19 @@
+{
+  "boundary": "full rotated synthetic-pattern RGB crop regression, not model parity",
+  "upstream_revision": "b5c765a0d89d789985e186d396315e7590887b94",
+  "capture_script": "reference/capture_body_image.py",
+  "case_id": 6,
+  "source_shape": [81, 127, 3],
+  "source_pattern": ["(x*31+y*7)%256", "(x*3+y*53)%256", "(x^y)%256"],
+  "bbox_xyxy_f32": [-44.45, -8.1, 142.24, 78.57],
+  "padding": 1.25,
+  "prior_aspect": 0.75,
+  "rotation_degrees": 17.5,
+  "output_size": [512, 512],
+  "numpy": "2.2.6",
+  "opencv": "4.11.0",
+  "full_crop_rgb_sha256": "dae536a7cad0fd26320665b311104d8aaa90e52aca40aeb74a4c22163dde75db",
+  "full_crop_rgb_fnv1a64": "b5f5723212f21032",
+  "upstream_full_safetensors_sha256": "e63d97907a809db503c00667a9a8e872f3ac574b49cfaa4545f301d9b9e25abd",
+  "note": "FNV checksum is only a dependency-free C regression assertion; SHA-256 records authoritative captured bytes. Test data is synthetic and contains no model weights."
+}

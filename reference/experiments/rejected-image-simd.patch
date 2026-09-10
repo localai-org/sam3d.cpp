@@ -1,0 +1,114 @@
+diff --git a/src/image_normalization.hpp b/src/image_normalization.hpp
+new file mode 100644
+--- /dev/null
++++ b/src/image_normalization.hpp
+@@ -0,0 +1,32 @@
++#pragma once
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#if defined(__SSE2__) || defined(_M_X64)
++#include <emmintrin.h>
++#endif
++
++namespace sam3d {
++// Internal helper: caller validates the three input bytes and planar output
++// extents. Keep every division/subtraction; no reciprocal, FMA or LUT.
++inline void normalize_image_pixel(const uint8_t *rgb, float *out, size_t stride) {
++    constexpr std::array<float,3> mean{.485f,.456f,.406f},stddev{.229f,.224f,.225f};
++#if defined(__SSE2__) || defined(_M_X64)
++    const auto bytes=_mm_setr_epi32(rgb[0],rgb[1],rgb[2],0);
++    const auto unit=_mm_div_ps(_mm_cvtepi32_ps(bytes),_mm_set1_ps(255.f));
++    const auto value=_mm_div_ps(_mm_sub_ps(unit,_mm_setr_ps(mean[0],mean[1],mean[2],0.f)),
++                              _mm_setr_ps(stddev[0],stddev[1],stddev[2],1.f));
++    _mm_store_ss(out,value);
++    _mm_store_ss(out+stride,_mm_shuffle_ps(value,value,_MM_SHUFFLE(1,1,1,1)));
++    _mm_store_ss(out+2*stride,_mm_shuffle_ps(value,value,_MM_SHUFFLE(2,2,2,2)));
++#else
++    for(size_t c=0;c<3;++c){
++        const float unit=float(rgb[c])/255.f;
++        out[c*stride]=(unit-mean[c])/stddev[c];
++    }
++#endif
++}
++inline void normalize_image_rgb(const uint8_t *rgb, float *out, size_t pixels) {
++    for(size_t i=0;i<pixels;++i)normalize_image_pixel(rgb+3*i,out+i,pixels);
++}
++}
+diff --git a/tests/test_image_normalization.cpp b/tests/test_image_normalization.cpp
+new file mode 100644
+--- /dev/null
++++ b/tests/test_image_normalization.cpp
+@@ -0,0 +1,29 @@
++#include "image_normalization.hpp"
++#include <bit>
++#include <iostream>
++#include <stdexcept>
++#include <vector>
++
++int main(){try{
++    size_t cases=0;
++    constexpr float means[]={.485f,.456f,.406f},scales[]={.229f,.224f,.225f};
++    for(size_t n:std::array<size_t,14>{0,1,2,3,4,5,7,15,16,17,255,256,257,1029}){
++        for(size_t offset=0;offset<4;++offset){
++            // Exact-length source suffix: sanitizers detect any vector overread.
++            std::vector<uint8_t> input(n*3+offset+(n==0 && offset==0));
++            for(size_t i=0;i<n*3;++i)input[offset+i]=uint8_t(i*17+offset*31);
++            std::vector<float> output(n*3+offset+4,12345.f);
++            sam3d::normalize_image_rgb(input.data()+offset,output.data()+offset,n);
++            for(size_t c=0;c<3;++c)for(size_t i=0;i<n;++i){
++                const float unit=float(input[offset+i*3+c])/255.f;
++                const float expected=(unit-means[c])/scales[c];
++                if(std::bit_cast<uint32_t>(output[offset+c*n+i])!=std::bit_cast<uint32_t>(expected))
++                    throw std::runtime_error("normalization changed F32 bits");
++            }
++            for(size_t i=0;i<offset;++i)if(output[i]!=12345.f)throw std::runtime_error("leading guard changed");
++            for(size_t i=offset+n*3;i<output.size();++i)if(output[i]!=12345.f)throw std::runtime_error("trailing guard changed");
++            ++cases;
++        }
++    }
++    std::cout<<cases<<" exact image normalization cases, all byte values, offsets, tails and guards passed\n";
++}catch(const std::exception &e){std::cerr<<e.what()<<'\n';return 1;}}
+diff --git a/src/body_image.cpp b/src/body_image.cpp
+--- a/src/body_image.cpp
++++ b/src/body_image.cpp
+@@ -4,4 +4,7 @@
+ #include "error.hpp"
++#include "image_normalization.hpp"
+ #include <array>
+ #include <cmath>
++#include <cstdlib>
++#include <string_view>
+ #include <memory>
+@@ -71,1 +74,3 @@
+         constexpr std::array<float, 3> stddev{0.229f, 0.224f, 0.225f};
++        const char *simd_env=std::getenv("SAM3D_SIMD_IMAGE");
++        const bool simd=simd_env && std::string_view(simd_env)=="1";
+         for (uint32_t y = 0; y < result->height; ++y) {
+@@ -87,6 +92,9 @@
+                     result->rgb[pixel*3+c] = value;
+-                    const float unit = static_cast<float>(value)/255.0f;
+-                    result->normalized[c*pixels+pixel] = (unit-mean[c])/stddev[c];
++                    if(!simd){
++                        const float unit = static_cast<float>(value)/255.0f;
++                        result->normalized[c*pixels+pixel] = (unit-mean[c])/stddev[c];
++                    }
+                 }
++                if(simd)sam3d::normalize_image_pixel(result->rgb.data()+pixel*3,result->normalized.data()+pixel,pixels);
+             }
+         }
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -396,1 +396,10 @@
+   add_test(NAME body_image_c_api COMMAND sam3d-image-api-test)
++  add_test(NAME body_image_c_api_simd COMMAND sam3d-image-api-test)
++  set_tests_properties(body_image_c_api_simd PROPERTIES ENVIRONMENT "SAM3D_SIMD_IMAGE=1")
++  add_executable(sam3d-image-normalization-test tests/test_image_normalization.cpp)
++  target_include_directories(sam3d-image-normalization-test PRIVATE src)
++  target_compile_features(sam3d-image-normalization-test PRIVATE cxx_std_23)
++  if(SAM3D_SANITIZERS)
++    target_link_libraries(sam3d-image-normalization-test PRIVATE sam3d_sanitizers)
++  endif()
++  add_test(NAME body_image_normalization_exact COMMAND sam3d-image-normalization-test)
+   add_executable(sam3d-crop-capture tests/body_crop_capture.cpp)

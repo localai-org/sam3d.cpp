@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "policy": "euler-radians-unit-circle-v1",
+  "scope": "global Euler radians only; independent original CPU/CUDA elementary-function control, not trained model parity",
+  "uses_native_output_for_calibration": false,
+  "max_abs_radians": 0.0001,
+  "unit_circle_relative_l2": 2e-05,
+  "relative_representation": "per-coordinate sin/cos has fixed nonzero reference norm sqrt(number of coordinates), including identity; raw Euler absolute bound remains mandatory",
+  "raw_euler_relative_error_retained": true,
+  "native_inference_changed": false,
+  "source_manifests_sha256": [
+    "b44c57e53075a9ebfdc86b071a539ad54841c7d619c34ea28a00858f9f0ebd41",
+    "8a68cfff901dd57143d6e7b8243ce8ab9d20f25a94a5e4d0721b9064ca469389"
+  ],
+  "original_capture_sha256": [
+    "56827b8e333ddbd6023721b59232ec585b18f08d8ac3794b494499ea433994fc",
+    "ebe1cfd93e30e25d9417a4c8ecd8db04e72604cbc93ffe220d5d650d375bb4f6"
+  ],
+  "policy_code_sha256": "98e6d568590bf0aa23e1eae64dee48de63500abf943b6fed12f6ea358a0f26cc",
+  "script_sha256": "ef331476e08f6acf72c3bd5add0b28579a6bfc81c5c2c52ac0ff0026221c4097",
+  "cases": [
+    {
+      "key": "original.0.17.global.euler",
+      "cpu": [
+        [
+          0.003834161441773176,
+          0.0023403167724609375,
+          0.0004981826059520245
+        ]
+      ],
+      "cuda": [
+        [
+          0.003834161441773176,
+          0.0023401975631713867,
+          0.0004981826059520245
+        ]
+      ],
+      "policy": "euler-radians-unit-circle-v1",
+      "max_abs": 1.1920928955078125e-07,
+      "max_abs_limit": 0.0001,
+      "raw_euler_relative_l2": 2.6376536747674433e-05,
+      "relative_l2": 6.882551541204489e-08,
+      "relative_l2_representation": "per-coordinate sin/cos, evaluated in F64",
+      "relative_l2_limit": 2e-05,
+      "pass": true
+    },
+    {
+      "key": "original.1.17.global.euler",
+      "cpu": [
+        [
+          0.0038621455896645784,
+          0.0023611783981323242,
+          0.0004437232855707407
+        ]
+      ],
+      "cuda": [
+        [
+          0.0038621455896645784,
+          0.002361297607421875,
+          0.0004437232855707407
+        ]
+      ],
+      "policy": "euler-radians-unit-circle-v1",
+      "max_abs": 1.1920928955078125e-07,
+      "max_abs_limit": 0.0001,
+      "raw_euler_relative_l2": 2.6208883010078895e-05,
+      "relative_l2": 6.882551541193934e-08,
+      "relative_l2_representation": "per-coordinate sin/cos, evaluated in F64",
+      "relative_l2_limit": 2e-05,
+      "pass": true
+    },
+    {
+      "key": "original.2.17.global.euler",
+      "cpu": [
+        [
+          0.003829271998256445,
+          0.002332448959350586,
+          0.00042230868712067604
+        ]
+      ],
+      "cuda": [
+        [
+          0.003829271998256445,
+          0.002332448959350586,
+          0.00042230868712067604
+        ]
+      ],
+      "policy": "euler-radians-unit-circle-v1",
+      "max_abs": 0.0,
+      "max_abs_limit": 0.0001,
+      "raw_euler_relative_l2": 0.0,
+      "relative_l2": 0.0,
+      "relative_l2_representation": "per-coordinate sin/cos, evaluated in F64",
+      "relative_l2_limit": 2e-05,
+      "pass": true
+    },
+    {
+      "key": "original.3.17.global.euler",
+      "cpu": [
+        [
+          0.0038418478798121214,
+          0.0023136138916015625,
+          0.00038862903602421284
+        ]
+      ],
+      "cuda": [
+        [
+          0.0038418478798121214,
+          0.0023137331008911133,
+          0.00038862903602421284
+        ]
+      ],
+      "policy": "euler-radians-unit-circle-v1",
+      "max_abs": 1.1920928955078125e-07,
+      "max_abs_limit": 0.0001,
+      "raw_euler_relative_l2": 2.6482037873300895e-05,
+      "relative_l2": 6.882551541195106e-08,
+      "relative_l2_representation": "per-coordinate sin/cos, evaluated in F64",
+      "relative_l2_limit": 2e-05,
+      "pass": true
+    },
+    {
+      "key": "original.4.17.global.euler",
+      "cpu": [
+        [
+          0.0038691272493451834,
+          0.0023392438888549805,
+          0.00044892518781125546
+        ]
+      ],
+      "cuda": [
+        [
+          0.0038691272493451834,
+          0.0023393630981445312,
+          0.00044892518781125546
+        ]
+      ],
+      "policy": "euler-radians-unit-circle-v1",
+      "max_abs": 1.1920928955078125e-07,
+      "max_abs_limit": 0.0001,
+      "raw_euler_relative_l2": 2.6237103829990293e-05,
+      "relative_l2": 6.8825515412205e-08,
+      "relative_l2_representation": "per-coordinate sin/cos, evaluated in F64",
+      "relative_l2_limit": 2e-05,
+      "pass": true
+    },
+    {
+      "key": "original.5.17.global.euler",
+      "cpu": [
+        [
+          0.0038650690112262964,
+          0.0023151636123657227,
+          0.00044135632924735546
+        ]
+      ],
+      "cuda": [
+        [
+          0.0038650690112262964,
+          0.0023152828216552734,
+          0.00044135632924735546
+        ]
+      ],
+      "policy": "euler-radians-unit-circle-v1",
+      "max_abs": 1.1920928955078125e-07,
+      "max_abs_limit": 0.0001,
+      "raw_euler_relative_l2": 2.6333079225159714e-05,
+      "relative_l2": 6.882551541207928e-08,
+      "relative_l2_representation": "per-coordinate sin/cos, evaluated in F64",
+      "relative_l2_limit": 2e-05,
+      "pass": true
+    }
+  ]
+}

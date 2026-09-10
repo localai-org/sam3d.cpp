@@ -1,0 +1,804 @@
+{
+  "scope": "original explicit resize/crop/rembg joint transform chain, supplied synthetic XYZ; NOT SSI/MoGe/learned pipeline parity or verified checkpoint transform selection",
+  "device": "cpu",
+  "torch": "2.7.0+cu128",
+  "threads": 1,
+  "repeats": 3,
+  "observer_exact": true,
+  "source_hashes": {
+    "pipeline/preprocess_utils.py": "57de199943b3e22e776cc2baeec70caeceea848ccfd9ad82e6096d1ee3b869c4",
+    "pipeline/inference_pipeline.py": "e83e9560a727b06565134ea855503034d3510cbfbeeff2b6ca6dc13013536d2f",
+    "data/dataset/tdfy/preprocessor.py": "ea61061b81b2c0b08ef5b4f1092ef119fb2c20dfae30ed8f8f3e54ee1c6dd673",
+    "data/dataset/tdfy/img_and_mask_transforms.py": "e5ecdb46c12568a1d91e09c83842a16afaca8d1e22d73f49f0b9ded62cc3cc26",
+    "data/dataset/tdfy/img_processing.py": "a90b0ce2f96b5950176884a14162b2d4a340bbe1947cd7bf4db2bd03d0f5be3d"
+  },
+  "image_sha256": "0d4d55dcebda52e7be9fd60e6fe68ce3fe52fdee5f7fe086bffda7520466e9ed",
+  "mask_sha256": "811eada8e42b6870a403bf63cbf0ba2ec06bf585c993833cc6b4a13585ec77b8",
+  "script_sha256": "fc98061f85def825b90fe5caf8a46ef1ee69cfa09a4cb2e5b7db44ffedf9e5f5",
+  "loader_sha256": "f3b530763ea4f7982bd0bfdf928de53f3a2a94e85c40f8989ab389d63197c5dd",
+  "max_abs": 1e-05,
+  "relative_l2": 2e-05,
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "args": [
+        13,
+        9,
+        5,
+        7,
+        55
+      ],
+      "options": [
+        1.0,
+        0.1
+      ],
+      "order": [
+        "00.rgba",
+        "01.alpha",
+        "02.aligned_rgb",
+        "03.aligned_mask",
+        "04.aligned_pointmap",
+        "05.nan_mask",
+        "06.clean",
+        "07.resized",
+        "08.resized_nan_mask",
+        "09.bbox",
+        "10.crop_rgb",
+        "11.crop_mask",
+        "12.crop_pointmap",
+        "20.rgb",
+        "21.mask",
+        "22.pointmap"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          9,
+          13
+        ],
+        "01.alpha": [
+          1,
+          9,
+          13
+        ],
+        "02.aligned_rgb": [
+          3,
+          9,
+          13
+        ],
+        "03.aligned_mask": [
+          1,
+          9,
+          13
+        ],
+        "04.aligned_pointmap": [
+          3,
+          9,
+          13
+        ],
+        "05.nan_mask": [
+          5,
+          7
+        ],
+        "06.clean": [
+          3,
+          5,
+          7
+        ],
+        "07.resized": [
+          3,
+          9,
+          13
+        ],
+        "08.resized_nan_mask": [
+          9,
+          13
+        ],
+        "09.bbox": [
+          4
+        ],
+        "10.crop_rgb": [
+          3,
+          8,
+          8
+        ],
+        "11.crop_mask": [
+          1,
+          8,
+          8
+        ],
+        "12.crop_pointmap": [
+          3,
+          8,
+          8
+        ],
+        "20.rgb": [
+          3,
+          8,
+          8
+        ],
+        "21.mask": [
+          1,
+          8,
+          8
+        ],
+        "22.pointmap": [
+          3,
+          8,
+          8
+        ]
+      },
+      "official_image": false,
+      "pointmap": "synthetic supplied XYZ"
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "args": [
+        9,
+        13,
+        17,
+        11,
+        39
+      ],
+      "options": [
+        1.6,
+        0.1
+      ],
+      "order": [
+        "00.rgba",
+        "01.alpha",
+        "02.aligned_rgb",
+        "03.aligned_mask",
+        "04.aligned_pointmap",
+        "05.nan_mask",
+        "06.clean",
+        "07.resized",
+        "08.resized_nan_mask",
+        "09.bbox",
+        "10.crop_rgb",
+        "11.crop_mask",
+        "12.crop_pointmap",
+        "20.rgb",
+        "21.mask",
+        "22.pointmap"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          13,
+          9
+        ],
+        "01.alpha": [
+          1,
+          13,
+          9
+        ],
+        "02.aligned_rgb": [
+          3,
+          13,
+          9
+        ],
+        "03.aligned_mask": [
+          1,
+          13,
+          9
+        ],
+        "04.aligned_pointmap": [
+          3,
+          13,
+          9
+        ],
+        "05.nan_mask": [
+          17,
+          11
+        ],
+        "06.clean": [
+          3,
+          17,
+          11
+        ],
+        "07.resized": [
+          3,
+          13,
+          9
+        ],
+        "08.resized_nan_mask": [
+          13,
+          9
+        ],
+        "09.bbox": [
+          4
+        ],
+        "10.crop_rgb": [
+          3,
+          18,
+          18
+        ],
+        "11.crop_mask": [
+          1,
+          18,
+          18
+        ],
+        "12.crop_pointmap": [
+          3,
+          18,
+          18
+        ],
+        "20.rgb": [
+          3,
+          18,
+          18
+        ],
+        "21.mask": [
+          1,
+          18,
+          18
+        ],
+        "22.pointmap": [
+          3,
+          18,
+          18
+        ]
+      },
+      "official_image": false,
+      "pointmap": "synthetic supplied XYZ"
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "args": [
+        17,
+        11,
+        11,
+        17,
+        71
+      ],
+      "options": [
+        0.65,
+        0.25
+      ],
+      "order": [
+        "00.rgba",
+        "01.alpha",
+        "02.aligned_rgb",
+        "03.aligned_mask",
+        "04.aligned_pointmap",
+        "09.bbox",
+        "10.crop_rgb",
+        "11.crop_mask",
+        "12.crop_pointmap",
+        "20.rgb",
+        "21.mask",
+        "22.pointmap"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          11,
+          17
+        ],
+        "01.alpha": [
+          1,
+          11,
+          17
+        ],
+        "02.aligned_rgb": [
+          3,
+          11,
+          17
+        ],
+        "03.aligned_mask": [
+          1,
+          11,
+          17
+        ],
+        "04.aligned_pointmap": [
+          3,
+          11,
+          17
+        ],
+        "09.bbox": [
+          4
+        ],
+        "10.crop_rgb": [
+          3,
+          8,
+          8
+        ],
+        "11.crop_mask": [
+          1,
+          8,
+          8
+        ],
+        "12.crop_pointmap": [
+          3,
+          8,
+          8
+        ],
+        "20.rgb": [
+          3,
+          8,
+          8
+        ],
+        "21.mask": [
+          1,
+          8,
+          8
+        ],
+        "22.pointmap": [
+          3,
+          8,
+          8
+        ]
+      },
+      "official_image": false,
+      "pointmap": "synthetic supplied XYZ"
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "args": [
+        12,
+        12,
+        12,
+        7,
+        51
+      ],
+      "options": [
+        1.0,
+        0.0
+      ],
+      "order": [
+        "00.rgba",
+        "01.alpha",
+        "02.aligned_rgb",
+        "03.aligned_mask",
+        "04.aligned_pointmap",
+        "05.nan_mask",
+        "06.clean",
+        "07.resized",
+        "08.resized_nan_mask",
+        "09.bbox",
+        "10.crop_rgb",
+        "11.crop_mask",
+        "12.crop_pointmap",
+        "20.rgb",
+        "21.mask",
+        "22.pointmap"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          12,
+          12
+        ],
+        "01.alpha": [
+          1,
+          12,
+          12
+        ],
+        "02.aligned_rgb": [
+          3,
+          12,
+          12
+        ],
+        "03.aligned_mask": [
+          1,
+          12,
+          12
+        ],
+        "04.aligned_pointmap": [
+          3,
+          12,
+          12
+        ],
+        "05.nan_mask": [
+          12,
+          7
+        ],
+        "06.clean": [
+          3,
+          12,
+          7
+        ],
+        "07.resized": [
+          3,
+          12,
+          12
+        ],
+        "08.resized_nan_mask": [
+          12,
+          12
+        ],
+        "09.bbox": [
+          4
+        ],
+        "10.crop_rgb": [
+          3,
+          8,
+          8
+        ],
+        "11.crop_mask": [
+          1,
+          8,
+          8
+        ],
+        "12.crop_pointmap": [
+          3,
+          8,
+          8
+        ],
+        "20.rgb": [
+          3,
+          8,
+          8
+        ],
+        "21.mask": [
+          1,
+          8,
+          8
+        ],
+        "22.pointmap": [
+          3,
+          8,
+          8
+        ]
+      },
+      "official_image": false,
+      "pointmap": "synthetic supplied XYZ"
+    },
+    {
+      "prefix": "case.0004",
+      "input": "case.0004.input",
+      "args": [
+        17,
+        13,
+        5,
+        17,
+        71
+      ],
+      "options": [
+        1.0,
+        0.1
+      ],
+      "order": [
+        "00.rgba",
+        "01.alpha",
+        "02.aligned_rgb",
+        "03.aligned_mask",
+        "04.aligned_pointmap",
+        "05.nan_mask",
+        "06.clean",
+        "07.resized",
+        "08.resized_nan_mask",
+        "09.bbox",
+        "10.crop_rgb",
+        "11.crop_mask",
+        "12.crop_pointmap",
+        "20.rgb",
+        "21.mask",
+        "22.pointmap"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          13,
+          17
+        ],
+        "01.alpha": [
+          1,
+          13,
+          17
+        ],
+        "02.aligned_rgb": [
+          3,
+          13,
+          17
+        ],
+        "03.aligned_mask": [
+          1,
+          13,
+          17
+        ],
+        "04.aligned_pointmap": [
+          3,
+          13,
+          17
+        ],
+        "05.nan_mask": [
+          5,
+          17
+        ],
+        "06.clean": [
+          3,
+          5,
+          17
+        ],
+        "07.resized": [
+          3,
+          13,
+          17
+        ],
+        "08.resized_nan_mask": [
+          13,
+          17
+        ],
+        "09.bbox": [
+          4
+        ],
+        "10.crop_rgb": [
+          3,
+          14,
+          14
+        ],
+        "11.crop_mask": [
+          1,
+          14,
+          14
+        ],
+        "12.crop_pointmap": [
+          3,
+          14,
+          14
+        ],
+        "20.rgb": [
+          3,
+          14,
+          14
+        ],
+        "21.mask": [
+          1,
+          14,
+          14
+        ],
+        "22.pointmap": [
+          3,
+          14,
+          14
+        ]
+      },
+      "official_image": false,
+      "pointmap": "synthetic supplied XYZ"
+    },
+    {
+      "prefix": "case.0005",
+      "input": "case.0005.input",
+      "args": [
+        19,
+        7,
+        3,
+        5,
+        79
+      ],
+      "options": [
+        2.0,
+        0.25
+      ],
+      "order": [
+        "00.rgba",
+        "01.alpha",
+        "02.aligned_rgb",
+        "03.aligned_mask",
+        "04.aligned_pointmap",
+        "05.nan_mask",
+        "06.clean",
+        "07.resized",
+        "08.resized_nan_mask",
+        "09.bbox",
+        "10.crop_rgb",
+        "11.crop_mask",
+        "12.crop_pointmap",
+        "20.rgb",
+        "21.mask",
+        "22.pointmap"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          7,
+          19
+        ],
+        "01.alpha": [
+          1,
+          7,
+          19
+        ],
+        "02.aligned_rgb": [
+          3,
+          7,
+          19
+        ],
+        "03.aligned_mask": [
+          1,
+          7,
+          19
+        ],
+        "04.aligned_pointmap": [
+          3,
+          7,
+          19
+        ],
+        "05.nan_mask": [
+          3,
+          5
+        ],
+        "06.clean": [
+          3,
+          3,
+          5
+        ],
+        "07.resized": [
+          3,
+          7,
+          19
+        ],
+        "08.resized_nan_mask": [
+          7,
+          19
+        ],
+        "09.bbox": [
+          4
+        ],
+        "10.crop_rgb": [
+          3,
+          48,
+          48
+        ],
+        "11.crop_mask": [
+          1,
+          48,
+          48
+        ],
+        "12.crop_pointmap": [
+          3,
+          48,
+          48
+        ],
+        "20.rgb": [
+          3,
+          48,
+          48
+        ],
+        "21.mask": [
+          1,
+          48,
+          48
+        ],
+        "22.pointmap": [
+          3,
+          48,
+          48
+        ]
+      },
+      "official_image": false,
+      "pointmap": "synthetic supplied XYZ"
+    },
+    {
+      "prefix": "case.0006",
+      "input": "case.0006.input",
+      "args": [
+        4096,
+        2160,
+        257,
+        259,
+        16387
+      ],
+      "options": [
+        1.0,
+        0.1
+      ],
+      "order": [
+        "00.rgba",
+        "01.alpha",
+        "02.aligned_rgb",
+        "03.aligned_mask",
+        "04.aligned_pointmap",
+        "05.nan_mask",
+        "06.clean",
+        "07.resized",
+        "08.resized_nan_mask",
+        "09.bbox",
+        "10.crop_rgb",
+        "11.crop_mask",
+        "12.crop_pointmap",
+        "20.rgb",
+        "21.mask",
+        "22.pointmap"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          2160,
+          4096
+        ],
+        "01.alpha": [
+          1,
+          2160,
+          4096
+        ],
+        "02.aligned_rgb": [
+          3,
+          2160,
+          4096
+        ],
+        "03.aligned_mask": [
+          1,
+          2160,
+          4096
+        ],
+        "04.aligned_pointmap": [
+          3,
+          2160,
+          4096
+        ],
+        "05.nan_mask": [
+          257,
+          259
+        ],
+        "06.clean": [
+          3,
+          257,
+          259
+        ],
+        "07.resized": [
+          3,
+          2160,
+          4096
+        ],
+        "08.resized_nan_mask": [
+          2160,
+          4096
+        ],
+        "09.bbox": [
+          4
+        ],
+        "10.crop_rgb": [
+          3,
+          540,
+          540
+        ],
+        "11.crop_mask": [
+          1,
+          540,
+          540
+        ],
+        "12.crop_pointmap": [
+          3,
+          540,
+          540
+        ],
+        "20.rgb": [
+          3,
+          540,
+          540
+        ],
+        "21.mask": [
+          1,
+          540,
+          540
+        ],
+        "22.pointmap": [
+          3,
+          540,
+          540
+        ]
+      },
+      "official_image": true,
+      "pointmap": "synthetic supplied XYZ"
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "06ae8e7379d9358a3fd300f33236dfa0449095ea9de84c6d8537aabc2a7c9196",
+    "case.0001.input": "ea5958c8ef7ae1041ca79c439aad47e5d48dff7cf3178a4ffd7dc053fb3fbab0",
+    "case.0002.input": "8c9f4a6068fd178362ae066dd0d89ede741edab99b2dda49c581f40d80ec4df7",
+    "case.0003.input": "d4ae0c3cd48ac830a8a977260459151699efeacf40a1e3662fadddc005a870f5",
+    "case.0004.input": "e948c46282a182bd793d996eb0bba59b86e37e924c04f7e65febbbce970a4cb1",
+    "case.0005.input": "cc68db04a69566eb2f199d9aa9bafb05332e1a81b847b997bbac26456197b7ea",
+    "case.0006.input": "9b191e7ecaded594ed0db7e86692f815f8835faae29bced432ede44d3eca5e7a",
+    "upstream.safetensors": "24f6138b52a6b266d7fbbd4417d017d0e1a6f9615acf52a9cdab32b1d00dbfb7",
+    "full.safetensors": "64270b81904ab44d022475b2bbd00f3c8ecc302e2a8f498e9843603c7d48ed50",
+    "regression.txt": "b58ab38c14c500371687f77200deb449b80d6ed645bf9921eeeeb1ca9e1fdc79"
+  }
+}

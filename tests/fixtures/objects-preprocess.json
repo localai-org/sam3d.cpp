@@ -1,0 +1,4297 @@
+{
+  "scope": "original complete PointMap preprocess_image method on CPU; explicit transform config, supplied synthetic XYZ; NOT MoGe/checkpoint configuration/learned model parity",
+  "device": "cpu",
+  "torch": "2.7.0+cu128",
+  "threads": 1,
+  "repeats": 3,
+  "observer_exact": true,
+  "max_abs": 0.0001,
+  "relative_l2": 2e-05,
+  "source_hashes": {
+    "pipeline/preprocess_utils.py": "57de199943b3e22e776cc2baeec70caeceea848ccfd9ad82e6096d1ee3b869c4",
+    "pipeline/inference_pipeline.py": "e83e9560a727b06565134ea855503034d3510cbfbeeff2b6ca6dc13013536d2f",
+    "data/dataset/tdfy/preprocessor.py": "ea61061b81b2c0b08ef5b4f1092ef119fb2c20dfae30ed8f8f3e54ee1c6dd673",
+    "data/dataset/tdfy/img_and_mask_transforms.py": "e5ecdb46c12568a1d91e09c83842a16afaca8d1e22d73f49f0b9ded62cc3cc26",
+    "data/dataset/tdfy/img_processing.py": "a90b0ce2f96b5950176884a14162b2d4a340bbe1947cd7bf4db2bd03d0f5be3d"
+  },
+  "ssi_source_hashes": {
+    "pytorch3d/transforms/transform3d.py": "b8fdd5c9aa5dcc89b41994984472d6117cc9ccf49f8b225334197f2a373dfd84",
+    "pytorch3d/common/datatypes.py": "1e1f48bea108b715b4dfcbc0b79c915bd3e78fbe4768645c52cc2fb3919aeb6e",
+    "sam3d_objects/data/dataset/tdfy/pose_target.py": "d56de3ea82f9c16363ba5d101fe487183bdef30ecb948fbe0f529282c7888ec3",
+    "sam3d_objects/data/dataset/tdfy/img_and_mask_transforms.py": "e5ecdb46c12568a1d91e09c83842a16afaca8d1e22d73f49f0b9ded62cc3cc26",
+    "sam3d_objects/model/backbone/dit/embedder/point_remapper.py": "fae4708d051a7f11c398252643e550daea69dd21873440d870533fddc11540c0"
+  },
+  "pipeline_sha256": "55b69917ff0bb8b5ca6e918f516d75e9e7561a6c9396120abde863bf5757aa72",
+  "pytorch3d_revision": "75ebeeaea0908c5527e7b1e305fbc7681382db47",
+  "photo_sha256": "0d4d55dcebda52e7be9fd60e6fe68ce3fe52fdee5f7fe086bffda7520466e9ed",
+  "mask_sha256": "811eada8e42b6870a403bf63cbf0ba2ec06bf585c993833cc6b4a13585ec77b8",
+  "script_sha256": "0d74ef4535a0b31c3f8f6459be48649c7598cc7ab02de1ce6e9982221c54845a",
+  "loaders": {
+    "capture_objects_image.py": "f3b530763ea4f7982bd0bfdf928de53f3a2a94e85c40f8989ab389d63197c5dd",
+    "original_objects_ssi.py": "71eef28179cfc97e4925241c969da0a6409f77aa2ecff8c65ce8253458bca55c"
+  },
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0000.00.rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "00.mask": {
+          "file": "case.0000.00.mask.safetensors",
+          "shape": [
+            1,
+            9,
+            13
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0000.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0000.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0000.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0000.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0000.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            9,
+            13
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0000.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0000.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            9,
+            13
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0000.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0000.03.05.nan_mask.safetensors",
+          "shape": [
+            5,
+            7
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0000.03.06.clean.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0000.03.07.resized.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0000.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            9,
+            13
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0000.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0000.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0000.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0000.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0000.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0000.03.21.mask.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0000.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0000.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0000.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            11,
+            11
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0000.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0000.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            11,
+            11
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0000.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0000.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0000.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0000.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            11,
+            11
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0000.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0000.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            11,
+            11
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0000.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0000.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0000.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0000.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0000.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0000.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0000.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0000.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            11,
+            11
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0000.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            11,
+            11
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0000.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            11,
+            11
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0000.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            11,
+            11
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0000.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0000.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0000.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0000.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0000.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0000.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0000.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        }
+      },
+      "full": "case.0000.full.safetensors",
+      "official_image": false,
+      "args": [
+        13,
+        9,
+        55,
+        5,
+        7,
+        11,
+        8,
+        1,
+        0
+      ],
+      "normalizers": [
+        [
+          4,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          4,
+          0,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0001.00.rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "00.mask": {
+          "file": "case.0001.00.mask.safetensors",
+          "shape": [
+            1,
+            11,
+            15
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0001.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0001.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0001.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0001.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0001.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            11,
+            15
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0001.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0001.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            11,
+            15
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0001.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0001.03.05.nan_mask.safetensors",
+          "shape": [
+            7,
+            7
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0001.03.06.clean.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0001.03.07.resized.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0001.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            11,
+            15
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0001.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0001.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0001.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0001.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0001.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0001.03.21.mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0001.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0001.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0001.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0001.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0001.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0001.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0001.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0001.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0001.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0001.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            15,
+            15
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0001.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0001.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0001.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0001.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0001.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0001.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0001.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0001.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0001.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            12,
+            12
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0001.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            12,
+            12
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0001.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            12,
+            12
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0001.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            12,
+            12
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0001.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0001.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0001.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0001.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0001.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0001.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0001.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        }
+      },
+      "full": "case.0001.full.safetensors",
+      "official_image": false,
+      "args": [
+        15,
+        11,
+        63,
+        7,
+        7,
+        12,
+        9,
+        1,
+        1
+      ],
+      "normalizers": [
+        [
+          1,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          1,
+          0,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0002.00.rgb.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "00.mask": {
+          "file": "case.0002.00.mask.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0002.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0002.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0002.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0002.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0002.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0002.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0002.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0002.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0002.03.05.nan_mask.safetensors",
+          "shape": [
+            5,
+            7
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0002.03.06.clean.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0002.03.07.resized.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0002.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            13,
+            13
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0002.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0002.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            24,
+            24
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0002.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            24,
+            24
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0002.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            24,
+            24
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0002.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            24,
+            24
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0002.03.21.mask.safetensors",
+          "shape": [
+            1,
+            24,
+            24
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0002.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            24,
+            24
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0002.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            24,
+            24
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0002.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0002.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            24,
+            24
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0002.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0002.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            24,
+            24
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0002.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            10,
+            10
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0002.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0002.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0002.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0002.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0002.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0002.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0002.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0002.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0002.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            10,
+            10
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0002.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0002.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            10,
+            10
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0002.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            13,
+            13
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0002.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            13,
+            13
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0002.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            13,
+            13
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0002.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            13,
+            13
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0002.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            10,
+            10
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0002.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            10,
+            10
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0002.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0002.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0002.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0002.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0002.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            10,
+            10
+          ]
+        }
+      },
+      "full": "case.0002.full.safetensors",
+      "official_image": false,
+      "args": [
+        13,
+        13,
+        55,
+        5,
+        7,
+        13,
+        10,
+        1,
+        0
+      ],
+      "normalizers": [
+        [
+          3,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          1,
+          1,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.6,
+        0.25
+      ]
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0003.00.rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            15
+          ]
+        },
+        "00.mask": {
+          "file": "case.0003.00.mask.safetensors",
+          "shape": [
+            1,
+            9,
+            15
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0003.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            9,
+            15
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0003.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0003.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0003.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            15
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0003.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            9,
+            15
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0003.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            15
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0003.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            9,
+            15
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0003.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            9,
+            15
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0003.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0003.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0003.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0003.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0003.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0003.03.21.mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0003.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0003.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0003.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            14,
+            14
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0003.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0003.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            14,
+            14
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0003.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0003.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0003.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0003.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            14,
+            14
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0003.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            15,
+            15
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0003.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            14,
+            14
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0003.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            9,
+            15
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0003.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0003.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0003.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0003.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0003.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0003.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0003.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            14,
+            14
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0003.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            14,
+            14
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0003.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            14,
+            14
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0003.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            14,
+            14
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0003.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0003.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0003.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0003.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0003.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0003.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0003.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        }
+      },
+      "full": "case.0003.full.safetensors",
+      "official_image": false,
+      "args": [
+        15,
+        9,
+        63,
+        9,
+        15,
+        14,
+        8,
+        0,
+        1
+      ],
+      "normalizers": [
+        [
+          0,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          0,
+          0,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "prefix": "case.0004",
+      "input": "case.0004.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0004.00.rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            13
+          ]
+        },
+        "00.mask": {
+          "file": "case.0004.00.mask.safetensors",
+          "shape": [
+            1,
+            11,
+            13
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0004.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0004.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0004.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0004.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            13
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0004.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            11,
+            13
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0004.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            13
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0004.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            11,
+            13
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0004.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            11,
+            13
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0004.03.05.nan_mask.safetensors",
+          "shape": [
+            5,
+            7
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0004.03.06.clean.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0004.03.07.resized.safetensors",
+          "shape": [
+            3,
+            11,
+            13
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0004.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            11,
+            13
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0004.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0004.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0004.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0004.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0004.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0004.03.21.mask.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0004.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0004.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0004.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0004.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0004.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            15,
+            15
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0004.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0004.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0004.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0004.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0004.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0004.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            15,
+            15
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0004.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0004.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0004.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0004.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0004.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0004.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0004.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0004.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            15,
+            15
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0004.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            15,
+            15
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0004.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            15,
+            15
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0004.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            15,
+            15
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0004.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0004.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0004.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0004.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0004.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0004.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0004.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        }
+      },
+      "full": "case.0004.full.safetensors",
+      "official_image": false,
+      "args": [
+        13,
+        11,
+        55,
+        5,
+        7,
+        15,
+        9,
+        1,
+        0
+      ],
+      "normalizers": [
+        [
+          6,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          7,
+          0,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "prefix": "case.0005",
+      "input": "case.0005.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0005.00.rgb.safetensors",
+          "shape": [
+            3,
+            13,
+            15
+          ]
+        },
+        "00.mask": {
+          "file": "case.0005.00.mask.safetensors",
+          "shape": [
+            1,
+            13,
+            15
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0005.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0005.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0005.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0005.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            13,
+            15
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0005.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            13,
+            15
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0005.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            13,
+            15
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0005.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            13,
+            15
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0005.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            13,
+            15
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0005.03.05.nan_mask.safetensors",
+          "shape": [
+            7,
+            7
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0005.03.06.clean.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0005.03.07.resized.safetensors",
+          "shape": [
+            3,
+            13,
+            15
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0005.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            13,
+            15
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0005.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0005.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0005.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0005.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0005.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0005.03.21.mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0005.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0005.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0005.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            16,
+            16
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0005.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0005.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            16,
+            16
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0005.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0005.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            10,
+            10
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0005.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0005.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            16,
+            16
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0005.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            15,
+            15
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0005.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            16,
+            16
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0005.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0005.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0005.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0005.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0005.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            10,
+            10
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0005.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0005.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            10,
+            10
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0005.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            16,
+            16
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0005.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            16,
+            16
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0005.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            16,
+            16
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0005.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            16,
+            16
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0005.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            10,
+            10
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0005.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            10,
+            10
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0005.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0005.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0005.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0005.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0005.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            10,
+            10
+          ]
+        }
+      },
+      "full": "case.0005.full.safetensors",
+      "official_image": false,
+      "args": [
+        15,
+        13,
+        63,
+        7,
+        7,
+        16,
+        10,
+        1,
+        1
+      ],
+      "normalizers": [
+        [
+          2,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          1,
+          0,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "prefix": "case.0006",
+      "input": "case.0006.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0006.00.rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "00.mask": {
+          "file": "case.0006.00.mask.safetensors",
+          "shape": [
+            1,
+            9,
+            13
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0006.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0006.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0006.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0006.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0006.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            9,
+            13
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0006.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0006.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            9,
+            13
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0006.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0006.03.05.nan_mask.safetensors",
+          "shape": [
+            5,
+            7
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0006.03.06.clean.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0006.03.07.resized.safetensors",
+          "shape": [
+            3,
+            9,
+            13
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0006.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            9,
+            13
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0006.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0006.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0006.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0006.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0006.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0006.03.21.mask.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0006.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0006.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0006.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            17,
+            17
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0006.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            8,
+            8
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0006.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            17,
+            17
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0006.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0006.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0006.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            13,
+            13
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0006.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            17,
+            17
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0006.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            13,
+            13
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0006.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            17,
+            17
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0006.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            5,
+            7
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0006.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0006.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0006.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0006.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0006.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0006.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0006.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            17,
+            17
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0006.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            17,
+            17
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0006.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            17,
+            17
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0006.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            17,
+            17
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0006.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0006.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0006.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0006.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0006.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0006.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0006.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            8,
+            8
+          ]
+        }
+      },
+      "full": "case.0006.full.safetensors",
+      "official_image": false,
+      "args": [
+        13,
+        9,
+        55,
+        5,
+        7,
+        17,
+        8,
+        1,
+        0
+      ],
+      "normalizers": [
+        [
+          5,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          4,
+          0,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "prefix": "case.0007",
+      "input": "case.0007.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0007.00.rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "00.mask": {
+          "file": "case.0007.00.mask.safetensors",
+          "shape": [
+            1,
+            11,
+            15
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0007.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0007.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0007.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0007.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0007.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            11,
+            15
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0007.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0007.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            11,
+            15
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0007.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0007.03.05.nan_mask.safetensors",
+          "shape": [
+            7,
+            7
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0007.03.06.clean.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0007.03.07.resized.safetensors",
+          "shape": [
+            3,
+            11,
+            15
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0007.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            11,
+            15
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0007.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0007.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0007.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0007.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0007.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0007.03.21.mask.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0007.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0007.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0007.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            18,
+            18
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0007.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            12,
+            12
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0007.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            18,
+            18
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0007.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            12,
+            12
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0007.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0007.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            15,
+            15
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0007.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            18,
+            18
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0007.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            15,
+            15
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0007.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            18,
+            18
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0007.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0007.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0007.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0007.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0007.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0007.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            7,
+            7
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0007.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0007.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            18,
+            18
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0007.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            18,
+            18
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0007.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            18,
+            18
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0007.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            18,
+            18
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0007.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0007.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0007.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0007.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0007.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0007.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0007.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            9,
+            9
+          ]
+        }
+      },
+      "full": "case.0007.full.safetensors",
+      "official_image": false,
+      "args": [
+        15,
+        11,
+        63,
+        7,
+        7,
+        18,
+        9,
+        0,
+        1
+      ],
+      "normalizers": [
+        [
+          1,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          1,
+          1,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "prefix": "case.0008",
+      "input": "case.0008.input",
+      "taps": {
+        "00.rgb": {
+          "file": "case.0008.00.rgb.safetensors",
+          "shape": [
+            3,
+            2160,
+            4096
+          ]
+        },
+        "00.mask": {
+          "file": "case.0008.00.mask.safetensors",
+          "shape": [
+            1,
+            2160,
+            4096
+          ]
+        },
+        "01.object.pointmap": {
+          "file": "case.0008.01.object.pointmap.safetensors",
+          "shape": [
+            3,
+            257,
+            259
+          ]
+        },
+        "01.object.scale": {
+          "file": "case.0008.01.object.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "01.object.shift": {
+          "file": "case.0008.01.object.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "02.full_before.rgb": {
+          "file": "case.0008.02.full_before.rgb.safetensors",
+          "shape": [
+            3,
+            2160,
+            4096
+          ]
+        },
+        "02.full_before.mask": {
+          "file": "case.0008.02.full_before.mask.safetensors",
+          "shape": [
+            1,
+            2160,
+            4096
+          ]
+        },
+        "03.02.aligned_rgb": {
+          "file": "case.0008.03.02.aligned_rgb.safetensors",
+          "shape": [
+            3,
+            2160,
+            4096
+          ]
+        },
+        "03.03.aligned_mask": {
+          "file": "case.0008.03.03.aligned_mask.safetensors",
+          "shape": [
+            1,
+            2160,
+            4096
+          ]
+        },
+        "03.04.aligned_pointmap": {
+          "file": "case.0008.03.04.aligned_pointmap.safetensors",
+          "shape": [
+            3,
+            2160,
+            4096
+          ]
+        },
+        "03.05.nan_mask": {
+          "file": "case.0008.03.05.nan_mask.safetensors",
+          "shape": [
+            257,
+            259
+          ]
+        },
+        "03.06.clean": {
+          "file": "case.0008.03.06.clean.safetensors",
+          "shape": [
+            3,
+            257,
+            259
+          ]
+        },
+        "03.07.resized": {
+          "file": "case.0008.03.07.resized.safetensors",
+          "shape": [
+            3,
+            2160,
+            4096
+          ]
+        },
+        "03.08.resized_nan_mask": {
+          "file": "case.0008.03.08.resized_nan_mask.safetensors",
+          "shape": [
+            2160,
+            4096
+          ]
+        },
+        "03.09.bbox": {
+          "file": "case.0008.03.09.bbox.safetensors",
+          "shape": [
+            4
+          ]
+        },
+        "03.10.crop_rgb": {
+          "file": "case.0008.03.10.crop_rgb.safetensors",
+          "shape": [
+            3,
+            540,
+            540
+          ]
+        },
+        "03.11.crop_mask": {
+          "file": "case.0008.03.11.crop_mask.safetensors",
+          "shape": [
+            1,
+            540,
+            540
+          ]
+        },
+        "03.12.crop_pointmap": {
+          "file": "case.0008.03.12.crop_pointmap.safetensors",
+          "shape": [
+            3,
+            540,
+            540
+          ]
+        },
+        "03.20.rgb": {
+          "file": "case.0008.03.20.rgb.safetensors",
+          "shape": [
+            3,
+            540,
+            540
+          ]
+        },
+        "03.21.mask": {
+          "file": "case.0008.03.21.mask.safetensors",
+          "shape": [
+            1,
+            540,
+            540
+          ]
+        },
+        "03.22.pointmap": {
+          "file": "case.0008.03.22.pointmap.safetensors",
+          "shape": [
+            3,
+            540,
+            540
+          ]
+        },
+        "04.apply.0.pad": {
+          "file": "case.0008.04.apply.0.pad.safetensors",
+          "shape": [
+            3,
+            540,
+            540
+          ]
+        },
+        "04.apply.0.output": {
+          "file": "case.0008.04.apply.0.output.safetensors",
+          "shape": [
+            3,
+            518,
+            518
+          ]
+        },
+        "04.apply.1.pad": {
+          "file": "case.0008.04.apply.1.pad.safetensors",
+          "shape": [
+            1,
+            540,
+            540
+          ]
+        },
+        "04.apply.1.output": {
+          "file": "case.0008.04.apply.1.output.safetensors",
+          "shape": [
+            1,
+            518,
+            518
+          ]
+        },
+        "04.apply.2.pad": {
+          "file": "case.0008.04.apply.2.pad.safetensors",
+          "shape": [
+            3,
+            540,
+            540
+          ]
+        },
+        "04.apply.2.output": {
+          "file": "case.0008.04.apply.2.output.safetensors",
+          "shape": [
+            3,
+            256,
+            256
+          ]
+        },
+        "04.apply.3.pad": {
+          "file": "case.0008.04.apply.3.pad.safetensors",
+          "shape": [
+            3,
+            4096,
+            4096
+          ]
+        },
+        "04.apply.3.output": {
+          "file": "case.0008.04.apply.3.output.safetensors",
+          "shape": [
+            3,
+            518,
+            518
+          ]
+        },
+        "04.apply.4.pad": {
+          "file": "case.0008.04.apply.4.pad.safetensors",
+          "shape": [
+            1,
+            4096,
+            4096
+          ]
+        },
+        "04.apply.4.output": {
+          "file": "case.0008.04.apply.4.output.safetensors",
+          "shape": [
+            1,
+            518,
+            518
+          ]
+        },
+        "05.full.pointmap": {
+          "file": "case.0008.05.full.pointmap.safetensors",
+          "shape": [
+            3,
+            257,
+            259
+          ]
+        },
+        "05.full.scale": {
+          "file": "case.0008.05.full.scale.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "05.full.shift": {
+          "file": "case.0008.05.full.shift.safetensors",
+          "shape": [
+            3
+          ]
+        },
+        "04.apply.5.pad": {
+          "file": "case.0008.04.apply.5.pad.safetensors",
+          "shape": [
+            3,
+            259,
+            259
+          ]
+        },
+        "04.apply.5.output": {
+          "file": "case.0008.04.apply.5.output.safetensors",
+          "shape": [
+            3,
+            256,
+            256
+          ]
+        },
+        "04.apply.6.pad": {
+          "file": "case.0008.04.apply.6.pad.safetensors",
+          "shape": [
+            3,
+            259,
+            259
+          ]
+        },
+        "04.apply.6.output": {
+          "file": "case.0008.04.apply.6.output.safetensors",
+          "shape": [
+            3,
+            256,
+            256
+          ]
+        },
+        "06.return.mask": {
+          "file": "case.0008.06.return.mask.safetensors",
+          "shape": [
+            1,
+            1,
+            518,
+            518
+          ]
+        },
+        "06.return.image": {
+          "file": "case.0008.06.return.image.safetensors",
+          "shape": [
+            1,
+            3,
+            518,
+            518
+          ]
+        },
+        "06.return.rgb_image": {
+          "file": "case.0008.06.return.rgb_image.safetensors",
+          "shape": [
+            1,
+            3,
+            518,
+            518
+          ]
+        },
+        "06.return.rgb_image_mask": {
+          "file": "case.0008.06.return.rgb_image_mask.safetensors",
+          "shape": [
+            1,
+            1,
+            518,
+            518
+          ]
+        },
+        "06.return.pointmap": {
+          "file": "case.0008.06.return.pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            256,
+            256
+          ]
+        },
+        "06.return.rgb_pointmap": {
+          "file": "case.0008.06.return.rgb_pointmap.safetensors",
+          "shape": [
+            1,
+            3,
+            256,
+            256
+          ]
+        },
+        "06.return.pointmap_scale": {
+          "file": "case.0008.06.return.pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.pointmap_shift": {
+          "file": "case.0008.06.return.pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_scale": {
+          "file": "case.0008.06.return.rgb_pointmap_scale.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_shift": {
+          "file": "case.0008.06.return.rgb_pointmap_shift.safetensors",
+          "shape": [
+            1,
+            3
+          ]
+        },
+        "06.return.rgb_pointmap_unnorm": {
+          "file": "case.0008.06.return.rgb_pointmap_unnorm.safetensors",
+          "shape": [
+            1,
+            3,
+            256,
+            256
+          ]
+        }
+      },
+      "full": "case.0008.full.safetensors",
+      "official_image": true,
+      "args": [
+        4096,
+        2160,
+        16387,
+        257,
+        259,
+        518,
+        256,
+        1,
+        0
+      ],
+      "normalizers": [
+        [
+          4,
+          0,
+          0,
+          0.1,
+          0.0,
+          1.3,
+          0.23
+        ],
+        [
+          4,
+          0,
+          0,
+          0.2,
+          0.0,
+          0.9,
+          0.17
+        ]
+      ],
+      "crop": [
+        1.0,
+        0.1
+      ]
+    }
+  ],
+  "artifacts": {
+    "case.0000.00.rgb.safetensors": "3e41bb22dd0ecc1ed0fbc5dfba68245be0ceb9cc43b0d48abfdebcb1fa215ac7",
+    "case.0000.00.mask.safetensors": "8bd323f84b38a8d243ac65c659b19c3801d62dd8107effd6c87d20626f9c9d7f",
+    "case.0000.01.object.pointmap.safetensors": "4996f7e4174222589bc867921776bef24144c0390455bc727cd293b02e6c00fc",
+    "case.0000.01.object.scale.safetensors": "426aa253ecdc43bd78aa4b1a7fbadfc5fcf3deea553440a84dae1a092c494a35",
+    "case.0000.01.object.shift.safetensors": "e309a96088b5f689bba5711046bb3b345a5514c2d8d0e245143f71532f340fd0",
+    "case.0000.02.full_before.rgb.safetensors": "3e41bb22dd0ecc1ed0fbc5dfba68245be0ceb9cc43b0d48abfdebcb1fa215ac7",
+    "case.0000.02.full_before.mask.safetensors": "8bd323f84b38a8d243ac65c659b19c3801d62dd8107effd6c87d20626f9c9d7f",
+    "case.0000.03.02.aligned_rgb.safetensors": "3e41bb22dd0ecc1ed0fbc5dfba68245be0ceb9cc43b0d48abfdebcb1fa215ac7",
+    "case.0000.03.03.aligned_mask.safetensors": "8bd323f84b38a8d243ac65c659b19c3801d62dd8107effd6c87d20626f9c9d7f",
+    "case.0000.03.04.aligned_pointmap.safetensors": "b1d92fb285879e0b4ed50d1458c0896978b70fa762a6a7cc55bd40a9c795c836",
+    "case.0000.03.05.nan_mask.safetensors": "41ad8e3cf126fefd357f0e2aa13054b0b14182c74bb3e8678d5f9af521d1d430",
+    "case.0000.03.06.clean.safetensors": "dccd745c3972435653899c32fddc7c8de8f500287c474a1d7bedd4047ea35c85",
+    "case.0000.03.07.resized.safetensors": "195e1c4737935e42784906ce86b962a8ef8cc09e998b2a2d018d13d2f496e604",
+    "case.0000.03.08.resized_nan_mask.safetensors": "0c3e8ae9a08b2d0de5366e8ecd2474e9f4efefd4c048ddfede316277a2e19d2e",
+    "case.0000.03.09.bbox.safetensors": "b98311d0c08bf0d29b9c790f645198c82462a339b004de7b826c56f03d04385d",
+    "case.0000.03.10.crop_rgb.safetensors": "0043c4e71cc9eeb38ef20562e6ad8256845ce8df41b2b8e7d5ddf367a390c41b",
+    "case.0000.03.11.crop_mask.safetensors": "4a1efcd9c0b8960b7c5696b4a65f26a3756a357e0e61458fff674a7dd48fd0b0",
+    "case.0000.03.12.crop_pointmap.safetensors": "02a4d3f0db960b337544a84228f7ac72a1df92ac1c3d5d4014eefee4f3479551",
+    "case.0000.03.20.rgb.safetensors": "5d8d838e030ee298755b5625217103b6a980aa856e3486c7ccb0f42f723de352",
+    "case.0000.03.21.mask.safetensors": "4a1efcd9c0b8960b7c5696b4a65f26a3756a357e0e61458fff674a7dd48fd0b0",
+    "case.0000.03.22.pointmap.safetensors": "6484b47dd50fcb038b6dd26b263b1bdd873f7c2e5243cbd369839f27d7da3c00",
+    "case.0000.04.apply.0.pad.safetensors": "5d8d838e030ee298755b5625217103b6a980aa856e3486c7ccb0f42f723de352",
+    "case.0000.04.apply.0.output.safetensors": "8a6d1d1992772f5e4ca629c422668b1427b88240675f00d4a3d057c44c60857e",
+    "case.0000.04.apply.1.pad.safetensors": "4a1efcd9c0b8960b7c5696b4a65f26a3756a357e0e61458fff674a7dd48fd0b0",
+    "case.0000.04.apply.1.output.safetensors": "1698df5cda3ee6192bbb44d4f67949bf7d67f0a2d339725d5be4e066279c9ec4",
+    "case.0000.04.apply.2.pad.safetensors": "6484b47dd50fcb038b6dd26b263b1bdd873f7c2e5243cbd369839f27d7da3c00",
+    "case.0000.04.apply.2.output.safetensors": "6484b47dd50fcb038b6dd26b263b1bdd873f7c2e5243cbd369839f27d7da3c00",
+    "case.0000.04.apply.3.pad.safetensors": "d7920f23aeec22edcf9125291cb225ed82a68fd11b22e1fc548479872cebe38b",
+    "case.0000.04.apply.3.output.safetensors": "d1cea5cfb38a1e9c5e9f963ee70f9112420331fdf7f1e8f1927da86151ea4ce4",
+    "case.0000.04.apply.4.pad.safetensors": "313771b87c6038904098c0a47a3fac18d452e9fb7b95d6b0fa4a5e281c095d71",
+    "case.0000.04.apply.4.output.safetensors": "40bca5dde4f411cfff713dde3cf5d205667edbe7fb1db4607831bdc4c9bdda97",
+    "case.0000.05.full.pointmap.safetensors": "4996f7e4174222589bc867921776bef24144c0390455bc727cd293b02e6c00fc",
+    "case.0000.05.full.scale.safetensors": "426aa253ecdc43bd78aa4b1a7fbadfc5fcf3deea553440a84dae1a092c494a35",
+    "case.0000.05.full.shift.safetensors": "e309a96088b5f689bba5711046bb3b345a5514c2d8d0e245143f71532f340fd0",
+    "case.0000.04.apply.5.pad.safetensors": "ccfa4ed10e53d4c3d298b73fff699233f723b79ca99fc1e09307a7dad0c76bf8",
+    "case.0000.04.apply.5.output.safetensors": "f6d6848af769726fb40833b5d59aee193d323d4ef2ad3777b26ae91577a96b24",
+    "case.0000.04.apply.6.pad.safetensors": "6e60e1f40eb53dac99cc91dde738dc4b2593ae5fd5c924cd4d122a3c716ec2f1",
+    "case.0000.04.apply.6.output.safetensors": "4a7b551c77764fcce7b99c19020e15e950cd1813a507183a3d4a150f37f8bd62",
+    "case.0000.06.return.mask.safetensors": "8b13fc6647b4ba8ea4c3843c802cdebdebe6f0add3986ececdf8674739dc72d1",
+    "case.0000.06.return.image.safetensors": "f776c08b35ccfab8afe886b090b84ab647f9b41b2c0af7ada2cb78d8756417c2",
+    "case.0000.06.return.rgb_image.safetensors": "97aff665a731d4e7f2a2241bbcfcd598def4dc98dee5aef0f80315c0b6229c39",
+    "case.0000.06.return.rgb_image_mask.safetensors": "5c660f34a689e00d544648850690517b51d319e966eacec9acd3ec4696aafff8",
+    "case.0000.06.return.pointmap.safetensors": "1ef15d767d41a247ac3c6afb24ffa0bc87978a96e51d15ec54f1a77259f3a385",
+    "case.0000.06.return.rgb_pointmap.safetensors": "6a4853bf073e282e4f0274b2e5891871cb635dbe7af2646218d6efe42f4893fe",
+    "case.0000.06.return.pointmap_scale.safetensors": "d99df0962a84c415b5247bd600a029552773433847c9d8a0f518ddafe04f44f4",
+    "case.0000.06.return.pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+    "case.0000.06.return.rgb_pointmap_scale.safetensors": "d99df0962a84c415b5247bd600a029552773433847c9d8a0f518ddafe04f44f4",
+    "case.0000.06.return.rgb_pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+    "case.0000.06.return.rgb_pointmap_unnorm.safetensors": "953ea4bcb24a539214025e51e5214cbf98a88f9a145e62e899395beb0465b8c4",
+    "case.0000.full.safetensors": "c2fbcccd5be581e0f76fe630f197c398f4e9e1766f564afe60cc4be695e0f230",
+    "case.0000.input": "0ec1a0a3aa6e557b2e53560d6437faf4da3d1015c567d9f4a31d6cabce1c732c",
+    "case.0001.00.rgb.safetensors": "68ac2f066f7c42c4f650a71dcab3c350f4a56152c23bd4562fb6cc7715df88ec",
+    "case.0001.00.mask.safetensors": "229189e318e7ebbb71f163d2e88606599c012a580ec63431c7c1fd6cbec08e5b",
+    "case.0001.01.object.pointmap.safetensors": "1d1eee4e14b3ad4a42681ef7936009d418a919d20b278e6d808a015b3efe11ad",
+    "case.0001.01.object.scale.safetensors": "579c81acd2f4276c508cc23acdad44f8f47312d7753792899e2bf2236063991d",
+    "case.0001.01.object.shift.safetensors": "c43df08fe2d8c6924b86b4dc1eb99effe4c2659100adf1e75bbdee63f8d10f3a",
+    "case.0001.02.full_before.rgb.safetensors": "68ac2f066f7c42c4f650a71dcab3c350f4a56152c23bd4562fb6cc7715df88ec",
+    "case.0001.02.full_before.mask.safetensors": "229189e318e7ebbb71f163d2e88606599c012a580ec63431c7c1fd6cbec08e5b",
+    "case.0001.03.02.aligned_rgb.safetensors": "68ac2f066f7c42c4f650a71dcab3c350f4a56152c23bd4562fb6cc7715df88ec",
+    "case.0001.03.03.aligned_mask.safetensors": "229189e318e7ebbb71f163d2e88606599c012a580ec63431c7c1fd6cbec08e5b",
+    "case.0001.03.04.aligned_pointmap.safetensors": "343eac95950173ee6882f787fe5449ff73853b3e19004651ad0c61e9c722d5fe",
+    "case.0001.03.05.nan_mask.safetensors": "8ca6e13bd0e3ba662cea7bee75d9d73f38bbed6efc75f2a6b8055925e5b96e20",
+    "case.0001.03.06.clean.safetensors": "dc2c15c66c30ca241c200ad47a1e33226c24849d3bf093ef66f7e4c2d260bda9",
+    "case.0001.03.07.resized.safetensors": "75bb14c7a71346ad8b93bf7767755ca278733f38cc0168d3fe80042c62236b4d",
+    "case.0001.03.08.resized_nan_mask.safetensors": "dbd34163e821695498f23dce3a6e68910aedaa70c990f259c47396520f4acda0",
+    "case.0001.03.09.bbox.safetensors": "4a756d8c472ee585317c533919c66aa474126b14e1d2640e4dc783a08092b8b4",
+    "case.0001.03.10.crop_rgb.safetensors": "770634a7adc0ad0c8f5f55641323b1110eaa1c9e1d4b953f6334d5f4d3381f18",
+    "case.0001.03.11.crop_mask.safetensors": "1fe3806b7b7eacef20ada31e5165e3b20f5ef4f38f0c77a988223cf017d5a72d",
+    "case.0001.03.12.crop_pointmap.safetensors": "2bac9501640c12527eff82d444992cf18de8787b64a5586bd73d21f0867b34ae",
+    "case.0001.03.20.rgb.safetensors": "cfe03764f3ca6f5c040db7b5d434a9252f4fe79745bdace4be6c57b3cdb57ab8",
+    "case.0001.03.21.mask.safetensors": "1fe3806b7b7eacef20ada31e5165e3b20f5ef4f38f0c77a988223cf017d5a72d",
+    "case.0001.03.22.pointmap.safetensors": "23b9a57be4c996882f4746115651183068259dd18aac64f7c7fab46f68f64ee1",
+    "case.0001.04.apply.0.pad.safetensors": "cfe03764f3ca6f5c040db7b5d434a9252f4fe79745bdace4be6c57b3cdb57ab8",
+    "case.0001.04.apply.0.output.safetensors": "cfe03764f3ca6f5c040db7b5d434a9252f4fe79745bdace4be6c57b3cdb57ab8",
+    "case.0001.04.apply.1.pad.safetensors": "1fe3806b7b7eacef20ada31e5165e3b20f5ef4f38f0c77a988223cf017d5a72d",
+    "case.0001.04.apply.1.output.safetensors": "1fe3806b7b7eacef20ada31e5165e3b20f5ef4f38f0c77a988223cf017d5a72d",
+    "case.0001.04.apply.2.pad.safetensors": "23b9a57be4c996882f4746115651183068259dd18aac64f7c7fab46f68f64ee1",
+    "case.0001.04.apply.2.output.safetensors": "6d25dfc2e6a9dd1e462969414a86733e3f5026c421e797f79c112c19af7dcb83",
+    "case.0001.04.apply.3.pad.safetensors": "774fb67feb282249d8bb773567b3cd115327e8e0821d9279c476526375cef90e",
+    "case.0001.04.apply.3.output.safetensors": "b40cd15928f0171a683e6ff41e52989c134cd1457eed326a09bc896f8581730c",
+    "case.0001.04.apply.4.pad.safetensors": "7e1a4fa6a4121e6361a5936abc1b6b6abd1545631803505098c4470581bdecc7",
+    "case.0001.04.apply.4.output.safetensors": "77cac626b30dbd88d78aa152e6277238e3a2faa3bd4f7db254730bbeb349ccbb",
+    "case.0001.05.full.pointmap.safetensors": "be349e3d41eeb87928fd7653cccd3a5f483e6140f61b068c4a515a3e2a34b40d",
+    "case.0001.05.full.scale.safetensors": "6d07c896830bf917263358a31c846c51e615e3e0215ccd9404adbffa80f802a3",
+    "case.0001.05.full.shift.safetensors": "88d74a63e38546f935ea61f02e85acdcb97934b9974a7147076427a5b7d1f81d",
+    "case.0001.04.apply.5.pad.safetensors": "be349e3d41eeb87928fd7653cccd3a5f483e6140f61b068c4a515a3e2a34b40d",
+    "case.0001.04.apply.5.output.safetensors": "5ce9eaed1c5762702049af7fc45b7dd423fd417ca23c124be54029e6a7834436",
+    "case.0001.04.apply.6.pad.safetensors": "5c91ceefc0f79c0e004be56b6955c4818bf713af320db18d2e7b5badb3adb9aa",
+    "case.0001.04.apply.6.output.safetensors": "5494e5fb5fb981a27fabca19de11d3d70d6a459582882e499bf4eb6fe9180096",
+    "case.0001.06.return.mask.safetensors": "2eb9e16947f57f38194610f1d24f26a201b7718b28824e9e5d181c4c85307094",
+    "case.0001.06.return.image.safetensors": "66147a32591549548554b5da4567c9b373018acecc217ba1ea5b802270ca45ae",
+    "case.0001.06.return.rgb_image.safetensors": "2d70815d36406b64fd80420f0476134373693649c91d5b7ed345dc571ec3583e",
+    "case.0001.06.return.rgb_image_mask.safetensors": "78baac35aa062770ca48f0e1f19c10f375de3c2ff3cc69a6b34491c619362d8d",
+    "case.0001.06.return.pointmap.safetensors": "04183aea07d762f475e050314aa7f398a65b5648b3072140b67a65041cb26a57",
+    "case.0001.06.return.rgb_pointmap.safetensors": "98ccdc9b0f6b9c014ef84b8a91ed9ed9f8674211294216db0968dcdf358371ae",
+    "case.0001.06.return.pointmap_scale.safetensors": "e360180324d8cb803d5bca16f315d67a528a16a9a2ca972cd9b0dd85ab005755",
+    "case.0001.06.return.pointmap_shift.safetensors": "d7b51d4c08b0243265c18da58fc44abccad10d12a31bf4393b2629e01ff7e6d7",
+    "case.0001.06.return.rgb_pointmap_scale.safetensors": "614149b5cd58a99586ae877be9e0f95fccb6d18c101a0f1cbaf656a42ec50a89",
+    "case.0001.06.return.rgb_pointmap_shift.safetensors": "76aa2b58a879bbc30ff917c3734c849f54832af71f1318beda11369a9c510c8f",
+    "case.0001.06.return.rgb_pointmap_unnorm.safetensors": "efbf4f7a62e9e2e2c640430fe2d153667c294232d6857cd3220c3ddbdd430ad2",
+    "case.0001.full.safetensors": "2d2359c966ff8814ade0b5478d0d7ab0c52181d55281e1c38c00794f28b42679",
+    "case.0001.input": "780c2ba4174a9612fcf7c85adcfd16c298d746d788bf08c2862db22f6fa7417c",
+    "case.0002.00.rgb.safetensors": "096a63d261a86159a1c97866fd357da7791cecbbd81c048e4d34f42b676e5c3f",
+    "case.0002.00.mask.safetensors": "5ef203164a52889c5438eb79a521628a513babdedbb4f5725b4e1277256ae02c",
+    "case.0002.01.object.pointmap.safetensors": "52e399de0eaa2e6af1e887535ff612b68d5bb3cf22773d48c62b4b1636b9d7b9",
+    "case.0002.01.object.scale.safetensors": "5fa2d6d347ad51a297f79cde82b96728dcf3ec1e3f0b1491ee40456076fb803c",
+    "case.0002.01.object.shift.safetensors": "05044a4b8cfecc49411af4f49d7d32ce2f5c8828f53b90fb5aa777aaafe05632",
+    "case.0002.02.full_before.rgb.safetensors": "096a63d261a86159a1c97866fd357da7791cecbbd81c048e4d34f42b676e5c3f",
+    "case.0002.02.full_before.mask.safetensors": "5ef203164a52889c5438eb79a521628a513babdedbb4f5725b4e1277256ae02c",
+    "case.0002.03.02.aligned_rgb.safetensors": "096a63d261a86159a1c97866fd357da7791cecbbd81c048e4d34f42b676e5c3f",
+    "case.0002.03.03.aligned_mask.safetensors": "5ef203164a52889c5438eb79a521628a513babdedbb4f5725b4e1277256ae02c",
+    "case.0002.03.04.aligned_pointmap.safetensors": "7361840f30dd2a1f6bf55b2c8ab5ced06f2d0ad691f6b25a321de9958e749c47",
+    "case.0002.03.05.nan_mask.safetensors": "41ad8e3cf126fefd357f0e2aa13054b0b14182c74bb3e8678d5f9af521d1d430",
+    "case.0002.03.06.clean.safetensors": "f1f72e5edfe7f3bbe8906c9e133681376f22ff87e7f775cc07e0657cd8abf298",
+    "case.0002.03.07.resized.safetensors": "5f89268e3005ae3f59f168410b289621904210628fd07bd2c032034aa84a92d3",
+    "case.0002.03.08.resized_nan_mask.safetensors": "8fcef891679f3afff765612c8c83e676db20490dbf68cb9ecc4b8c591ef6aa6b",
+    "case.0002.03.09.bbox.safetensors": "cb353183d691d90c9b51f25fc6b3e5446b798c1dcf34718fefa8266113a21848",
+    "case.0002.03.10.crop_rgb.safetensors": "593c1d68b7dc04093970179f8effb2a984abdbeef61f0769e79a27afcfdb9a75",
+    "case.0002.03.11.crop_mask.safetensors": "80bad105f665862ca89be95f444609a71aa9496759090e04fa763e84c5f5c4af",
+    "case.0002.03.12.crop_pointmap.safetensors": "4f0cd82a99a25a6edd83f8b9e4b5e9e9a4fa18097c048a627bf64038c324ade7",
+    "case.0002.03.20.rgb.safetensors": "272a42c30824fc6b5178417f3349c16e2bbc1c05434df463b0aa32bf3fcb88e2",
+    "case.0002.03.21.mask.safetensors": "80bad105f665862ca89be95f444609a71aa9496759090e04fa763e84c5f5c4af",
+    "case.0002.03.22.pointmap.safetensors": "f9fbfcffeae650e8a84e154c0c7ed06c1ac3e9069aaa0521fb2963a7fddb7800",
+    "case.0002.04.apply.0.pad.safetensors": "272a42c30824fc6b5178417f3349c16e2bbc1c05434df463b0aa32bf3fcb88e2",
+    "case.0002.04.apply.0.output.safetensors": "9d25c6b09081dff873dc27e73f8c8b492914d30843e2e7fe4f8cd5755dc493d7",
+    "case.0002.04.apply.1.pad.safetensors": "80bad105f665862ca89be95f444609a71aa9496759090e04fa763e84c5f5c4af",
+    "case.0002.04.apply.1.output.safetensors": "35140d7eb14630456c15691f903155b12e96b4b7b8dd52b3d70ced334c701768",
+    "case.0002.04.apply.2.pad.safetensors": "f9fbfcffeae650e8a84e154c0c7ed06c1ac3e9069aaa0521fb2963a7fddb7800",
+    "case.0002.04.apply.2.output.safetensors": "0ff1bd2aa49677c300eb96ca05b85fbf38b39d5821997d7401bd34d6c781b965",
+    "case.0002.04.apply.3.pad.safetensors": "096a63d261a86159a1c97866fd357da7791cecbbd81c048e4d34f42b676e5c3f",
+    "case.0002.04.apply.3.output.safetensors": "096a63d261a86159a1c97866fd357da7791cecbbd81c048e4d34f42b676e5c3f",
+    "case.0002.04.apply.4.pad.safetensors": "5ef203164a52889c5438eb79a521628a513babdedbb4f5725b4e1277256ae02c",
+    "case.0002.04.apply.4.output.safetensors": "5ef203164a52889c5438eb79a521628a513babdedbb4f5725b4e1277256ae02c",
+    "case.0002.05.full.pointmap.safetensors": "52e399de0eaa2e6af1e887535ff612b68d5bb3cf22773d48c62b4b1636b9d7b9",
+    "case.0002.05.full.scale.safetensors": "5fa2d6d347ad51a297f79cde82b96728dcf3ec1e3f0b1491ee40456076fb803c",
+    "case.0002.05.full.shift.safetensors": "05044a4b8cfecc49411af4f49d7d32ce2f5c8828f53b90fb5aa777aaafe05632",
+    "case.0002.04.apply.5.pad.safetensors": "12c248f58c09c78adc49af2e858c97e32f87870f9ec49297f10e57c60f3b6f80",
+    "case.0002.04.apply.5.output.safetensors": "bd248eac4b23386bde1d88ad3bc58bcbd87776f10c21a7e4cdc10fdcbb53938d",
+    "case.0002.04.apply.6.pad.safetensors": "3707bbf6ba625a67570f4585b3823375510da0f218e4d3e6b83fb70b386cbf03",
+    "case.0002.04.apply.6.output.safetensors": "ce232f485e564d0508e50f4a2506dd02e667a98dbf49faa51f1af66d8ce0e7cf",
+    "case.0002.06.return.mask.safetensors": "645826730a9c2fcbb5d50dc9bf1d78d261a17a11d9f81db9541fba0196af30ac",
+    "case.0002.06.return.image.safetensors": "d74809461a82f5ff3c741f89907a73e0abf0c65c27e3302f93a338bd6ae66277",
+    "case.0002.06.return.rgb_image.safetensors": "21a29c948c6da257e97a4630be763877f084a05f903ea09d3e8921d762818283",
+    "case.0002.06.return.rgb_image_mask.safetensors": "01c548cd84dda00a10ce3c5370444d49c744edf91a5caca49ee47cb99a4ad47e",
+    "case.0002.06.return.pointmap.safetensors": "1851a1f1adfbc21f989d2af57fc2528953ea72c80b33325ef273f0527fabb947",
+    "case.0002.06.return.rgb_pointmap.safetensors": "54c10f2267328cda480815ee82d09099bc72f8aacc4c479321dd2f729da7d3e8",
+    "case.0002.06.return.pointmap_scale.safetensors": "c0713be69cbaaa178c30c90e24e80a53a5d3bd0e39a44e285caca7e60f5166ed",
+    "case.0002.06.return.pointmap_shift.safetensors": "90cdd7a6c59b13ab8461300e0091c5bab89ba5d82d7401f0638bb770e5ec6fb7",
+    "case.0002.06.return.rgb_pointmap_scale.safetensors": "c0713be69cbaaa178c30c90e24e80a53a5d3bd0e39a44e285caca7e60f5166ed",
+    "case.0002.06.return.rgb_pointmap_shift.safetensors": "90cdd7a6c59b13ab8461300e0091c5bab89ba5d82d7401f0638bb770e5ec6fb7",
+    "case.0002.06.return.rgb_pointmap_unnorm.safetensors": "ffa15cab8cbf7eef6c869655f46ccc5f3ae13716cd984cdeed6befe1b39726fb",
+    "case.0002.full.safetensors": "5836ca03b78e7aecf7981c5460133688f9d5fa6ec5a3a5167898c3fccfede63d",
+    "case.0002.input": "0393c200ad8cce6d9667fdb8f15baf9c9d903ae57ba7093de30a6d22e68e9289",
+    "case.0003.00.rgb.safetensors": "b914b2dd2d531f35bf87dd02d6c3ca6794ea45c296c7cc70d983721e2898a758",
+    "case.0003.00.mask.safetensors": "e00d1ac581991a5f6fd29cf55a2a3b88ab92ee989b774df42d14e177d7d48749",
+    "case.0003.01.object.pointmap.safetensors": "a7aa9dea636b1ba70d7de9f8478ebf5814059443b088fcf2fa24cf0afedc1437",
+    "case.0003.01.object.scale.safetensors": "71a706271be9aee800bba93be9725e1b87262cf466d658f34108c7daba3d3fa7",
+    "case.0003.01.object.shift.safetensors": "0744ac2686e084d1078d5bef7b1bf06893c2cfb5eddcffa44dfc556766ad7860",
+    "case.0003.02.full_before.rgb.safetensors": "b914b2dd2d531f35bf87dd02d6c3ca6794ea45c296c7cc70d983721e2898a758",
+    "case.0003.02.full_before.mask.safetensors": "e00d1ac581991a5f6fd29cf55a2a3b88ab92ee989b774df42d14e177d7d48749",
+    "case.0003.03.02.aligned_rgb.safetensors": "b914b2dd2d531f35bf87dd02d6c3ca6794ea45c296c7cc70d983721e2898a758",
+    "case.0003.03.03.aligned_mask.safetensors": "e00d1ac581991a5f6fd29cf55a2a3b88ab92ee989b774df42d14e177d7d48749",
+    "case.0003.03.04.aligned_pointmap.safetensors": "a7aa9dea636b1ba70d7de9f8478ebf5814059443b088fcf2fa24cf0afedc1437",
+    "case.0003.03.09.bbox.safetensors": "c1e981f51b2dcb1e26cb23f02af2d9c00b0d1891baa979a59afc007647c1c115",
+    "case.0003.03.10.crop_rgb.safetensors": "8328cecf19c8949c48b3519d5d39eb01deb1e12e4d0bc1aad130b6bf812ee5fb",
+    "case.0003.03.11.crop_mask.safetensors": "a00ccd3930ad4a96f9ae0f1deeda25922e20bcabc140188a20a552db45dd588d",
+    "case.0003.03.12.crop_pointmap.safetensors": "37e5d735e3f7b3610b9165373d3bf59b26a6241671ded3e2665843cf7271722f",
+    "case.0003.03.20.rgb.safetensors": "7c53474260e0380513d31e1ad24362d80b96ba332f1a6e3d657bf0ab54dc4a9b",
+    "case.0003.03.21.mask.safetensors": "a00ccd3930ad4a96f9ae0f1deeda25922e20bcabc140188a20a552db45dd588d",
+    "case.0003.03.22.pointmap.safetensors": "87c8519480b48970d82d76d419a2fdd2bf08ed17a455223d6ee0001211fc5a45",
+    "case.0003.04.apply.0.pad.safetensors": "7c53474260e0380513d31e1ad24362d80b96ba332f1a6e3d657bf0ab54dc4a9b",
+    "case.0003.04.apply.0.output.safetensors": "eba9692ce4b29cfa67dba616bbd696dafda66064c43a51fd8adf377bdc3cae80",
+    "case.0003.04.apply.1.pad.safetensors": "a00ccd3930ad4a96f9ae0f1deeda25922e20bcabc140188a20a552db45dd588d",
+    "case.0003.04.apply.1.output.safetensors": "2044d0dc16781705d82f9801d007d4c63943ff6533b7e69d8b23a033c1f7a162",
+    "case.0003.04.apply.2.pad.safetensors": "87c8519480b48970d82d76d419a2fdd2bf08ed17a455223d6ee0001211fc5a45",
+    "case.0003.04.apply.2.output.safetensors": "6eae582508d3adf59449b7861e103467d94c31974dde9b216252f6637eb35df6",
+    "case.0003.04.apply.3.pad.safetensors": "7122db114847c5f95f4a2d09bbfc09cce86a6ce2179da4334055ebba85e68497",
+    "case.0003.04.apply.3.output.safetensors": "1fffada60813ac4883ee08c09b8aad3b2a39e26d7a8c6ac3d717226c0441256f",
+    "case.0003.04.apply.4.pad.safetensors": "77b4a24c489807204e74c5a3173e15c1a97f7b0b1479a655f4f3ba1af188ec56",
+    "case.0003.04.apply.4.output.safetensors": "7cc38428a26006466484de9ce9a696d52f2a045b5309b81e701063622aeac858",
+    "case.0003.05.full.pointmap.safetensors": "a7aa9dea636b1ba70d7de9f8478ebf5814059443b088fcf2fa24cf0afedc1437",
+    "case.0003.05.full.scale.safetensors": "71a706271be9aee800bba93be9725e1b87262cf466d658f34108c7daba3d3fa7",
+    "case.0003.05.full.shift.safetensors": "0744ac2686e084d1078d5bef7b1bf06893c2cfb5eddcffa44dfc556766ad7860",
+    "case.0003.04.apply.5.pad.safetensors": "7b0c62194bfb3012919991eb57b6f9412931c5061f10d0ee9ce1559f53313435",
+    "case.0003.04.apply.5.output.safetensors": "43ed44a3b819a0207dcb7179fb0a7e29ed6daca23fdc5ee6ec3349b500b1c29b",
+    "case.0003.04.apply.6.pad.safetensors": "7b0c62194bfb3012919991eb57b6f9412931c5061f10d0ee9ce1559f53313435",
+    "case.0003.04.apply.6.output.safetensors": "43ed44a3b819a0207dcb7179fb0a7e29ed6daca23fdc5ee6ec3349b500b1c29b",
+    "case.0003.06.return.mask.safetensors": "8195e09c0da285514c0518a7baab8370945296fe87ae99e8bd96239b95e3f4e2",
+    "case.0003.06.return.image.safetensors": "0e2e59e03a13440b76e35910d85c8f47b926e7e8746b7807bab3e344d09300d6",
+    "case.0003.06.return.rgb_image.safetensors": "758733c9a84a563fd2b25705caf94e3bc65b7b8848a183b60c90f103466efb9e",
+    "case.0003.06.return.rgb_image_mask.safetensors": "4f3837d5aca75a91f5c542988225f11a85cdfd3a892837ba706998ea682086d9",
+    "case.0003.06.return.pointmap.safetensors": "63797a68a32c4aea34a4fe1952d4975814b5c31ea6e60af068badc1878c2d0e6",
+    "case.0003.06.return.rgb_pointmap.safetensors": "953857f33c01581b8a296246808dd442de48be51c555a375479a2933ffc40310",
+    "case.0003.06.return.pointmap_scale.safetensors": "8c94e9d66e93392597c38f56e742c3b004c9ff889565c12a9963a55d8a74e35d",
+    "case.0003.06.return.pointmap_shift.safetensors": "2f11e0e577ce25e7cba5a8eed40509e30e24704c51b484f31e8098120e8833e7",
+    "case.0003.06.return.rgb_pointmap_scale.safetensors": "8c94e9d66e93392597c38f56e742c3b004c9ff889565c12a9963a55d8a74e35d",
+    "case.0003.06.return.rgb_pointmap_shift.safetensors": "2f11e0e577ce25e7cba5a8eed40509e30e24704c51b484f31e8098120e8833e7",
+    "case.0003.06.return.rgb_pointmap_unnorm.safetensors": "953857f33c01581b8a296246808dd442de48be51c555a375479a2933ffc40310",
+    "case.0003.full.safetensors": "e97ac2e32780b0dbfa3219892b5bf9e361e4555399eb8609c14fa991ed3a7a10",
+    "case.0003.input": "6e1d8963d409718bfb51d641208a2ed218e3598c03122bd3f48a56d548234f44",
+    "case.0004.00.rgb.safetensors": "f08e2b3ce8abf5ca195a542e827f8f2efb6ff83252946b3a9f2ad1ea720a9281",
+    "case.0004.00.mask.safetensors": "ac2d99c4691c5f8500fae1bd28bc6b7a52d4cefee942c87d3d4bd40f4577410d",
+    "case.0004.01.object.pointmap.safetensors": "2a66d2ace60da9bf1b16e81b237071ef210e578af8332942bc07eb5fa470a811",
+    "case.0004.01.object.scale.safetensors": "63202bc1351a9e4b754c83ac17c27900567a18da504d343ff31006b95edb11af",
+    "case.0004.01.object.shift.safetensors": "95b21bd5ba6c95e7c426163ff1e38311ed076c2d46ebd543474295f6e65e5255",
+    "case.0004.02.full_before.rgb.safetensors": "f08e2b3ce8abf5ca195a542e827f8f2efb6ff83252946b3a9f2ad1ea720a9281",
+    "case.0004.02.full_before.mask.safetensors": "ac2d99c4691c5f8500fae1bd28bc6b7a52d4cefee942c87d3d4bd40f4577410d",
+    "case.0004.03.02.aligned_rgb.safetensors": "f08e2b3ce8abf5ca195a542e827f8f2efb6ff83252946b3a9f2ad1ea720a9281",
+    "case.0004.03.03.aligned_mask.safetensors": "ac2d99c4691c5f8500fae1bd28bc6b7a52d4cefee942c87d3d4bd40f4577410d",
+    "case.0004.03.04.aligned_pointmap.safetensors": "57af500b3b561e8b4a0774394bcfc7934f8832e68ad3d6ee38b30a39db20b4dd",
+    "case.0004.03.05.nan_mask.safetensors": "41ad8e3cf126fefd357f0e2aa13054b0b14182c74bb3e8678d5f9af521d1d430",
+    "case.0004.03.06.clean.safetensors": "0341ad1ec46345a75c237ccc55e6bd38c8331a2cee6075e89a34427751e7ddc7",
+    "case.0004.03.07.resized.safetensors": "d613e2e2d4839bd5c337515f16e2205cecf5f6c68766e8d00db82f67294ff084",
+    "case.0004.03.08.resized_nan_mask.safetensors": "1e771a6f93a15ea1efe94d685b3075859ef9557426e1489518c7e4519e672e62",
+    "case.0004.03.09.bbox.safetensors": "8698e8f1353560175902aafee6372ed6bf7f44369551e3e5e2ec37d915a581a5",
+    "case.0004.03.10.crop_rgb.safetensors": "eab870ead0ad1798701b0d784a33d74b9ff445d9f590a44a9762fe8b7c15fa63",
+    "case.0004.03.11.crop_mask.safetensors": "c307695c83e4602b2bf5f0eb84199296c409bf4e97693a071b760324a51246c6",
+    "case.0004.03.12.crop_pointmap.safetensors": "539c59d7a875f8323677301238be3234dd95f993d0c748e4dada76570a068d76",
+    "case.0004.03.20.rgb.safetensors": "831ac48488dbf3008fbaef05f51fe1bbdf210be008f5ca46eb83246a373fe79d",
+    "case.0004.03.21.mask.safetensors": "c307695c83e4602b2bf5f0eb84199296c409bf4e97693a071b760324a51246c6",
+    "case.0004.03.22.pointmap.safetensors": "539c59d7a875f8323677301238be3234dd95f993d0c748e4dada76570a068d76",
+    "case.0004.04.apply.0.pad.safetensors": "831ac48488dbf3008fbaef05f51fe1bbdf210be008f5ca46eb83246a373fe79d",
+    "case.0004.04.apply.0.output.safetensors": "9cc796d39c983815a83b99e15cfb882cf4cb3506434aa463f3c21da40ac87055",
+    "case.0004.04.apply.1.pad.safetensors": "c307695c83e4602b2bf5f0eb84199296c409bf4e97693a071b760324a51246c6",
+    "case.0004.04.apply.1.output.safetensors": "6025b63a13ad6684d5d1c90918c8498628ba05e3f38188b5faccae75799b5656",
+    "case.0004.04.apply.2.pad.safetensors": "539c59d7a875f8323677301238be3234dd95f993d0c748e4dada76570a068d76",
+    "case.0004.04.apply.2.output.safetensors": "e0e83ddbf06a98957885c1e401dcc60360fc2dd48c0fb4345d6b2294512f7012",
+    "case.0004.04.apply.3.pad.safetensors": "d9d2804dde8cb290fa5ca3300a8a69bb98bb9e91f5cc21dbf1a02635ff3d1f98",
+    "case.0004.04.apply.3.output.safetensors": "3067b6803b2a90738fbe191d6cadf0e4514e4fcc316eb0098494570d59aef01b",
+    "case.0004.04.apply.4.pad.safetensors": "8eff8d6f051d87de0fd6034dbb545e167f8ca5d0f40966c96a303b8bdf7f89ca",
+    "case.0004.04.apply.4.output.safetensors": "c0b7818e47dae4377dbd8d942433f2e3c0cda8f74c4cfb347735bc6e61d851e1",
+    "case.0004.05.full.pointmap.safetensors": "2a66d2ace60da9bf1b16e81b237071ef210e578af8332942bc07eb5fa470a811",
+    "case.0004.05.full.scale.safetensors": "63202bc1351a9e4b754c83ac17c27900567a18da504d343ff31006b95edb11af",
+    "case.0004.05.full.shift.safetensors": "95b21bd5ba6c95e7c426163ff1e38311ed076c2d46ebd543474295f6e65e5255",
+    "case.0004.04.apply.5.pad.safetensors": "61febd37dd20cc8fc7384e0abf2b55e72a06c7d45c124e751fd91d5e2a54db94",
+    "case.0004.04.apply.5.output.safetensors": "2287cd51313baad07f4ebe7c46a3a88766a0effefca23975de3999145f781b8b",
+    "case.0004.04.apply.6.pad.safetensors": "2e91ad64905aa4b8b7b767a7828ea4a504f1ff9534964a5fa58a464c14040bb1",
+    "case.0004.04.apply.6.output.safetensors": "e9926d4a2c3d85b44e9fe90c9798cf8cdecda3291856531ba922e4951cebdc64",
+    "case.0004.06.return.mask.safetensors": "de4d64cb8303015fc9ee314183518fbc5c960965682b537e4d0ee53be294d9ca",
+    "case.0004.06.return.image.safetensors": "306cd474cecafa2af876a184e1da600f3b345c8e68eec7f2834bca9b100f2e7b",
+    "case.0004.06.return.rgb_image.safetensors": "bb2c6acad3742ab021ed5bcfd4816574b36e77ae9965ecd157a7fa612f60845b",
+    "case.0004.06.return.rgb_image_mask.safetensors": "1b455d62adebfec164157990effe238d90abd609b2cbd4a266d5e09a000e5167",
+    "case.0004.06.return.pointmap.safetensors": "941d8e586fb14ef5acce8c8f028651caefe95795008f19ef77282ded9201e2cf",
+    "case.0004.06.return.rgb_pointmap.safetensors": "bbbd9f14458ff89ae6700732ef487315d6b54e819400f72bfae6d8e447ad5465",
+    "case.0004.06.return.pointmap_scale.safetensors": "27ff71565c0a711fbe73fae4339c73f252be7f263d638b54a80bbbde74e14a8d",
+    "case.0004.06.return.pointmap_shift.safetensors": "86022de80abbb3f91ca002b13f0436cd5d744201524efbdc0ec258e2594e49c9",
+    "case.0004.06.return.rgb_pointmap_scale.safetensors": "27ff71565c0a711fbe73fae4339c73f252be7f263d638b54a80bbbde74e14a8d",
+    "case.0004.06.return.rgb_pointmap_shift.safetensors": "86022de80abbb3f91ca002b13f0436cd5d744201524efbdc0ec258e2594e49c9",
+    "case.0004.06.return.rgb_pointmap_unnorm.safetensors": "b4039b53bad1caceafd59fdbf02988dbb22b5656340ae300efed03c8ef77c365",
+    "case.0004.full.safetensors": "06eebc3c3f6334d8225ec2aa16096e44d117412f6f8cae3ad45c45955b339598",
+    "case.0004.input": "1e750cf31a74ae2e9c8ff8c535011ecd6276a2ae5cbf5a2eeca24c54eb1b4c71",
+    "case.0005.00.rgb.safetensors": "3d2879aa05365c56d46d4cf4c3c777ff7c0e1a2d7e3cf90c52a4697113e3aa81",
+    "case.0005.00.mask.safetensors": "98a2d3eb2b9c5b1bd3272e46beccf6213068867ccbef7af49a1243f9f80713ad",
+    "case.0005.01.object.pointmap.safetensors": "b9939be776604fc9408ab6341634d40ed906f7df083e89c5bce0d2b1efb851e0",
+    "case.0005.01.object.scale.safetensors": "2fa6034d87d0ec9322017908c2fc7de16a0adc9a41d00b459fd140d4cba8e1c2",
+    "case.0005.01.object.shift.safetensors": "3da58cca84198773b6cf373f2aef7e0d757c91a1e75ef167ed4924e0fe06758d",
+    "case.0005.02.full_before.rgb.safetensors": "3d2879aa05365c56d46d4cf4c3c777ff7c0e1a2d7e3cf90c52a4697113e3aa81",
+    "case.0005.02.full_before.mask.safetensors": "98a2d3eb2b9c5b1bd3272e46beccf6213068867ccbef7af49a1243f9f80713ad",
+    "case.0005.03.02.aligned_rgb.safetensors": "3d2879aa05365c56d46d4cf4c3c777ff7c0e1a2d7e3cf90c52a4697113e3aa81",
+    "case.0005.03.03.aligned_mask.safetensors": "98a2d3eb2b9c5b1bd3272e46beccf6213068867ccbef7af49a1243f9f80713ad",
+    "case.0005.03.04.aligned_pointmap.safetensors": "cda311f90270f94fe1569fd685f06f5f1ba76050aa9c7daaceca440010ed75b7",
+    "case.0005.03.05.nan_mask.safetensors": "8ca6e13bd0e3ba662cea7bee75d9d73f38bbed6efc75f2a6b8055925e5b96e20",
+    "case.0005.03.06.clean.safetensors": "05920a2c0290995de663ffa912044ad13868db58d44264790742c06352cfa13f",
+    "case.0005.03.07.resized.safetensors": "f71a6f7797557d935af274e095fd47ce7100a68a4c84417904009fff330e3a28",
+    "case.0005.03.08.resized_nan_mask.safetensors": "a4f383b2b38b074b1583a008bba268158d888850835766d53fbbf681b1968d57",
+    "case.0005.03.09.bbox.safetensors": "c5d2f11025691943f032aa37edb11ffac484e42a0201b8714cc2f9a16cfb6ea9",
+    "case.0005.03.10.crop_rgb.safetensors": "61bcceb40d123b2bafe3b51b3f2ca51ccb40c3f36d1d5e1d39d881186c934455",
+    "case.0005.03.11.crop_mask.safetensors": "f071810a4027af8b1f7d3123df84fceb9b6b6b86272976a93f024dd630cec0a1",
+    "case.0005.03.12.crop_pointmap.safetensors": "5b0559dc49b00cb0534e49e70d724a94851b4878a31cc7fdcc6e4a3bc0e4ad50",
+    "case.0005.03.20.rgb.safetensors": "fa4311c17dda6fa79353285b8ea8f6191f5caeb123657f4594bb19e24188d054",
+    "case.0005.03.21.mask.safetensors": "f071810a4027af8b1f7d3123df84fceb9b6b6b86272976a93f024dd630cec0a1",
+    "case.0005.03.22.pointmap.safetensors": "5b0559dc49b00cb0534e49e70d724a94851b4878a31cc7fdcc6e4a3bc0e4ad50",
+    "case.0005.04.apply.0.pad.safetensors": "fa4311c17dda6fa79353285b8ea8f6191f5caeb123657f4594bb19e24188d054",
+    "case.0005.04.apply.0.output.safetensors": "e6f8762e7589a2690cc5b1240f503235ffaa60451fd7774f35eaf5f5ec70ecfc",
+    "case.0005.04.apply.1.pad.safetensors": "f071810a4027af8b1f7d3123df84fceb9b6b6b86272976a93f024dd630cec0a1",
+    "case.0005.04.apply.1.output.safetensors": "8a91e1b12e58c75542aae77cebb6b9500b6446d616b2f4432b819d6e7ca4817a",
+    "case.0005.04.apply.2.pad.safetensors": "5b0559dc49b00cb0534e49e70d724a94851b4878a31cc7fdcc6e4a3bc0e4ad50",
+    "case.0005.04.apply.2.output.safetensors": "1bea0977717d189facb333a32dc7d2f14b951165c37463c50cee2c83cabad014",
+    "case.0005.04.apply.3.pad.safetensors": "e713c0ca7fabc9def51a201a74a03649f45170b42279659e427ca4167ecd104f",
+    "case.0005.04.apply.3.output.safetensors": "11465e3c631f87e114527deeb0a030eb25bb3446d947cfb4491becb1e5102b6a",
+    "case.0005.04.apply.4.pad.safetensors": "27d142daecd02875c9040ae0c4ef733b97f9de9385b4260772a97c1a08e36654",
+    "case.0005.04.apply.4.output.safetensors": "0f83c63ae14ccbbec06765d4edb77c0a1a7f22d0400cb57d474e3b715dc1f18f",
+    "case.0005.05.full.pointmap.safetensors": "a2aaef968de08ce7ea6fe0bdfc3a0bf8db6699c7651a2383792f92750cfe3d8a",
+    "case.0005.05.full.scale.safetensors": "519950ec910ca29250ed6f73f769869bf7777bd4bca05c7eff920d3e5bff6ee9",
+    "case.0005.05.full.shift.safetensors": "110352d3c3772b53ca4ee51b1f0f9df7266287f9ec065cf7e0a5c2767bf6798f",
+    "case.0005.04.apply.5.pad.safetensors": "a2aaef968de08ce7ea6fe0bdfc3a0bf8db6699c7651a2383792f92750cfe3d8a",
+    "case.0005.04.apply.5.output.safetensors": "a95989f02548e91e6321c26497f0ec4b83aeb3a8258b790dd6b89db8f6914ecb",
+    "case.0005.04.apply.6.pad.safetensors": "f6a98eaf29735573ad955a22b5dd913f6bf86cbdb9c6a0ef0efaf8eb8de477bb",
+    "case.0005.04.apply.6.output.safetensors": "5092ecefecf4117571d4af8a3061687460b2922aba27cce540726a24058adbcc",
+    "case.0005.06.return.mask.safetensors": "5d028424aab0d7eddbd4283877ab36da935c41ea040282cb9f0708db31af8559",
+    "case.0005.06.return.image.safetensors": "1df4e0425dd087c5d029e47f8ed8ed9b2232d82820ef1a45a258a11d1779eae9",
+    "case.0005.06.return.rgb_image.safetensors": "5597b4abe20b6168c4ac5db4392b696f76c3a0cc4deb63f4082198aa9eb3e647",
+    "case.0005.06.return.rgb_image_mask.safetensors": "fb1c4711e94795f589a5d90151edc1763833340ed0a7906fb695b5488f39b405",
+    "case.0005.06.return.pointmap.safetensors": "be28e26b1d483d12aa8fad0d111d4a19775c1b4ae530cc081f04d8920bb463d6",
+    "case.0005.06.return.rgb_pointmap.safetensors": "31f3532f42d21b63f5253fca26bb8e48082aa0ccabd865246b8d6a5a952d011c",
+    "case.0005.06.return.pointmap_scale.safetensors": "78b24d1e7131668ab0196adafa875a8d80ff6d9475801149805f0ae01484aa59",
+    "case.0005.06.return.pointmap_shift.safetensors": "871c50ef3f69554645e1036425fad5ec5c4e3306e9c9d852055c26dc4f488489",
+    "case.0005.06.return.rgb_pointmap_scale.safetensors": "1ccab381e6943398fe91bd49ce4d2f1dd8df4290c6646415f76f970baf8b0429",
+    "case.0005.06.return.rgb_pointmap_shift.safetensors": "97017dce637cbc0f8bdb958febd49f4a1c740c22251ded5ce1e0bc4b937ab906",
+    "case.0005.06.return.rgb_pointmap_unnorm.safetensors": "4fdaa669c15eb14e0c5a792e304bc2df28e18c611306f30a0a52be32a60514db",
+    "case.0005.full.safetensors": "0525df820b9dce2028de0ae2c490f87d31f6164071d92217c553e5e656c886bd",
+    "case.0005.input": "ed8140366f6df9f5eff33dfb521be675fa9f8a0295153c8b9ca12ec1257a4583",
+    "case.0006.00.rgb.safetensors": "601341debf312168a5e005d1b1f751cc28e8e11ae1c16c29f68c01a239404066",
+    "case.0006.00.mask.safetensors": "30dcd70eecd7190e94cbc901d251964b100d0706dc837735f2fd2a05bdee49cb",
+    "case.0006.01.object.pointmap.safetensors": "65f4ee0da7af5270b9913dffc2447d1f199be3fff4a3ffe57ff480825aa429bd",
+    "case.0006.01.object.scale.safetensors": "91e148096dc4cd632e10df642d3311678feee2f4393c3cedaaff11f44c797300",
+    "case.0006.01.object.shift.safetensors": "e309a96088b5f689bba5711046bb3b345a5514c2d8d0e245143f71532f340fd0",
+    "case.0006.02.full_before.rgb.safetensors": "601341debf312168a5e005d1b1f751cc28e8e11ae1c16c29f68c01a239404066",
+    "case.0006.02.full_before.mask.safetensors": "30dcd70eecd7190e94cbc901d251964b100d0706dc837735f2fd2a05bdee49cb",
+    "case.0006.03.02.aligned_rgb.safetensors": "601341debf312168a5e005d1b1f751cc28e8e11ae1c16c29f68c01a239404066",
+    "case.0006.03.03.aligned_mask.safetensors": "30dcd70eecd7190e94cbc901d251964b100d0706dc837735f2fd2a05bdee49cb",
+    "case.0006.03.04.aligned_pointmap.safetensors": "ddb9048b90c1f6da33a33507876f38ecde073322aee5a5d893dbeecc15612bcb",
+    "case.0006.03.05.nan_mask.safetensors": "41ad8e3cf126fefd357f0e2aa13054b0b14182c74bb3e8678d5f9af521d1d430",
+    "case.0006.03.06.clean.safetensors": "79ef79ea94a218e5b49a48a34bb3b73e8afa7553222dcf49e28c483cb9bdcb06",
+    "case.0006.03.07.resized.safetensors": "083e3e38025a0b777682cfac828d9e9f1f82310c769fa2e2938076530895d0f7",
+    "case.0006.03.08.resized_nan_mask.safetensors": "0c3e8ae9a08b2d0de5366e8ecd2474e9f4efefd4c048ddfede316277a2e19d2e",
+    "case.0006.03.09.bbox.safetensors": "b98311d0c08bf0d29b9c790f645198c82462a339b004de7b826c56f03d04385d",
+    "case.0006.03.10.crop_rgb.safetensors": "aaca543d007b449b22e7b286a76af85dac47d2f59091c81b70eb496642f32b7f",
+    "case.0006.03.11.crop_mask.safetensors": "e90352c4b7d33ce8e6dd472a9ab6001d5733403978f5b1e48371e6a65c3d6f3d",
+    "case.0006.03.12.crop_pointmap.safetensors": "5f8faaf03d180284524621774be5ca3ba084daa633b22b7f91dba36c481b7822",
+    "case.0006.03.20.rgb.safetensors": "b8f64831ad61f5fcbc538369498e1a51331f7d53ff83b278115f214a5710b3df",
+    "case.0006.03.21.mask.safetensors": "e90352c4b7d33ce8e6dd472a9ab6001d5733403978f5b1e48371e6a65c3d6f3d",
+    "case.0006.03.22.pointmap.safetensors": "3d294f30e33eb9e20059889c09b8443d2704ba84aa4684e45ca7bd3ef2e94991",
+    "case.0006.04.apply.0.pad.safetensors": "b8f64831ad61f5fcbc538369498e1a51331f7d53ff83b278115f214a5710b3df",
+    "case.0006.04.apply.0.output.safetensors": "12bd5b533b9dcb1143f238af67367d9c079eb18709575f4e91e5d7606f09fdd2",
+    "case.0006.04.apply.1.pad.safetensors": "e90352c4b7d33ce8e6dd472a9ab6001d5733403978f5b1e48371e6a65c3d6f3d",
+    "case.0006.04.apply.1.output.safetensors": "77b2ac046389b3b7885f4a19999bb4c34a079e268dc76bb4d6439abf749e50cc",
+    "case.0006.04.apply.2.pad.safetensors": "3d294f30e33eb9e20059889c09b8443d2704ba84aa4684e45ca7bd3ef2e94991",
+    "case.0006.04.apply.2.output.safetensors": "3d294f30e33eb9e20059889c09b8443d2704ba84aa4684e45ca7bd3ef2e94991",
+    "case.0006.04.apply.3.pad.safetensors": "b5155100e6772011a5871476b6ff5fdd630f76e9faf3c24d85d727633cec5370",
+    "case.0006.04.apply.3.output.safetensors": "d3f9bb260223b69563943248593a08edf97ec531e4de3832752d01036755049c",
+    "case.0006.04.apply.4.pad.safetensors": "cdb5812ffdb9899ad953bc649e9834a5612344dd7345e2ecdec883efc05ab46f",
+    "case.0006.04.apply.4.output.safetensors": "6d2ef6cca442907437a01fe2bb283b747e08f066270c73ecf0184e34122dd652",
+    "case.0006.05.full.pointmap.safetensors": "65f4ee0da7af5270b9913dffc2447d1f199be3fff4a3ffe57ff480825aa429bd",
+    "case.0006.05.full.scale.safetensors": "91e148096dc4cd632e10df642d3311678feee2f4393c3cedaaff11f44c797300",
+    "case.0006.05.full.shift.safetensors": "e309a96088b5f689bba5711046bb3b345a5514c2d8d0e245143f71532f340fd0",
+    "case.0006.04.apply.5.pad.safetensors": "b4d12ca70890d1ee349e87905ae72b32f99d3e06e48c6bcdc50c1f31ad89e710",
+    "case.0006.04.apply.5.output.safetensors": "5d992a312cdb45c866b854f5121378d3f0f7758d0d13f0a3972e1fcb809cb0d2",
+    "case.0006.04.apply.6.pad.safetensors": "2e710188ea925aff3b679df71e3525f007fad3851391310b765f47b49f309217",
+    "case.0006.04.apply.6.output.safetensors": "d46098002c0239a34333447c0da8c619606e86e4192250ebea35bf12a494d104",
+    "case.0006.06.return.mask.safetensors": "dc2f8be279f8a4b026ff887a7cc27f13dac1f1f1bdc78d9ab8daf17c153eea35",
+    "case.0006.06.return.image.safetensors": "b7d548f9d3950357dcaabf67fa8f53606f9a501ea9308e614ecfb29c9c691151",
+    "case.0006.06.return.rgb_image.safetensors": "24a305d99de43af4273332de8d70206a7013a2d3b4ac1891449456a49cd6b504",
+    "case.0006.06.return.rgb_image_mask.safetensors": "4db40584ccd58ebb5a36a28ab125b487b9fddf440ac6a0aa7a172d2dc8d141ad",
+    "case.0006.06.return.pointmap.safetensors": "ef2a58b22e3e75cf89792e02dc49f1f883b5156eae11a9bdf138f10ecc14a851",
+    "case.0006.06.return.rgb_pointmap.safetensors": "3ed590acde070dd1b57754e11a7fb8c836dc9499ce1f443f479b28b003af0f83",
+    "case.0006.06.return.pointmap_scale.safetensors": "97ba79845a355cd2417948a7ec1acb64e5fc3648031e62c8536c36eb874a3fda",
+    "case.0006.06.return.pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+    "case.0006.06.return.rgb_pointmap_scale.safetensors": "97ba79845a355cd2417948a7ec1acb64e5fc3648031e62c8536c36eb874a3fda",
+    "case.0006.06.return.rgb_pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+    "case.0006.06.return.rgb_pointmap_unnorm.safetensors": "a063d93a01bc18f4e0d112293193606bc50fc3118c23f336766d2cc0adedd1fd",
+    "case.0006.full.safetensors": "85944cdbdc3f506791ca568174a61ac8e0efe58beea2c5e564ff533e75dc7d37",
+    "case.0006.input": "08d4285855b2fa5316b2f1214e7c04b0a7b49e07a6296424e673890cdd78864f",
+    "case.0007.00.rgb.safetensors": "f8c71c7adaf3745b95f5219a4e061cb2ee45218f0264d775c8ec1bb49a08698a",
+    "case.0007.00.mask.safetensors": "2645d5188e1c54f559de20544aba2f9a349e8bf3984a81e9cf965d7559c40e77",
+    "case.0007.01.object.pointmap.safetensors": "c835bd0f11f4310d7a3b533ed6f44fffff0e1853952be438131935f97a8fa18d",
+    "case.0007.01.object.scale.safetensors": "f58a03bce574d76a118b07f18355a0c94446ba4a11599940dd0b26339c44f634",
+    "case.0007.01.object.shift.safetensors": "b1c5b09bb5d53360028b2a13692be64f3119e874ea529b73865a19792c809238",
+    "case.0007.02.full_before.rgb.safetensors": "f8c71c7adaf3745b95f5219a4e061cb2ee45218f0264d775c8ec1bb49a08698a",
+    "case.0007.02.full_before.mask.safetensors": "2645d5188e1c54f559de20544aba2f9a349e8bf3984a81e9cf965d7559c40e77",
+    "case.0007.03.02.aligned_rgb.safetensors": "f8c71c7adaf3745b95f5219a4e061cb2ee45218f0264d775c8ec1bb49a08698a",
+    "case.0007.03.03.aligned_mask.safetensors": "2645d5188e1c54f559de20544aba2f9a349e8bf3984a81e9cf965d7559c40e77",
+    "case.0007.03.04.aligned_pointmap.safetensors": "f115cbf3a6dc66b19c8d7389f060cb93f01c2b02211ae8718d502cb5802963e7",
+    "case.0007.03.05.nan_mask.safetensors": "8ca6e13bd0e3ba662cea7bee75d9d73f38bbed6efc75f2a6b8055925e5b96e20",
+    "case.0007.03.06.clean.safetensors": "e9aac4c20535b71fb29e62265beb32f35084099d77fd2e9b3bdd67dcf45c3c18",
+    "case.0007.03.07.resized.safetensors": "222d743b40dfd45dd1c2ac67a72669530b72aa2cafcc90185638d76c588c378c",
+    "case.0007.03.08.resized_nan_mask.safetensors": "dbd34163e821695498f23dce3a6e68910aedaa70c990f259c47396520f4acda0",
+    "case.0007.03.09.bbox.safetensors": "4a756d8c472ee585317c533919c66aa474126b14e1d2640e4dc783a08092b8b4",
+    "case.0007.03.10.crop_rgb.safetensors": "71f95b6929586b34fa20aba8a7ce286a155208a5c3b05608b22e9fbb9cd97982",
+    "case.0007.03.11.crop_mask.safetensors": "6d8b8e2d8e5675cbac8cd27b6c719a0ba0b169065b782ef62dab348db379b60d",
+    "case.0007.03.12.crop_pointmap.safetensors": "3d84bb119aac2e665e63a18b42595601e15cee43847f71ae9dfd6fa96381fa54",
+    "case.0007.03.20.rgb.safetensors": "bd96d162366deb4ac964e4602018c4b8614d23f7124af167e45e8c38b70acf12",
+    "case.0007.03.21.mask.safetensors": "6d8b8e2d8e5675cbac8cd27b6c719a0ba0b169065b782ef62dab348db379b60d",
+    "case.0007.03.22.pointmap.safetensors": "9886efe66dc9fd5e7845675da34664ebbc5f32eedda9fcf60a32a082bd96a209",
+    "case.0007.04.apply.0.pad.safetensors": "bd96d162366deb4ac964e4602018c4b8614d23f7124af167e45e8c38b70acf12",
+    "case.0007.04.apply.0.output.safetensors": "21dc442fcb2007bf34f1deeeb7065800de900646cdda3cb5f85c59a332058ec1",
+    "case.0007.04.apply.1.pad.safetensors": "6d8b8e2d8e5675cbac8cd27b6c719a0ba0b169065b782ef62dab348db379b60d",
+    "case.0007.04.apply.1.output.safetensors": "f6e6b8f6c3f4436cb4091c4acac7894b628fd13742f070fb3867385a6d6613ad",
+    "case.0007.04.apply.2.pad.safetensors": "9886efe66dc9fd5e7845675da34664ebbc5f32eedda9fcf60a32a082bd96a209",
+    "case.0007.04.apply.2.output.safetensors": "a0ca8ec18858d6205e5872dbca462bc144c1e328dd9f63fc0d2cdaa8423e7590",
+    "case.0007.04.apply.3.pad.safetensors": "87db9857349eb028bd39da94490ac2c86101742667f9c7cd744087af5e5c4194",
+    "case.0007.04.apply.3.output.safetensors": "d656abcae43f8bc97d2eb7f4ee43044dd28502b035bc044e8f45339dfb70eb58",
+    "case.0007.04.apply.4.pad.safetensors": "936720945998caf1076ce9ece04a500257dc0a5e49abf1d7ede643d84f8150cb",
+    "case.0007.04.apply.4.output.safetensors": "88423a2159ba3a37104088b7571a4efefabf7e66f7039b7d6be9c521ce2a8456",
+    "case.0007.05.full.pointmap.safetensors": "c835bd0f11f4310d7a3b533ed6f44fffff0e1853952be438131935f97a8fa18d",
+    "case.0007.05.full.scale.safetensors": "c57f0930facc0fb5e19ceb62d25ec1c2ebf7b9a54d980e9b6b5d41440b668d9e",
+    "case.0007.05.full.shift.safetensors": "5d2fa35aa2d58463b0a1e387f62539b42fed57fc049def5d54a88a1d3474e456",
+    "case.0007.04.apply.5.pad.safetensors": "c835bd0f11f4310d7a3b533ed6f44fffff0e1853952be438131935f97a8fa18d",
+    "case.0007.04.apply.5.output.safetensors": "84b81df21bc75c99ea879e23d791309665509bd81863d9908cf9bb2caf7c6c1e",
+    "case.0007.04.apply.6.pad.safetensors": "c835bd0f11f4310d7a3b533ed6f44fffff0e1853952be438131935f97a8fa18d",
+    "case.0007.04.apply.6.output.safetensors": "84b81df21bc75c99ea879e23d791309665509bd81863d9908cf9bb2caf7c6c1e",
+    "case.0007.06.return.mask.safetensors": "5fab4dea7a14d786a366503743ad8cd510b047806e01a8b7ff65e7533500b22a",
+    "case.0007.06.return.image.safetensors": "9007fc64cda9e3dd0bdebd97efcc60c61a806efcc0724a58ed76d4a2652f1203",
+    "case.0007.06.return.rgb_image.safetensors": "34d59cbbf55cedfbfd81cfaf1cea7d5ab23aea05514d026ccc9dd86b67877049",
+    "case.0007.06.return.rgb_image_mask.safetensors": "4e0918f3cfe89ecc37185e82327bf5c0b19b7f01e65e7e68fe008adceb58221c",
+    "case.0007.06.return.pointmap.safetensors": "13334ba63842ee8ec59c715152ead3cbdd44070be5083c01b1c54bc73c9c5b61",
+    "case.0007.06.return.rgb_pointmap.safetensors": "16a1a92b9f245259503f87604a17b37a596973f2c0d11961f02d77b52dfcc7a0",
+    "case.0007.06.return.pointmap_scale.safetensors": "c2d2c2fe8a143207c1291a86873948352d46f56947537d1418c2139aa2f22e59",
+    "case.0007.06.return.pointmap_shift.safetensors": "c253d753744e9283147bbf2a2ff99186b4d594cc6e721d7730f74fb3443d80de",
+    "case.0007.06.return.rgb_pointmap_scale.safetensors": "4f9e47f96c30d13d641488a4b7681c43bb6ee1defcafeeba6c250a9e5da1283f",
+    "case.0007.06.return.rgb_pointmap_shift.safetensors": "3b975068ebd55bbddb96b46d1e87e49232d425ee288d7249186f3a4530f2d9dc",
+    "case.0007.06.return.rgb_pointmap_unnorm.safetensors": "16a1a92b9f245259503f87604a17b37a596973f2c0d11961f02d77b52dfcc7a0",
+    "case.0007.full.safetensors": "61f8977a308d28b97a3e8854410fd56c0e8a00c01d0c1cf32bc45487e6b74f75",
+    "case.0007.input": "79bbb655cd60df665db5c45f8a6c900d8f8ca9af74c6ceb2f9d191c3d253d6df",
+    "case.0008.00.rgb.safetensors": "0f320352af3a28fb273d289cfeadb11f5a523d70bfdab1624cea98795637a29b",
+    "case.0008.00.mask.safetensors": "99aee3e82cb0188066ec4e4765d14d28a75bed3e549fea14ad72d75a18a1a190",
+    "case.0008.01.object.pointmap.safetensors": "5cd001d77cea685ebd86dc820625ba99135bf7cd5aa6d648dbc5538076070f26",
+    "case.0008.01.object.scale.safetensors": "d76420f1614472b26bc3abb6e2b48c7c9aceba6d5cd4651fd3095b707f0917e6",
+    "case.0008.01.object.shift.safetensors": "e309a96088b5f689bba5711046bb3b345a5514c2d8d0e245143f71532f340fd0",
+    "case.0008.02.full_before.rgb.safetensors": "0f320352af3a28fb273d289cfeadb11f5a523d70bfdab1624cea98795637a29b",
+    "case.0008.02.full_before.mask.safetensors": "99aee3e82cb0188066ec4e4765d14d28a75bed3e549fea14ad72d75a18a1a190",
+    "case.0008.03.02.aligned_rgb.safetensors": "0f320352af3a28fb273d289cfeadb11f5a523d70bfdab1624cea98795637a29b",
+    "case.0008.03.03.aligned_mask.safetensors": "99aee3e82cb0188066ec4e4765d14d28a75bed3e549fea14ad72d75a18a1a190",
+    "case.0008.03.04.aligned_pointmap.safetensors": "9c03050ee978dbeb8b876ddcb6b284d9589dc4c63c47d617ffd173d0073a3391",
+    "case.0008.03.05.nan_mask.safetensors": "ca9bc61ba0b63a58d041496073e6769c9ac78a5f0fa246189fcafeb9f53e6eda",
+    "case.0008.03.06.clean.safetensors": "7faf9e19c49c2a29e19a775072cea6153ac83e828605669fe86a4a4644169a4a",
+    "case.0008.03.07.resized.safetensors": "b2006af06db859d0c30ef8d18bc29b7789fe93623b1d1852c5a5a7b4fc6a99f8",
+    "case.0008.03.08.resized_nan_mask.safetensors": "63f53a4089f4657fd35122632a0a266c7cbc01307858c45cfa6e7ab4aae330b3",
+    "case.0008.03.09.bbox.safetensors": "e26b762d7f2518306be8195dc05466f049eec7b28079a713bc4643b8c551dd31",
+    "case.0008.03.10.crop_rgb.safetensors": "b3cc60c3037619e9685b58f8eb87f33398bc8c06b75a1c272da71c82d9618483",
+    "case.0008.03.11.crop_mask.safetensors": "400dfb1103365048c4356232a95f4a7ed5f4680d6d2bf68cd14488a3522ce701",
+    "case.0008.03.12.crop_pointmap.safetensors": "71f75e13ad28c16ce5af97216f441dfce1e47e6865e217f717306ac83a3292cc",
+    "case.0008.03.20.rgb.safetensors": "934f155b02fb77ac18460ebaebea34d10fdae224162c86fc10f6653be05562c7",
+    "case.0008.03.21.mask.safetensors": "400dfb1103365048c4356232a95f4a7ed5f4680d6d2bf68cd14488a3522ce701",
+    "case.0008.03.22.pointmap.safetensors": "5fbb8e700d46665d3235a0f7f13c2c2735124a636c73d088c3c2c22aa8f928b3",
+    "case.0008.04.apply.0.pad.safetensors": "934f155b02fb77ac18460ebaebea34d10fdae224162c86fc10f6653be05562c7",
+    "case.0008.04.apply.0.output.safetensors": "c5b40d278fca8444bc0ba0bfb656519f5b41f1b2f35c44e980056526485994b0",
+    "case.0008.04.apply.1.pad.safetensors": "400dfb1103365048c4356232a95f4a7ed5f4680d6d2bf68cd14488a3522ce701",
+    "case.0008.04.apply.1.output.safetensors": "f3439e4050b126abf013079e0f43c90a2f54db66407829b6afdd402f610230ab",
+    "case.0008.04.apply.2.pad.safetensors": "5fbb8e700d46665d3235a0f7f13c2c2735124a636c73d088c3c2c22aa8f928b3",
+    "case.0008.04.apply.2.output.safetensors": "78ae32beccbe060468c89dab9e98725afb926c5b89b56ee551641aa80c13eeee",
+    "case.0008.04.apply.3.pad.safetensors": "60f1f9355fad63f8a0095d4bf6f23df9487f57f12d550f55c7f8cf4ece00d453",
+    "case.0008.04.apply.3.output.safetensors": "ae74ff6b638d8949f07e36e8f65cb4dd87a255653b985b45d481f73975e56a62",
+    "case.0008.04.apply.4.pad.safetensors": "b2ff95a6ffeafc53c2082ba911a81b6756598f57dc032bc259ce05f118bcdba6",
+    "case.0008.04.apply.4.output.safetensors": "662bfe0d1eeed72d5b3b6a5464bf1b52a94d4bc497d2d43a9d635747977c41a7",
+    "case.0008.05.full.pointmap.safetensors": "5cd001d77cea685ebd86dc820625ba99135bf7cd5aa6d648dbc5538076070f26",
+    "case.0008.05.full.scale.safetensors": "d76420f1614472b26bc3abb6e2b48c7c9aceba6d5cd4651fd3095b707f0917e6",
+    "case.0008.05.full.shift.safetensors": "e309a96088b5f689bba5711046bb3b345a5514c2d8d0e245143f71532f340fd0",
+    "case.0008.04.apply.5.pad.safetensors": "96d2f80cf49a1f89e2ccf5ae9abc9118bdf889c1172360a85bc0781b575c3cea",
+    "case.0008.04.apply.5.output.safetensors": "0418bfd06458d3172e3d3d4eb763da019082dd6601b93b731497ca8d6ea8f168",
+    "case.0008.04.apply.6.pad.safetensors": "012f8922d4d04c6ddb16c2e98e50c78979326982153fe0965389eb6bc4f06f97",
+    "case.0008.04.apply.6.output.safetensors": "dc564fe79f6818468ed076c5821b38de42147841b3e42b535d22898d607a4257",
+    "case.0008.06.return.mask.safetensors": "882856c7c87b07cf31e0430763b7e9386de6ebc7199167f3b9d0467136439a2d",
+    "case.0008.06.return.image.safetensors": "a38275a009798522c899f1141edb482d55ecad3432f71f7fe546c9a9cc9800ba",
+    "case.0008.06.return.rgb_image.safetensors": "2f1012e12e61db9e303b914eaec2a75922d2b2a79308ee6c497e5c30da8ac1c7",
+    "case.0008.06.return.rgb_image_mask.safetensors": "3f1607703a5324ee6796605b1e4a1720f6a3f637a77fb5167693c080e5c5c77c",
+    "case.0008.06.return.pointmap.safetensors": "36e9063a6cf1f39338074c63beba528cfef35577c06b0690155facf048aef503",
+    "case.0008.06.return.rgb_pointmap.safetensors": "c4542b21f5d339d2fb0378e22c2a9a09cb04121e4e121fcc57f7d58602d1f037",
+    "case.0008.06.return.pointmap_scale.safetensors": "b7a5b7865cf4d86063e1489173094ebf87373327903e22f8e5590ae39a0401a6",
+    "case.0008.06.return.pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+    "case.0008.06.return.rgb_pointmap_scale.safetensors": "b7a5b7865cf4d86063e1489173094ebf87373327903e22f8e5590ae39a0401a6",
+    "case.0008.06.return.rgb_pointmap_shift.safetensors": "5f86847aa630cec39de189e932a6b85d5cf7af5da1bef7a33f125542cd7a498d",
+    "case.0008.06.return.rgb_pointmap_unnorm.safetensors": "e5ea93650f68710ce26194ba418d87a57b7979826476771836d68740b23f6558",
+    "case.0008.full.safetensors": "de0ce7094788aeac0744f8b9284368c75cf00cddf20fc62522c81181073d887e",
+    "case.0008.input": "533338bb5b1ce2252dfec884d12dbb4f7b72f7b9d088ecab963a41e778c6595d",
+    "regression.txt": "345842d6f6e32664bd9be0d7c31279df5d0938121985b3d0b4b487bdb54e4940"
+  }
+}

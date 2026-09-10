@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>Captured BF16 Body comparison</title>
+<style>body{margin:0;background:#10192c;color:#e6edf5;font:16px system-ui}header{padding:20px}h1{font-size:22px;margin:0 0 8px}#panels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 12px}section{min-width:0}h2{font-size:16px;text-align:center}canvas{width:100%;display:block}#photo{object-fit:contain;background:#182237}p{margin:6px 0;color:#bccbdc}</style>
+<header><h1 id="title"></h1><p>Saved complete inference outputs — visual inspection, not upload/inference demo QA.</p><p>Same metric origin, scale and camera in all 3D panels. Cyan: GGML; orange wireframe: original PyTorch. No independent alignment.</p><p id="metrics"></p></header>
+<div id="panels"><section><h2>Original input + projected vertices</h2><canvas id="photo"></canvas></section><section id="original"><h2>Original PyTorch BF16</h2></section><section id="native"><h2>Native GGML BF16</h2></section><section id="overlay"><h2>Shared-frame overlay</h2></section></div>
+<script type="module">
+import * as T from '/three.module.min.js';
+const qa=window.visualQA={ready:false,errors:[]};
+window.addEventListener('error',e=>qa.errors.push(e.message));window.addEventListener('unhandledrejection',e=>qa.errors.push(String(e.reason)));
+const data=await(await fetch('/case.json')).json();document.querySelector('#title').textContent=data.name;
+document.querySelector('#metrics').textContent=`Vertex distance: mean ${data.mean_mm.toFixed(3)} mm; maximum ${data.max_mm.toFixed(3)} mm. View: front`;
+const convert=a=>{const v=new Float32Array(a);for(let i=0;i<v.length;i+=3){v[i+1]*=-1;v[i+2]*=-1}return v};
+const ref=convert(data.original.vertices),native=convert(data.native.vertices);
+const bounds=new T.Box3().setFromBufferAttribute(new T.BufferAttribute(ref,3)),centre=bounds.getCenter(new T.Vector3()),size=bounds.getSize(new T.Vector3());
+const extent=Math.max(size.x,size.y,size.z);if(!Number.isFinite(extent)||extent<=0||extent>100)throw Error('Invalid reference bounds');
+const width=360,height=660,camera=new T.PerspectiveCamera(38,width/height,.01,100);
+const distance=extent*.65/Math.tan(T.MathUtils.degToRad(19))/Math.min(1,width/height);
+const scenes=[],renderers=[];
+function mesh(v,color,wire=false){const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(v,3));g.setIndex(data.faces);g.computeVertexNormals();return new T.Mesh(g,new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.75,wireframe:wire,transparent:wire,opacity:wire?.45:1,depthWrite:!wire}))}
+for(const id of ['original','native','overlay']){const scene=new T.Scene();scene.background=new T.Color('#10192c');scene.add(new T.HemisphereLight(0xcbeaff,0x384450,2.2));const light=new T.DirectionalLight(0xffffff,2.8);light.position.set(3,5,5);scene.add(light);
+ if(id==='original')scene.add(mesh(ref,0x61b7d4));else scene.add(mesh(native,0x61b7d4));if(id==='overlay')scene.add(mesh(ref,0xffad61,true));
+ const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(width,height,false);renderer.outputColorSpace=T.SRGBColorSpace;document.getElementById(id).append(renderer.domElement);scenes.push(scene);renderers.push(renderer)}
+const image=new Image();image.src='/input.png';await image.decode();
+const canvas=document.getElementById('photo');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');const scale=Math.min(width/image.width,height/image.height),dx=(width-scale*image.width)/2,dy=(height-scale*image.height)/2;
+ctx.drawImage(image,dx,dy,scale*image.width,scale*image.height);
+for(const [field,color]of [[data.original,'#ffad61'],[data.native,'#61b7d4']]){ctx.globalAlpha=.25;ctx.fillStyle=color;for(let i=0;i<field.pixels.length;i+=2)ctx.fillRect(dx+field.pixels[i]*scale,dy+field.pixels[i+1]*scale,.7,.7)}ctx.globalAlpha=1;
+qa.setView=async(view)=>{const azimuth=view==='side'?Math.PI/2:view==='oblique'?.4:0,elevation=view==='oblique'?.12:0;camera.position.set(centre.x+distance*Math.sin(azimuth)*Math.cos(elevation),centre.y+distance*Math.sin(elevation),centre.z+distance*Math.cos(azimuth)*Math.cos(elevation));camera.lookAt(centre);camera.updateMatrixWorld();
+ qa.frames=[];for(let i=0;i<3;i++){const r=renderers[i];r.render(scenes[i],camera);const gl=r.getContext(),pixels=new Uint8Array(width*height*4);gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);let occupied=0;for(let j=0;j<pixels.length;j+=4)if(Math.abs(pixels[j]-pixels[0])+Math.abs(pixels[j+1]-pixels[1])+Math.abs(pixels[j+2]-pixels[2])>20)occupied++;qa.frames.push({calls:r.info.render.calls,triangles:r.info.render.triangles,occupied,gl_error:gl.getError()})}
+ qa.camera={position:camera.position.toArray(),target:centre.toArray(),view};document.querySelector('#metrics').textContent=`Vertex distance: mean ${data.mean_mm.toFixed(3)} mm; maximum ${data.max_mm.toFixed(3)} mm. View: ${view}`;await new Promise(r=>requestAnimationFrame(r));return qa.frames};
+await qa.setView('front');qa.ready=true;
+</script>

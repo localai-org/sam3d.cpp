@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SAM 3D Body · LocalAI</title><link rel="stylesheet" href="style.css"><link rel="icon" href="data:,"></head>
+<body>
+<aside>
+ <header><span class="eyebrow">IMAGE / VIDEO → BODY</span><h1>SAM 3D Body</h1><p id="model">Connecting to the native inference worker…</p></header>
+ <section id="tracking"><h2>Video tracking</h2>
+ <label>Input mode <select id="input-mode"><option value="photo">Photo</option><option value="offline">Offline video</option><option value="live">Live webcam</option></select></label>
+ <div id="video-options" hidden>
+ <label class="upload" id="video-upload-label">Select video<input id="video-upload" type="file" accept="video/*"></label>
+ <button id="camera-open" hidden>Open webcam</button>
+ <p id="camera-notice" class="notice" hidden>Webcams require HTTPS or localhost and camera permission. Plain HTTP on a remote/Tailscale address cannot access a webcam. Offline video still works.</p>
+ <div class="fields"><label>Maximum inference Hz<input id="track-hz" type="number" min="1" max="30" step="1" value="10"></label><label id="duration-label">Process seconds<input id="track-duration" type="number" min="0.1" max="1800" step="0.1" value="10"></label></div>
+ <label class="check"><input id="follow-box" type="checkbox" checked> Follow projected person box</label>
+ <p class="small">Select one person in the preview below before starting. One frame in flight; actual rate may be lower than the cap. Live results start displaying immediately with a 25 ms blend, no playback buffer or prediction. No automatic detection, identity tracking or temporal model.</p>
+ <button id="track-start" class="primary" disabled>Start tracking</button><button id="track-stop" hidden>Stop tracking</button>
+ <div id="track-status" role="status">Choose a video or open the webcam.</div>
+ <p id="track-metrics" class="small"></p>
+ </div>
+ <div id="track-playback" hidden><div class="row"><button id="track-play">Play</button><span id="track-time"></span></div><input id="track-seek" aria-label="Video pose timeline" type="range" min="0" max="1" step="0.001" value="0"><a id="track-manifest" download>Download sequence manifest</a></div>
+ <p class="small">Offline sequences are saved; webcam frames are temporary. Uploaded video stays in your browser; only sampled images go to this server. Source video is not saved in history.</p>
+ <div id="track-history"></div>
+ </section>
+ <section><h2>Select a person</h2><p>Drag a box around one person in the preview. For video, select the person before starting tracking.</p>
+ <div id="photo-upload-options">
+ <label class="upload">Upload photo<input id="upload" type="file" accept="image/*,.heic,.heif,.avif,.tif,.tiff,.exr,.jxl"></label>
+ <p class="small">Photos up to 128 MiB. Oversized or unsupported images are sent to local FFmpeg for resizing/re-encoding. The prepared image must fit 16 MP / 20 MiB; codec support depends on FFmpeg. Transparent pixels use black.</p>
+ <p id="preparation" class="notice" role="status" hidden></p>
+ <button id="example" hidden>Use official dancing example</button>
+ </div>
+ <p id="input-name">No image selected</p>
+ <div class="row"><strong>Person box</strong><button id="whole" class="quiet" disabled>Whole image</button></div>
+ <div class="fields"><label>Left<input id="x0" type="number" min="0" step="1"></label><label>Top<input id="y0" type="number" min="0" step="1"></label><label>Right<input id="x1" type="number" min="0" step="1"></label><label>Bottom<input id="y1" type="number" min="0" step="1"></label></div>
+ <details><summary>Camera intrinsics (pixels)</summary><p class="small">Default focal length is the image diagonal, not an estimated calibration. Use known camera values when available.</p>
+ <div class="fields"><label>fx<input id="fx" type="number" min="1" max="100000" step="any"></label><label>fy<input id="fy" type="number" min="1" max="100000" step="any"></label><label>cx<input id="cx" type="number" min="0" step="any"></label><label>cy<input id="cy" type="number" min="0" step="any"></label></div></details>
+ <button id="generate" class="primary" disabled>Estimate 3D body</button><button id="cancel" hidden>Cancel generation</button>
+ <div id="status" role="status" aria-live="polite">Choose an image to begin.</div><p id="elapsed" class="small"></p>
+ <p class="notice">Body pose only. Detailed hand refinement is not yet enabled. Photo exports are static meshes; video sequences contain sampled meshes, not animated rigs or textures.</p>
+ </section>
+ <section><h2>View & download</h2>
+ <label class="check"><input id="mesh" type="checkbox" checked> Body mesh</label><label class="check"><input id="skeleton" type="checkbox" checked> Skeleton (127 joints)</label>
+ <label class="check"><input id="projection" type="checkbox" checked> Skeleton overlay on photo</label>
+ <label class="check"><input id="reference" type="checkbox" disabled> Compare upstream (orange)</label><p id="comparison" class="small">Comparison is available for the official example with matching settings.</p>
+ <div class="row"><button id="reset">Reset view</button><button id="front">Front</button><button id="side">Side</button></div>
+ <div id="downloads" hidden><a id="glb" download>Download GLB</a><a id="obj" download>OBJ</a><a id="metadata" download>Settings JSON</a></div>
+ <p class="small">GLB / OBJ: static posed mesh, metres, Y-up. Orbit: drag · zoom: wheel · pan: right-drag or Shift-drag.</p>
+ </section>
+ <section><h2>Past reconstructions</h2><div id="history"><p class="small">No saved bodies yet.</p></div></section>
+</aside>
+<main>
+ <a class="brand" href="https://localai.io" target="_blank" rel="noopener noreferrer"><img src="localai.png" alt="LocalAI"></a>
+ <div class="pane photo-pane"><div class="pane-title">SOURCE PHOTO <span id="image-size"></span></div><div id="photo-space"><p id="photo-empty">Your photograph and projected skeleton will appear here.</p><canvas id="photo" hidden aria-label="Source photo; drag to select person"></canvas></div></div>
+ <div class="pane viewer-pane"><div class="pane-title">3D RECONSTRUCTION <span id="geometry-info"></span></div><div id="viewer"><p id="viewer-empty">Estimate a body to explore it in 3D.</p></div><div class="legend"><span class="cyan">●</span> Native GGML <span id="reference-legend" hidden><span class="orange">●</span> Original PyTorch</span></div></div>
+</main>
+<link rel="stylesheet" href="tracking.css">
+<script type="module" src="app.js"></script>
+</body></html>

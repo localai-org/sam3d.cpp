@@ -1,0 +1,7 @@
+FROM pytorch/pytorch@sha256:7db0e1bf4b1ac274ea09cf6358ab516f8a5c7d3d0e02311bed445f7e236a5d80
+RUN python -m pip install --no-cache-dir --only-binary=:all: --no-deps \
+    numpy==2.2.6 opencv-python-headless==4.11.0.86 safetensors==0.6.2 \
+    pytorch-lightning==2.6.5 torchmetrics==1.8.2 lightning-utilities==0.15.2 yacs==0.1.8
+ENV PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+WORKDIR /work
+ENTRYPOINT ["python", "/work/reference/capture_body_image.py"]

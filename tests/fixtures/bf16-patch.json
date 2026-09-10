@@ -1,0 +1,11 @@
+{
+  "scope": "Actual CUDA Conv2d BF16 output from synthetic backbone state; not trained model parity",
+  "device": "NVIDIA GeForce RTX 5070 Ti",
+  "torch": "2.7.0+cu128",
+  "dtype": "bfloat16",
+  "source": "dino-backbone.txt",
+  "source_sha256": "97d22dfac669ff6012d3c49b08f98c027f3af1a39deb318fe94f8accc6a21355",
+  "fixture_sha256": "bb008cfc6169f7a83e6b2c797dcd55beccafcffbd24b57e3d499e7d3ed085877",
+  "script": "reference/capture_bf16_patch.py",
+  "script_sha256": "12393a6b0df31483be03f2df9d6f08eef7310edca066c79ed7bfefd01a279f27"
+}

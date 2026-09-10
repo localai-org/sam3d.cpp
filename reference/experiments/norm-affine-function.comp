@@ -1,0 +1,46 @@
+#version 450
+// Normalization reduction adapted from pinned GGML norm.comp (MIT).
+#include "types.glsl"
+#include "utils.glsl"
+#extension GL_EXT_control_flow_attributes : enable
+#define BLOCK_SIZE 512
+layout(local_size_x=BLOCK_SIZE,local_size_y=1,local_size_z=1) in;
+layout(push_constant) uniform parameter {
+    uint cols; uint rows; uint nb; uint nc;
+    uint ao; uint bo; uint co; uint dst; float eps;
+} p;
+layout(binding=0) readonly buffer A { float a[]; };
+layout(binding=1) readonly buffer B { float b[]; };
+layout(binding=2) readonly buffer C { float c[]; };
+layout(binding=3) writeonly buffer D { float d[]; };
+shared vec2 sum[BLOCK_SIZE];
+float apply_affine(float value,float weight,float bias) {
+    precise float product=value*weight;
+    precise float sum=product+bias;
+    return bf16_to_fp32(fp32_to_bf16(sum));
+}
+void main() {
+    uint row=gl_WorkGroupID.z*262144+gl_WorkGroupID.y*512+gl_WorkGroupID.x;
+    if(row>=p.rows)return;
+    uint tid=gl_LocalInvocationID.x;
+    uint base=row*p.cols;
+    sum[tid]=vec2(0.0f,0.0f);
+    [[unroll]] for(uint j=tid;j<p.cols;j+=BLOCK_SIZE) {
+        float xi=a[p.ao+base+j];
+        sum[tid].x+=xi;
+        sum[tid].y+=xi*xi;
+    }
+    barrier();
+    [[unroll]] for(int s=BLOCK_SIZE/2;s>0;s>>=1) {
+        if(tid<s)sum[tid]+=sum[tid+s];
+        barrier();
+    }
+    float mean=sum[0].x/p.cols;
+    float var=sum[0].y/p.cols-mean*mean;
+    float inv_std=inversesqrt(var+p.eps);
+    [[unroll]] for(uint j=tid;j<p.cols;j+=BLOCK_SIZE) {
+        uint idx=base+j;
+        float normalized=(a[p.ao+idx]-mean)*inv_std;
+        d[p.dst+idx]=apply_affine(normalized,b[p.bo+fastmod(idx,p.nb)],c[p.co+fastmod(idx,p.nc)]);
+    }
+}

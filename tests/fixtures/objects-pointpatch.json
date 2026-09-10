@@ -1,0 +1,2201 @@
+{
+  "scope": "original PointPatchEmbed eval with synthetic weights and supplied pointmaps; NOT SSI, MoGe or learned Objects parity",
+  "device": "cpu",
+  "torch": "2.7.0+cu128",
+  "threads": 1,
+  "sdpa_backend": "MATH",
+  "tf32": false,
+  "observer_exact": true,
+  "full_size": false,
+  "timm_wheel_sha256": "bf5704014476ab011589d3c14172ee4c901fd18f9110a928019cac5be2945914",
+  "timm_sources": {
+    "timm/models/vision_transformer.py": "8dc607d12266dbe12c0b35e2e9832cf132b9ad052eb2f2ae50d402fa07f88ba3",
+    "timm/layers/mlp.py": "daf34147a30be416d2d70ae5784baa99567ba511af3da659c27dab58f055f8bb",
+    "timm/layers/helpers.py": "f552ea203f238ddc3f527dbbd05deb40bbcdcfdbd032137d9adb3b924fcc6bf6",
+    "timm/layers/config.py": "ff5d6394c57d703c3efb0d7348ac4778920d39feb437a203aa7b349b680f1adb"
+  },
+  "objects_sources": {
+    "point_remapper.py": "fae4708d051a7f11c398252643e550daea69dd21873440d870533fddc11540c0",
+    "pointmap.py": "d0bdcbefdd9403b1fb9fb7b0e9b9b118fb6239bbf3e11028fa6284d6300cb45b"
+  },
+  "script_sha256": "649d85348e9ed79c9b8fbbbbec3cd34921916d0844c7efe9b26a2a66d1cccb38",
+  "loader_sha256": "6fab34c3dda4655716faea342814441c4df68f32b4e26e433ba54a17e02e2136",
+  "max_abs_limit": 0.0001,
+  "relative_l2_limit": 2e-05,
+  "nonfinite_allowed": [
+    "00.resized",
+    "03.remapped",
+    "04.projected"
+  ],
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "shape": [
+        2,
+        9,
+        13,
+        8,
+        2,
+        32,
+        2,
+        1,
+        0,
+        0
+      ],
+      "parameter_shapes": {
+        "invalid_xyz_token": [
+          32
+        ],
+        "pos_embed": [
+          1,
+          32,
+          4,
+          4
+        ],
+        "pos_embed_window": [
+          1,
+          5,
+          32
+        ],
+        "cls_token": [
+          1,
+          1,
+          32
+        ],
+        "point_proj.weight": [
+          32,
+          3
+        ],
+        "point_proj.bias": [
+          32
+        ],
+        "blocks.0.norm1.weight": [
+          32
+        ],
+        "blocks.0.norm1.bias": [
+          32
+        ],
+        "blocks.0.attn.qkv.weight": [
+          96,
+          32
+        ],
+        "blocks.0.attn.qkv.bias": [
+          96
+        ],
+        "blocks.0.attn.proj.weight": [
+          32,
+          32
+        ],
+        "blocks.0.attn.proj.bias": [
+          32
+        ],
+        "blocks.0.norm2.weight": [
+          32
+        ],
+        "blocks.0.norm2.bias": [
+          32
+        ],
+        "blocks.0.mlp.fc1.weight": [
+          64,
+          32
+        ],
+        "blocks.0.mlp.fc1.bias": [
+          64
+        ],
+        "blocks.0.mlp.fc2.weight": [
+          32,
+          64
+        ],
+        "blocks.0.mlp.fc2.bias": [
+          32
+        ]
+      },
+      "taps": {
+        "00.resized": {
+          "shape": [
+            32,
+            4,
+            3
+          ],
+          "file": "00.resized.safetensors",
+          "sha256": "9a27f2bf2a1316bb56f780fbec771096b62980354e4c460d030207a689f23af7"
+        },
+        "03.remapped": {
+          "shape": [
+            32,
+            4,
+            3
+          ],
+          "file": "03.remapped.safetensors",
+          "sha256": "fbba2d1e96a7d96d24a3526f7a0e3d5b344aad3a79aa8a0d155c3243d1d50b0d"
+        },
+        "04.projected": {
+          "shape": [
+            32,
+            4,
+            32
+          ],
+          "file": "04.projected.safetensors",
+          "sha256": "b71085523f0deedf5ba8573c7a7d592eda700a87e639780363bafb864bfd0312"
+        },
+        "01.valid": {
+          "shape": [
+            32,
+            4
+          ],
+          "file": "01.valid.safetensors",
+          "sha256": "173ba2f253648dd8baf1e59bfd08b74c2017ae51dd4eaa4029745cafa4d6102e"
+        },
+        "02.safe": {
+          "shape": [
+            32,
+            4,
+            3
+          ],
+          "file": "02.safe.safetensors",
+          "sha256": "7e879c806958daa27549a157bd4849a26ac8f61384b8606e978f68033c0e25c1"
+        },
+        "05.embedded": {
+          "shape": [
+            32,
+            4,
+            32
+          ],
+          "file": "05.embedded.safetensors",
+          "sha256": "f14c890a2c67c635e5d5a69828112b6501cd632f4e687254e6e2f2a582c6eb38"
+        },
+        "06.cls_joined": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "06.cls_joined.safetensors",
+          "sha256": "d1ae5c672d7df5b0db2491f7c149903dfbbdcfad12180b5946d070424d475eb7"
+        },
+        "10.window_tokens": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "10.window_tokens.safetensors",
+          "sha256": "46d500178c6e27711ca6b03d850e898bc0b7d6a789bc870aedbf209e65cd57d9"
+        },
+        "11.norm1": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "11.norm1.safetensors",
+          "sha256": "77f28b052cfbb3692688be7fb89ffd39386ba75593704e31f7d0ab951d041360"
+        },
+        "12.qkv": {
+          "shape": [
+            32,
+            5,
+            96
+          ],
+          "file": "12.qkv.safetensors",
+          "sha256": "25c63c960c3f96b12670ed090ad4c47181de488bc9f897eea5674457b83a7b86"
+        },
+        "13.q": {
+          "shape": [
+            32,
+            16,
+            5,
+            2
+          ],
+          "file": "13.q.safetensors",
+          "sha256": "272fc2b849f17040c8bbf9d2fc31f57369e87cb5f3549ad6236080f60dc6c96d"
+        },
+        "14.k": {
+          "shape": [
+            32,
+            16,
+            5,
+            2
+          ],
+          "file": "14.k.safetensors",
+          "sha256": "5011d06f220cb0572c46f8a67576f50346772e2f285d28b695226b0ad02d8066"
+        },
+        "16.logits": {
+          "shape": [
+            32,
+            16,
+            5,
+            5
+          ],
+          "file": "16.logits.safetensors",
+          "sha256": "8902173786d794ece9ade2305098a33c91caae364c49e62081840d755f41dfe8"
+        },
+        "17.probs": {
+          "shape": [
+            32,
+            16,
+            5,
+            5
+          ],
+          "file": "17.probs.safetensors",
+          "sha256": "dc1439e43df7ca6803570f2b3b166921d19f82823d2901f12e35a56ec57a17f6"
+        },
+        "18.attention": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "18.attention.safetensors",
+          "sha256": "e85ae2207f2d285059cd701d6cbd9c92b542a434c3cdb2e6aee827e60ad7e808"
+        },
+        "19.attn_projected": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "19.attn_projected.safetensors",
+          "sha256": "d4d6ed861ba3c3815c288cf94e0be827034b79599582d8ef89fd04d85ab5c30f"
+        },
+        "15.v": {
+          "shape": [
+            32,
+            16,
+            5,
+            2
+          ],
+          "file": "15.v.safetensors",
+          "sha256": "f98e02907bf9b3d52e5a4651a85ade1d127592a139c88d33eb7d6a237233c76a"
+        },
+        "20.residual": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "20.residual.safetensors",
+          "sha256": "ce82cc23fd2609765980af4a150e253d8e52889f3c519e9468a06e6994a6d4ad"
+        },
+        "21.norm2": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "21.norm2.safetensors",
+          "sha256": "5baf6e3f6cd3e66c4a40841d17c932561ce1227e626887bb3d9e8146438d9253"
+        },
+        "22.fc1": {
+          "shape": [
+            32,
+            5,
+            64
+          ],
+          "file": "22.fc1.safetensors",
+          "sha256": "e82eb90858d7d82e9dfd32fffd36b48c88c068af2d4a8d789931002369b43522"
+        },
+        "23.gelu": {
+          "shape": [
+            32,
+            5,
+            64
+          ],
+          "file": "23.gelu.safetensors",
+          "sha256": "a77cfcb377f5334714641737c8a7f32b8e1dd8e25edf9738fe2ade176ab687e0"
+        },
+        "24.fc2": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "24.fc2.safetensors",
+          "sha256": "185b9ca159c3018a9a8b0adaa22a6048c0660ef3d2dac3db442521b569576951"
+        },
+        "30.block_output": {
+          "shape": [
+            32,
+            5,
+            32
+          ],
+          "file": "30.block_output.safetensors",
+          "sha256": "7c82c71033a435d2973e6b041c3822a3d1253241c701709dbbdd1e044a3ae7d6"
+        },
+        "31.cls": {
+          "shape": [
+            32,
+            32
+          ],
+          "file": "31.cls.safetensors",
+          "sha256": "9c7a2e381dbd57ddce668d54fbe542c63c406369bd0746b2603da2050adabc7e"
+        },
+        "32.position": {
+          "shape": [
+            32,
+            32
+          ],
+          "file": "32.position.safetensors",
+          "sha256": "2df8462f42b7d946f035861140514400efa36cde8dd349b014e754984899f026"
+        },
+        "33.positioned": {
+          "shape": [
+            32,
+            32
+          ],
+          "file": "33.positioned.safetensors",
+          "sha256": "f3a31b58116b6b26de1bfa33072e3f8414ab8489ee4b1a8f72eaaf6f65107565"
+        },
+        "90.output": {
+          "shape": [
+            32,
+            32
+          ],
+          "file": "90.output.safetensors",
+          "sha256": "f3a31b58116b6b26de1bfa33072e3f8414ab8489ee4b1a8f72eaaf6f65107565"
+        }
+      },
+      "order": [
+        "00.resized",
+        "01.valid",
+        "02.safe",
+        "03.remapped",
+        "04.projected",
+        "05.embedded",
+        "06.cls_joined",
+        "10.window_tokens",
+        "11.norm1",
+        "12.qkv",
+        "13.q",
+        "14.k",
+        "15.v",
+        "16.logits",
+        "17.probs",
+        "18.attention",
+        "19.attn_projected",
+        "20.residual",
+        "21.norm2",
+        "22.fc1",
+        "23.gelu",
+        "24.fc2",
+        "30.block_output",
+        "31.cls",
+        "32.position",
+        "33.positioned",
+        "90.output"
+      ],
+      "full_sha256": "49d3492f08ec96ecf2bb3cf0643339942f9c068ed97ce1d1c3fef82cd14a8f26"
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "shape": [
+        1,
+        17,
+        11,
+        8,
+        4,
+        64,
+        0,
+        0,
+        0,
+        0
+      ],
+      "parameter_shapes": {
+        "invalid_xyz_token": [
+          64
+        ],
+        "pos_embed": [
+          1,
+          64,
+          2,
+          2
+        ],
+        "pos_embed_window": [
+          1,
+          17,
+          64
+        ],
+        "cls_token": [
+          1,
+          1,
+          64
+        ],
+        "point_proj.weight": [
+          64,
+          3
+        ],
+        "point_proj.bias": [
+          64
+        ],
+        "blocks.0.norm1.weight": [
+          64
+        ],
+        "blocks.0.norm1.bias": [
+          64
+        ],
+        "blocks.0.attn.qkv.weight": [
+          192,
+          64
+        ],
+        "blocks.0.attn.qkv.bias": [
+          192
+        ],
+        "blocks.0.attn.proj.weight": [
+          64,
+          64
+        ],
+        "blocks.0.attn.proj.bias": [
+          64
+        ],
+        "blocks.0.norm2.weight": [
+          64
+        ],
+        "blocks.0.norm2.bias": [
+          64
+        ],
+        "blocks.0.mlp.fc1.weight": [
+          128,
+          64
+        ],
+        "blocks.0.mlp.fc1.bias": [
+          128
+        ],
+        "blocks.0.mlp.fc2.weight": [
+          64,
+          128
+        ],
+        "blocks.0.mlp.fc2.bias": [
+          64
+        ]
+      },
+      "taps": {
+        "00.resized": {
+          "shape": [
+            4,
+            16,
+            3
+          ],
+          "file": "00.resized.safetensors",
+          "sha256": "c20f84e32a5fc7e6cb3f6837db0703d3575d056d37927e771b61674ef8345908"
+        },
+        "03.remapped": {
+          "shape": [
+            4,
+            16,
+            3
+          ],
+          "file": "03.remapped.safetensors",
+          "sha256": "febbe61c87ffcdc7aab094842b8f0441937adadf1e5dd2dd902b86bd1c3f35b6"
+        },
+        "04.projected": {
+          "shape": [
+            4,
+            16,
+            64
+          ],
+          "file": "04.projected.safetensors",
+          "sha256": "25324ffb6f89f5696b6d2a8c9e72caa65b79d711246bdbda0c9b24ca35d2e1fb"
+        },
+        "01.valid": {
+          "shape": [
+            4,
+            16
+          ],
+          "file": "01.valid.safetensors",
+          "sha256": "36b68c6e07a4f7dac1a618834727b8fea25dfa264b447e5d0d6ef8e250542471"
+        },
+        "02.safe": {
+          "shape": [
+            4,
+            16,
+            3
+          ],
+          "file": "02.safe.safetensors",
+          "sha256": "febbe61c87ffcdc7aab094842b8f0441937adadf1e5dd2dd902b86bd1c3f35b6"
+        },
+        "05.embedded": {
+          "shape": [
+            4,
+            16,
+            64
+          ],
+          "file": "05.embedded.safetensors",
+          "sha256": "beb5c56974cf8433df5ace3d4ea70a42eeada077e2961a6cbc29b42627dd09ff"
+        },
+        "06.cls_joined": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "06.cls_joined.safetensors",
+          "sha256": "4e9a1621ed4ae4d35813bbe6c2f484d684dfa2ccc2b461ef87784990fe1bc982"
+        },
+        "10.window_tokens": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "10.window_tokens.safetensors",
+          "sha256": "9e2906ab69e93b1c046f46bbf61ac7b69089890d849b749595bce5757801af12"
+        },
+        "11.norm1": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "11.norm1.safetensors",
+          "sha256": "7054fc651b7d7e7ae09795240054801e28f2246be602df002a8a870c0976b85c"
+        },
+        "12.qkv": {
+          "shape": [
+            4,
+            17,
+            192
+          ],
+          "file": "12.qkv.safetensors",
+          "sha256": "e305f0af1fa263043dc4de9200b6f33b71ad5586b222d63d414d96d29786e3c5"
+        },
+        "13.q": {
+          "shape": [
+            4,
+            16,
+            17,
+            4
+          ],
+          "file": "13.q.safetensors",
+          "sha256": "5f6c0f82c1a2f5f260d7cd2f9ec26d5b817be0740a5b06d0adfbc2eb206d0cdd"
+        },
+        "14.k": {
+          "shape": [
+            4,
+            16,
+            17,
+            4
+          ],
+          "file": "14.k.safetensors",
+          "sha256": "a3fecf7fe07c261f6095cbd66f777e47f03e7417059b6fe1555820a20d374998"
+        },
+        "16.logits": {
+          "shape": [
+            4,
+            16,
+            17,
+            17
+          ],
+          "file": "16.logits.safetensors",
+          "sha256": "d73007fc00bf2129671526be4abe280b9c7f473bb2139a05552db126a0b1c16e"
+        },
+        "17.probs": {
+          "shape": [
+            4,
+            16,
+            17,
+            17
+          ],
+          "file": "17.probs.safetensors",
+          "sha256": "655e6d2bc660025826bf6e35d4f98196ba89a06f3ddfaadcc442314c6c1f494a"
+        },
+        "18.attention": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "18.attention.safetensors",
+          "sha256": "00d501a34f075e71d7a629b0c86309de5605907d2ce4a2236f09a93e7b8355ce"
+        },
+        "19.attn_projected": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "19.attn_projected.safetensors",
+          "sha256": "68fa968efd8ae1b1c14d4a7ba0f72ce2ab0498acf91923240488cc63e38a898d"
+        },
+        "15.v": {
+          "shape": [
+            4,
+            16,
+            17,
+            4
+          ],
+          "file": "15.v.safetensors",
+          "sha256": "2418c6887625e110cb9a2f803cec9f52f38996d12cc1f20c88404e21dda29390"
+        },
+        "20.residual": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "20.residual.safetensors",
+          "sha256": "a85404a088993c133b30f1490854be13079b38370bb914c1243d39ad046fe3f8"
+        },
+        "21.norm2": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "21.norm2.safetensors",
+          "sha256": "5e0700b72f8e029515b27b9fd4fd0537ebe1e5b1e39a9ea2c5daa1fcbbdf4150"
+        },
+        "22.fc1": {
+          "shape": [
+            4,
+            17,
+            128
+          ],
+          "file": "22.fc1.safetensors",
+          "sha256": "505f1ecf95de38fd8aa6c2db4e9a14f5e03a84eae2230e30fdf39de07b03f02c"
+        },
+        "23.gelu": {
+          "shape": [
+            4,
+            17,
+            128
+          ],
+          "file": "23.gelu.safetensors",
+          "sha256": "2f988343333228d2b3028b5831f6cc5a7feaad0b9554643ab757cb9de6d93836"
+        },
+        "24.fc2": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "24.fc2.safetensors",
+          "sha256": "72a85ac71fd531ae083bef5864101767db6ebb7a44272f8c38447bd21388bce7"
+        },
+        "30.block_output": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "30.block_output.safetensors",
+          "sha256": "19ebb46dbd9e4942d9575c0935d8cac58666c970f5dd85d755cccdf8975a37ea"
+        },
+        "31.cls": {
+          "shape": [
+            4,
+            64
+          ],
+          "file": "31.cls.safetensors",
+          "sha256": "9a783e344e6508eb2b1ea974fd5fb1e3193debb787448918e95e919a0ed65bdc"
+        },
+        "32.position": {
+          "shape": [
+            4,
+            64
+          ],
+          "file": "32.position.safetensors",
+          "sha256": "2ef17b7cb025f82096d50e570145b654c7dddece8adafa600172b321783180c6"
+        },
+        "33.positioned": {
+          "shape": [
+            4,
+            64
+          ],
+          "file": "33.positioned.safetensors",
+          "sha256": "595679a2e0180bd3047d6d0d363990f99e6a9452803de8e4260f3fe7acee908c"
+        },
+        "90.output": {
+          "shape": [
+            4,
+            64
+          ],
+          "file": "90.output.safetensors",
+          "sha256": "595679a2e0180bd3047d6d0d363990f99e6a9452803de8e4260f3fe7acee908c"
+        }
+      },
+      "order": [
+        "00.resized",
+        "01.valid",
+        "02.safe",
+        "03.remapped",
+        "04.projected",
+        "05.embedded",
+        "06.cls_joined",
+        "10.window_tokens",
+        "11.norm1",
+        "12.qkv",
+        "13.q",
+        "14.k",
+        "15.v",
+        "16.logits",
+        "17.probs",
+        "18.attention",
+        "19.attn_projected",
+        "20.residual",
+        "21.norm2",
+        "22.fc1",
+        "23.gelu",
+        "24.fc2",
+        "30.block_output",
+        "31.cls",
+        "32.position",
+        "33.positioned",
+        "90.output"
+      ],
+      "full_sha256": "24d4ffbda41df9529615ac750f96da947ee4e83fd89b6daaac0c6705d494df24"
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "shape": [
+        1,
+        19,
+        13,
+        16,
+        4,
+        64,
+        1,
+        0,
+        0,
+        0
+      ],
+      "parameter_shapes": {
+        "invalid_xyz_token": [
+          64
+        ],
+        "pos_embed": [
+          1,
+          64,
+          4,
+          4
+        ],
+        "pos_embed_window": [
+          1,
+          17,
+          64
+        ],
+        "cls_token": [
+          1,
+          1,
+          64
+        ],
+        "point_proj.weight": [
+          64,
+          3
+        ],
+        "point_proj.bias": [
+          64
+        ],
+        "blocks.0.norm1.weight": [
+          64
+        ],
+        "blocks.0.norm1.bias": [
+          64
+        ],
+        "blocks.0.attn.qkv.weight": [
+          192,
+          64
+        ],
+        "blocks.0.attn.qkv.bias": [
+          192
+        ],
+        "blocks.0.attn.proj.weight": [
+          64,
+          64
+        ],
+        "blocks.0.attn.proj.bias": [
+          64
+        ],
+        "blocks.0.norm2.weight": [
+          64
+        ],
+        "blocks.0.norm2.bias": [
+          64
+        ],
+        "blocks.0.mlp.fc1.weight": [
+          128,
+          64
+        ],
+        "blocks.0.mlp.fc1.bias": [
+          128
+        ],
+        "blocks.0.mlp.fc2.weight": [
+          64,
+          128
+        ],
+        "blocks.0.mlp.fc2.bias": [
+          64
+        ]
+      },
+      "taps": {
+        "00.resized": {
+          "shape": [
+            16,
+            16,
+            3
+          ],
+          "file": "00.resized.safetensors",
+          "sha256": "3d27d2b128007c7521f04c34ccef6624540b3bba0caa0b2ed422792c024ca9d1"
+        },
+        "03.remapped": {
+          "shape": [
+            16,
+            16,
+            3
+          ],
+          "file": "03.remapped.safetensors",
+          "sha256": "bebcb3b291ca6264fe403adca692ad4cf55e9f66360bca3539bc094456f7c20f"
+        },
+        "04.projected": {
+          "shape": [
+            16,
+            16,
+            64
+          ],
+          "file": "04.projected.safetensors",
+          "sha256": "792bc47ae0f97ac60abb6711b6878257b3fccbc27e6383c076ded03ae2cb807c"
+        },
+        "01.valid": {
+          "shape": [
+            16,
+            16
+          ],
+          "file": "01.valid.safetensors",
+          "sha256": "e0e1f418901de881c2845234c54e9c03f2f78f90e4eabf0042f8dbd3cfb86c1d"
+        },
+        "02.safe": {
+          "shape": [
+            16,
+            16,
+            3
+          ],
+          "file": "02.safe.safetensors",
+          "sha256": "25301eb3e662d87cb888785077c64e296625613aa58c0e2c1a5aeb168a6fcad2"
+        },
+        "05.embedded": {
+          "shape": [
+            16,
+            16,
+            64
+          ],
+          "file": "05.embedded.safetensors",
+          "sha256": "4d1e83eb90c2ba8a930e71446c6efad6cf8cced1ad0bc6a477a0fc2906b7ce1a"
+        },
+        "06.cls_joined": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "06.cls_joined.safetensors",
+          "sha256": "cfcde73c2d9698662636201cd9d5ce7a41a98008ed1e11741ce6ca03e120c58e"
+        },
+        "10.window_tokens": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "10.window_tokens.safetensors",
+          "sha256": "d609c091ce27bc807f9780ab91e99fd9e32109901b99817dbef37b16f8acb9e6"
+        },
+        "11.norm1": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "11.norm1.safetensors",
+          "sha256": "112416c8213085d31d065fc4d47dabd43211df6ec8395d8d9e3697d7b764a38d"
+        },
+        "12.qkv": {
+          "shape": [
+            16,
+            17,
+            192
+          ],
+          "file": "12.qkv.safetensors",
+          "sha256": "78e0de73ed2038600ba2e868a99999e43af99207384bdcf25e1c57a3ef2492dd"
+        },
+        "13.q": {
+          "shape": [
+            16,
+            16,
+            17,
+            4
+          ],
+          "file": "13.q.safetensors",
+          "sha256": "3722cf1e98e233de7b61dbd59ee8cf7169bff1b48ff88a2fda2376a48ec1cd11"
+        },
+        "14.k": {
+          "shape": [
+            16,
+            16,
+            17,
+            4
+          ],
+          "file": "14.k.safetensors",
+          "sha256": "16aa400b05fee0f7e497974ac30eeb545dad82d51d9c74af42df429806ada468"
+        },
+        "16.logits": {
+          "shape": [
+            16,
+            16,
+            17,
+            17
+          ],
+          "file": "16.logits.safetensors",
+          "sha256": "1d647d4785913024e35a7c64e0300acf8b6729d710a9c5dfb4eb0b75ff647f08"
+        },
+        "17.probs": {
+          "shape": [
+            16,
+            16,
+            17,
+            17
+          ],
+          "file": "17.probs.safetensors",
+          "sha256": "12e78f635039e0f6b4f55e4bf8c9452a61f382e68c14ca7d8179c6ce203422fd"
+        },
+        "18.attention": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "18.attention.safetensors",
+          "sha256": "45e48b134a7f8ce92d151a5fbf5c99844d863d6c0f10c88b3e5c5bdf8c3d7934"
+        },
+        "19.attn_projected": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "19.attn_projected.safetensors",
+          "sha256": "888ae0787e8a1d9fdd79218fa56d0ecd042192117dcf11525fc61cd87d74725c"
+        },
+        "15.v": {
+          "shape": [
+            16,
+            16,
+            17,
+            4
+          ],
+          "file": "15.v.safetensors",
+          "sha256": "874a5df92fea6f668cfc2fcd692a8ba91c494ee236d289b00284689bb210430f"
+        },
+        "20.residual": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "20.residual.safetensors",
+          "sha256": "9b7364d784eb147c7f4b0f9daf7eaa0e61c4461c88f4a2cc9ee3cc81cef50977"
+        },
+        "21.norm2": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "21.norm2.safetensors",
+          "sha256": "8aadf983f2104fb9838be19f3355e45f741f28db51865a6f2daf253229e8a5fa"
+        },
+        "22.fc1": {
+          "shape": [
+            16,
+            17,
+            128
+          ],
+          "file": "22.fc1.safetensors",
+          "sha256": "5f87134c00b44091fe5f98f5cee1cd0591fa8e1c33135ad1c3c98e8a281dc40f"
+        },
+        "23.gelu": {
+          "shape": [
+            16,
+            17,
+            128
+          ],
+          "file": "23.gelu.safetensors",
+          "sha256": "29ac3cb14b27ec3eca88a6900f59cfbb794822f901e50388ad59f2e9db8d183d"
+        },
+        "24.fc2": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "24.fc2.safetensors",
+          "sha256": "d8718f3bf0aad2377b797a57da53c06c4a36abc51dfe278bc8bbb544815987ca"
+        },
+        "30.block_output": {
+          "shape": [
+            16,
+            17,
+            64
+          ],
+          "file": "30.block_output.safetensors",
+          "sha256": "2dfa85e8ea5ffbe2aa558c805850a20a1aeb3dc43fbd8ae969d92683e79ad885"
+        },
+        "31.cls": {
+          "shape": [
+            16,
+            64
+          ],
+          "file": "31.cls.safetensors",
+          "sha256": "1213f12d4c250c4cd5f20d430fc0c581d1f81f58d7cafdd735a6ce708311076a"
+        },
+        "32.position": {
+          "shape": [
+            16,
+            64
+          ],
+          "file": "32.position.safetensors",
+          "sha256": "a9eec37af1a4616b0d71a677cb1506e3da25c41c2cf6407c11f95b333f368850"
+        },
+        "33.positioned": {
+          "shape": [
+            16,
+            64
+          ],
+          "file": "33.positioned.safetensors",
+          "sha256": "20bfb78b5a907ce6dee027bab5790fb7716497baae87df406e0a3941639884e0"
+        },
+        "90.output": {
+          "shape": [
+            16,
+            64
+          ],
+          "file": "90.output.safetensors",
+          "sha256": "20bfb78b5a907ce6dee027bab5790fb7716497baae87df406e0a3941639884e0"
+        }
+      },
+      "order": [
+        "00.resized",
+        "01.valid",
+        "02.safe",
+        "03.remapped",
+        "04.projected",
+        "05.embedded",
+        "06.cls_joined",
+        "10.window_tokens",
+        "11.norm1",
+        "12.qkv",
+        "13.q",
+        "14.k",
+        "15.v",
+        "16.logits",
+        "17.probs",
+        "18.attention",
+        "19.attn_projected",
+        "20.residual",
+        "21.norm2",
+        "22.fc1",
+        "23.gelu",
+        "24.fc2",
+        "30.block_output",
+        "31.cls",
+        "32.position",
+        "33.positioned",
+        "90.output"
+      ],
+      "full_sha256": "26079c6bf05c741a7626f1a53bbf4591fc18de747bdf325fcfb379d2bda204b9"
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "shape": [
+        1,
+        8,
+        9,
+        8,
+        2,
+        32,
+        3,
+        0,
+        1,
+        1
+      ],
+      "parameter_shapes": {
+        "invalid_xyz_token": [
+          32
+        ],
+        "dropped_xyz_token": [
+          32
+        ],
+        "pos_embed": [
+          1,
+          32,
+          4,
+          4
+        ],
+        "pos_embed_window": [
+          1,
+          5,
+          32
+        ],
+        "cls_token": [
+          1,
+          1,
+          32
+        ],
+        "point_proj.weight": [
+          32,
+          3
+        ],
+        "point_proj.bias": [
+          32
+        ],
+        "blocks.0.norm1.weight": [
+          32
+        ],
+        "blocks.0.norm1.bias": [
+          32
+        ],
+        "blocks.0.attn.qkv.weight": [
+          96,
+          32
+        ],
+        "blocks.0.attn.qkv.bias": [
+          96
+        ],
+        "blocks.0.attn.proj.weight": [
+          32,
+          32
+        ],
+        "blocks.0.attn.proj.bias": [
+          32
+        ],
+        "blocks.0.norm2.weight": [
+          32
+        ],
+        "blocks.0.norm2.bias": [
+          32
+        ],
+        "blocks.0.mlp.fc1.weight": [
+          64,
+          32
+        ],
+        "blocks.0.mlp.fc1.bias": [
+          64
+        ],
+        "blocks.0.mlp.fc2.weight": [
+          32,
+          64
+        ],
+        "blocks.0.mlp.fc2.bias": [
+          32
+        ]
+      },
+      "taps": {
+        "00.resized": {
+          "shape": [
+            16,
+            4,
+            3
+          ],
+          "file": "00.resized.safetensors",
+          "sha256": "a8fb8c3caea88aa3c2d8e79ec66144db87fa08e083b5840519c612c1585be259"
+        },
+        "03.remapped": {
+          "shape": [
+            16,
+            4,
+            3
+          ],
+          "file": "03.remapped.safetensors",
+          "sha256": "c96e27c0fc38db9f31ef0477af97bf36ab8c9e0aa106d46b676c25aa384a0926"
+        },
+        "04.projected": {
+          "shape": [
+            16,
+            4,
+            32
+          ],
+          "file": "04.projected.safetensors",
+          "sha256": "843a9a858b6c835a6ad935d10ad16c80e9bcaa69eb27cba496a09ab3fc4cb3ff"
+        },
+        "01.valid": {
+          "shape": [
+            16,
+            4
+          ],
+          "file": "01.valid.safetensors",
+          "sha256": "3b7b30d8c15316f50443c15b839428a058d198a073b959205619ef90e4674a05"
+        },
+        "02.safe": {
+          "shape": [
+            16,
+            4,
+            3
+          ],
+          "file": "02.safe.safetensors",
+          "sha256": "7bf61777aceca23f588a5aca1be5577e0dfda0089b80cce575ed086cff829448"
+        },
+        "05.embedded": {
+          "shape": [
+            16,
+            4,
+            32
+          ],
+          "file": "05.embedded.safetensors",
+          "sha256": "fb8aadcef42d14252f72a577b7e670f351f33f50c29c069217e728d2ef036659"
+        },
+        "06.cls_joined": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "06.cls_joined.safetensors",
+          "sha256": "186b90572115d404d79ad625c1974100364d72a0a44fa33aad29c08d6e92cc10"
+        },
+        "10.window_tokens": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "10.window_tokens.safetensors",
+          "sha256": "3f880b163fbc23d611dd8324e12caa5d0dd1b74e92f9536324c44176ac3df3f7"
+        },
+        "11.norm1": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "11.norm1.safetensors",
+          "sha256": "5660472fa336c6f25a31e23435b834bc32f768154584f971be7bcf2143dd4a38"
+        },
+        "12.qkv": {
+          "shape": [
+            16,
+            5,
+            96
+          ],
+          "file": "12.qkv.safetensors",
+          "sha256": "8f098f22285d8bdde840bd0fb3c3714ff2358339a9d3af6b0371fb21e118fc9f"
+        },
+        "13.q": {
+          "shape": [
+            16,
+            16,
+            5,
+            2
+          ],
+          "file": "13.q.safetensors",
+          "sha256": "ec99720cd39ac0c2f8a66f598677a90f9a5b171f017dec00e715ab412554a285"
+        },
+        "14.k": {
+          "shape": [
+            16,
+            16,
+            5,
+            2
+          ],
+          "file": "14.k.safetensors",
+          "sha256": "b3901bc116519b28c324eb8861ff91e5e156d0318b6e964f3d0cce7a2577eb2e"
+        },
+        "16.logits": {
+          "shape": [
+            16,
+            16,
+            5,
+            5
+          ],
+          "file": "16.logits.safetensors",
+          "sha256": "87cfe5f594105c81db1afbfdaf002ed1143eb90b186113eec570fffea6397d09"
+        },
+        "17.probs": {
+          "shape": [
+            16,
+            16,
+            5,
+            5
+          ],
+          "file": "17.probs.safetensors",
+          "sha256": "7f4d8ce0f5e62e89d4641c24b0944870fb9f2c54668e81a29615c232ea40a434"
+        },
+        "18.attention": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "18.attention.safetensors",
+          "sha256": "9ec4ca83a63e979e3b074a323daec9f1a00e52598646bfc9463afee50383bf3f"
+        },
+        "19.attn_projected": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "19.attn_projected.safetensors",
+          "sha256": "8d26f716ae2f1eed90ca2b3e54c8d8fd01cbed43818c551453906d042ecbbd2c"
+        },
+        "15.v": {
+          "shape": [
+            16,
+            16,
+            5,
+            2
+          ],
+          "file": "15.v.safetensors",
+          "sha256": "280ab2138aed311aee6adf4e5bcdd2262976676f42269d5665fc2d1f8de6a704"
+        },
+        "20.residual": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "20.residual.safetensors",
+          "sha256": "7d70127b9e8b8490ca23eb4615944fff782a082cddf5217aada0d895b73540d5"
+        },
+        "21.norm2": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "21.norm2.safetensors",
+          "sha256": "6f682852a2c922a4b02e387831cfbc168853e572d16758767df9e705f7201206"
+        },
+        "22.fc1": {
+          "shape": [
+            16,
+            5,
+            64
+          ],
+          "file": "22.fc1.safetensors",
+          "sha256": "51f6db4e278e84fca7789e9c0c1e964ef72cf9d2636584ca9cebd99d9ae6485b"
+        },
+        "23.gelu": {
+          "shape": [
+            16,
+            5,
+            64
+          ],
+          "file": "23.gelu.safetensors",
+          "sha256": "4da5485d9bd5a8d4446957c98625d93ca69daef976690e22663a357aac339ef1"
+        },
+        "24.fc2": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "24.fc2.safetensors",
+          "sha256": "279340fbf861ba5a5f4048102343bc008c23bc28afa324cb5537e4f969792a86"
+        },
+        "30.block_output": {
+          "shape": [
+            16,
+            5,
+            32
+          ],
+          "file": "30.block_output.safetensors",
+          "sha256": "1a26751c40b3ad2c0088f0e4a38d57d3e4a6808b91289aef6718bcc74eddd28f"
+        },
+        "33.positioned": {
+          "shape": [
+            16,
+            32
+          ],
+          "file": "33.positioned.safetensors",
+          "sha256": "2e0c4fd6a539763387c3e7f4290cb4d5feb36be17a0dd613a1f224827df1cd6f"
+        },
+        "31.cls": {
+          "shape": [
+            16,
+            32
+          ],
+          "file": "31.cls.safetensors",
+          "sha256": "7f91e3dfb2e47ace93d26e88eabcd5302f732023152aec1a1f96e79c6dc6a56a"
+        },
+        "32.position": {
+          "shape": [
+            16,
+            32
+          ],
+          "file": "32.position.safetensors",
+          "sha256": "1630fb26f30437293cb3600ba5169c2582deec134ba1e7a38ddef0ada029f392"
+        },
+        "90.output": {
+          "shape": [
+            16,
+            32
+          ],
+          "file": "90.output.safetensors",
+          "sha256": "906cdd68c349ab1c900e1bf3e96c43c94c6583dc03d6076a5ccc0328f99c190c"
+        }
+      },
+      "order": [
+        "00.resized",
+        "01.valid",
+        "02.safe",
+        "03.remapped",
+        "04.projected",
+        "05.embedded",
+        "06.cls_joined",
+        "10.window_tokens",
+        "11.norm1",
+        "12.qkv",
+        "13.q",
+        "14.k",
+        "15.v",
+        "16.logits",
+        "17.probs",
+        "18.attention",
+        "19.attn_projected",
+        "20.residual",
+        "21.norm2",
+        "22.fc1",
+        "23.gelu",
+        "24.fc2",
+        "30.block_output",
+        "31.cls",
+        "32.position",
+        "33.positioned",
+        "90.output"
+      ],
+      "full_sha256": "e1ed5cbed061d11a207e4716a58497e890b9d0bc43387eb065b48342e3a23cab"
+    },
+    {
+      "prefix": "case.0004",
+      "input": "case.0004.input",
+      "shape": [
+        1,
+        11,
+        12,
+        8,
+        4,
+        32,
+        4,
+        0,
+        1,
+        0
+      ],
+      "parameter_shapes": {
+        "invalid_xyz_token": [
+          32
+        ],
+        "dropped_xyz_token": [
+          32
+        ],
+        "pos_embed": [
+          1,
+          32,
+          2,
+          2
+        ],
+        "pos_embed_window": [
+          1,
+          17,
+          32
+        ],
+        "cls_token": [
+          1,
+          1,
+          32
+        ],
+        "point_proj.weight": [
+          32,
+          3
+        ],
+        "point_proj.bias": [
+          32
+        ],
+        "blocks.0.norm1.weight": [
+          32
+        ],
+        "blocks.0.norm1.bias": [
+          32
+        ],
+        "blocks.0.attn.qkv.weight": [
+          96,
+          32
+        ],
+        "blocks.0.attn.qkv.bias": [
+          96
+        ],
+        "blocks.0.attn.proj.weight": [
+          32,
+          32
+        ],
+        "blocks.0.attn.proj.bias": [
+          32
+        ],
+        "blocks.0.norm2.weight": [
+          32
+        ],
+        "blocks.0.norm2.bias": [
+          32
+        ],
+        "blocks.0.mlp.fc1.weight": [
+          64,
+          32
+        ],
+        "blocks.0.mlp.fc1.bias": [
+          64
+        ],
+        "blocks.0.mlp.fc2.weight": [
+          32,
+          64
+        ],
+        "blocks.0.mlp.fc2.bias": [
+          32
+        ]
+      },
+      "taps": {
+        "00.resized": {
+          "shape": [
+            4,
+            16,
+            3
+          ],
+          "file": "00.resized.safetensors",
+          "sha256": "12d80828d9a07ea795fa8a5d5dfced0bb9892ef5b84238d5704cc4f4378c5f93"
+        },
+        "03.remapped": {
+          "shape": [
+            4,
+            16,
+            3
+          ],
+          "file": "03.remapped.safetensors",
+          "sha256": "0aa82170249153dfdaefa3783a1fe44adbc1b45b80aba2fad14661b7a839fef1"
+        },
+        "04.projected": {
+          "shape": [
+            4,
+            16,
+            32
+          ],
+          "file": "04.projected.safetensors",
+          "sha256": "e2df485dfb4ba42b84e9055a95ce95a9ae05013262282843575a5323dd554068"
+        },
+        "01.valid": {
+          "shape": [
+            4,
+            16
+          ],
+          "file": "01.valid.safetensors",
+          "sha256": "1343d8bde9f80185c01c7da8acbddab0ffe9388e83d147190ba4e9ef7e65a7eb"
+        },
+        "02.safe": {
+          "shape": [
+            4,
+            16,
+            3
+          ],
+          "file": "02.safe.safetensors",
+          "sha256": "4be741ba51b3c3d22f87da0808118fe8aa8c163e9afaa73fbfa11be0614766d7"
+        },
+        "05.embedded": {
+          "shape": [
+            4,
+            16,
+            32
+          ],
+          "file": "05.embedded.safetensors",
+          "sha256": "e6eb7ee5303972c136760f564aa20583420a83233dc19f29514e9f4aa4de9128"
+        },
+        "06.cls_joined": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "06.cls_joined.safetensors",
+          "sha256": "4384f1b0b5d5cb47b8c4c9f71b62d1869c20350bc1830219a415c7ee38afaff4"
+        },
+        "10.window_tokens": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "10.window_tokens.safetensors",
+          "sha256": "30e1ff9b70b77d578cb772f5223f568660b570a5fe19a4d1113fb1febdc175c8"
+        },
+        "11.norm1": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "11.norm1.safetensors",
+          "sha256": "5708ba2080cfe758c3eaf6f2ec88804a6e7dfd32df252c2fb1b25e8ccd776291"
+        },
+        "12.qkv": {
+          "shape": [
+            4,
+            17,
+            96
+          ],
+          "file": "12.qkv.safetensors",
+          "sha256": "38efcabb8dd4e83d5e3fcf8be036fb153e40550ae8da44dfec9d246264c25fd7"
+        },
+        "13.q": {
+          "shape": [
+            4,
+            16,
+            17,
+            2
+          ],
+          "file": "13.q.safetensors",
+          "sha256": "b39750821b059d7331b1ad68829113c98d51f545626689c043e4b6189c0d15d0"
+        },
+        "14.k": {
+          "shape": [
+            4,
+            16,
+            17,
+            2
+          ],
+          "file": "14.k.safetensors",
+          "sha256": "4b1cf04e01473d496baabfaa81b07b9b5aa2bca994b4e5592e8bb5d426054de0"
+        },
+        "16.logits": {
+          "shape": [
+            4,
+            16,
+            17,
+            17
+          ],
+          "file": "16.logits.safetensors",
+          "sha256": "2eafbe1cd165d557fb52d4e04fbf66464c3f892979776995cf66b97cf7dd0be4"
+        },
+        "17.probs": {
+          "shape": [
+            4,
+            16,
+            17,
+            17
+          ],
+          "file": "17.probs.safetensors",
+          "sha256": "7f7f7ab1efa132548ebbb1fa7dca071dcfdad6bcc5a478e367329b00bd0168dd"
+        },
+        "18.attention": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "18.attention.safetensors",
+          "sha256": "60047f3f820add502db01a24cde2c4c3024fce35adc920d7495a43dcaf7211e4"
+        },
+        "19.attn_projected": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "19.attn_projected.safetensors",
+          "sha256": "eedffa3eb4c505eda384178397f73d29bd11dc2ea8a31bb78d8b8a50a4b83605"
+        },
+        "15.v": {
+          "shape": [
+            4,
+            16,
+            17,
+            2
+          ],
+          "file": "15.v.safetensors",
+          "sha256": "080adc9828f7e2a8b36521ea7bce204eec0c78eb4e97cbde61a9d134d9c34a4d"
+        },
+        "20.residual": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "20.residual.safetensors",
+          "sha256": "9f1be53c1405b6c1c69b42991661bb97aca449706a5545551e47cdbda88564f2"
+        },
+        "21.norm2": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "21.norm2.safetensors",
+          "sha256": "a7da5cc7381a2aeb8a9f8afff549055830c9a975e34c3f0173b7bc46e5488209"
+        },
+        "22.fc1": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "22.fc1.safetensors",
+          "sha256": "70e4aeb1bd0c1568cfc41a1bf4cecafd8aa8270f6177ac08b7fa9ecb4a95a188"
+        },
+        "23.gelu": {
+          "shape": [
+            4,
+            17,
+            64
+          ],
+          "file": "23.gelu.safetensors",
+          "sha256": "9a400d2df66ff275fbb3655102d9c8bff0e630101020cd3e4f9562cb3dfa0575"
+        },
+        "24.fc2": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "24.fc2.safetensors",
+          "sha256": "6b05729b9d9dcb5e6a894abc65facb27edd6462beb89df5198b1b280d1d6affe"
+        },
+        "30.block_output": {
+          "shape": [
+            4,
+            17,
+            32
+          ],
+          "file": "30.block_output.safetensors",
+          "sha256": "2c0b93ab5bd3dc53d5eed9fe78d6ebc9eb713eb305b3ad2348b2fe4771c17286"
+        },
+        "31.cls": {
+          "shape": [
+            4,
+            32
+          ],
+          "file": "31.cls.safetensors",
+          "sha256": "4ad74329e4843c72a2f0ab1368bfbc6e32cad8debcf3dafbbadf2c76a22b1d7b"
+        },
+        "32.position": {
+          "shape": [
+            4,
+            32
+          ],
+          "file": "32.position.safetensors",
+          "sha256": "e4675ff9f33140a80ae332a3749a8e05d552ed860b6ac7f7de74627ef144978a"
+        },
+        "33.positioned": {
+          "shape": [
+            4,
+            32
+          ],
+          "file": "33.positioned.safetensors",
+          "sha256": "f336d05cb4d3965ad9461085b9b3e00e1dfecc34bc792ee891842703cfc65730"
+        },
+        "90.output": {
+          "shape": [
+            4,
+            32
+          ],
+          "file": "90.output.safetensors",
+          "sha256": "f336d05cb4d3965ad9461085b9b3e00e1dfecc34bc792ee891842703cfc65730"
+        }
+      },
+      "order": [
+        "00.resized",
+        "01.valid",
+        "02.safe",
+        "03.remapped",
+        "04.projected",
+        "05.embedded",
+        "06.cls_joined",
+        "10.window_tokens",
+        "11.norm1",
+        "12.qkv",
+        "13.q",
+        "14.k",
+        "15.v",
+        "16.logits",
+        "17.probs",
+        "18.attention",
+        "19.attn_projected",
+        "20.residual",
+        "21.norm2",
+        "22.fc1",
+        "23.gelu",
+        "24.fc2",
+        "30.block_output",
+        "31.cls",
+        "32.position",
+        "33.positioned",
+        "90.output"
+      ],
+      "full_sha256": "d79d4e3936f8b08dc6f101b5f693af085d671b708a0125816f1ecd717dfda8ed"
+    },
+    {
+      "prefix": "case.0005",
+      "input": "case.0005.input",
+      "shape": [
+        1,
+        17,
+        19,
+        16,
+        8,
+        768,
+        2,
+        0,
+        0,
+        0
+      ],
+      "parameter_shapes": {
+        "invalid_xyz_token": [
+          768
+        ],
+        "pos_embed": [
+          1,
+          768,
+          2,
+          2
+        ],
+        "pos_embed_window": [
+          1,
+          65,
+          768
+        ],
+        "cls_token": [
+          1,
+          1,
+          768
+        ],
+        "point_proj.weight": [
+          768,
+          3
+        ],
+        "point_proj.bias": [
+          768
+        ],
+        "blocks.0.norm1.weight": [
+          768
+        ],
+        "blocks.0.norm1.bias": [
+          768
+        ],
+        "blocks.0.attn.qkv.weight": [
+          2304,
+          768
+        ],
+        "blocks.0.attn.qkv.bias": [
+          2304
+        ],
+        "blocks.0.attn.proj.weight": [
+          768,
+          768
+        ],
+        "blocks.0.attn.proj.bias": [
+          768
+        ],
+        "blocks.0.norm2.weight": [
+          768
+        ],
+        "blocks.0.norm2.bias": [
+          768
+        ],
+        "blocks.0.mlp.fc1.weight": [
+          1536,
+          768
+        ],
+        "blocks.0.mlp.fc1.bias": [
+          1536
+        ],
+        "blocks.0.mlp.fc2.weight": [
+          768,
+          1536
+        ],
+        "blocks.0.mlp.fc2.bias": [
+          768
+        ]
+      },
+      "taps": {
+        "00.resized": {
+          "shape": [
+            4,
+            64,
+            3
+          ],
+          "file": "00.resized.safetensors",
+          "sha256": "bbda9908bf1232f87d3a44517b0c7f05be55ca34e4b7cb95825776282d27f364"
+        },
+        "03.remapped": {
+          "shape": [
+            4,
+            64,
+            3
+          ],
+          "file": "03.remapped.safetensors",
+          "sha256": "7a91315f436df36847ff52bb6c7986e843b694353adf87c66df7320e3c30bed6"
+        },
+        "04.projected": {
+          "shape": [
+            4,
+            64,
+            768
+          ],
+          "file": "04.projected.safetensors",
+          "sha256": "94117f6f94422c6248bb0c756e50a636f48ffaa85654b7adeba473820bb24844"
+        },
+        "01.valid": {
+          "shape": [
+            4,
+            64
+          ],
+          "file": "01.valid.safetensors",
+          "sha256": "0a30d0b06eba674208de1d77084868229e10e6aa40e43a6f9779eff6ce47a7af"
+        },
+        "02.safe": {
+          "shape": [
+            4,
+            64,
+            3
+          ],
+          "file": "02.safe.safetensors",
+          "sha256": "ed8d80c0d9a485a1a2f3dcc694d139739a8e71a1609634e68bacaf4719155c8f"
+        },
+        "05.embedded": {
+          "shape": [
+            4,
+            64,
+            768
+          ],
+          "file": "05.embedded.safetensors",
+          "sha256": "bd50fbbeacd4812ba15e261e46e543277a130ec4615b2084ec7b6fdea5caa9e3"
+        },
+        "06.cls_joined": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "06.cls_joined.safetensors",
+          "sha256": "d09f1735625b1a60c55860ccc30e97826daf58be113531dc3233870a6532c38a"
+        },
+        "10.window_tokens": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "10.window_tokens.safetensors",
+          "sha256": "b3b4b6257b17ceb27359a27a43fb944e3c5c2258bd44613871bccba269eaf94b"
+        },
+        "11.norm1": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "11.norm1.safetensors",
+          "sha256": "24098c81bc5a4826437563fdfb275d79e70ef37fb532e3521e56ad4cae2d8757"
+        },
+        "12.qkv": {
+          "shape": [
+            4,
+            65,
+            2304
+          ],
+          "file": "12.qkv.safetensors",
+          "sha256": "7d3976870a7a8718a5e73586e4e77f4035b68143ee22409a5f0bfae40be29345"
+        },
+        "13.q": {
+          "shape": [
+            4,
+            16,
+            65,
+            48
+          ],
+          "file": "13.q.safetensors",
+          "sha256": "ec4df0a3e9ddc3c09bb7948539e6dd200818966020fb57e50eac1a6bc49126e5"
+        },
+        "14.k": {
+          "shape": [
+            4,
+            16,
+            65,
+            48
+          ],
+          "file": "14.k.safetensors",
+          "sha256": "0be07b765635ffb75d95e308589db961e767da1f6fd3ccd85555c8ebe3541bd5"
+        },
+        "16.logits": {
+          "shape": [
+            4,
+            16,
+            65,
+            65
+          ],
+          "file": "16.logits.safetensors",
+          "sha256": "517b79b598f77cc86ef932829aa3c8ded88e04da7791da293a57dbbfc0e8da24"
+        },
+        "17.probs": {
+          "shape": [
+            4,
+            16,
+            65,
+            65
+          ],
+          "file": "17.probs.safetensors",
+          "sha256": "7b56472aab2015aad82ace47418388acb5e6b707acb895ae8e2e8625712261d6"
+        },
+        "18.attention": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "18.attention.safetensors",
+          "sha256": "5f48aac642a0c1b0fcff34b2b02e894344f2c37024d048a2bea6601125147eaa"
+        },
+        "19.attn_projected": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "19.attn_projected.safetensors",
+          "sha256": "15e9aa0a2a2026ca8bcf094ea2bbbadc2f123ca8ef5912f2c971a45085cfd5b2"
+        },
+        "15.v": {
+          "shape": [
+            4,
+            16,
+            65,
+            48
+          ],
+          "file": "15.v.safetensors",
+          "sha256": "1c2495219f61ed93c1c868d67b0d1f70c181ce28095216093b77c0b51ffdf251"
+        },
+        "20.residual": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "20.residual.safetensors",
+          "sha256": "a3a2c03141cf450c8101d60e713c50ecd6cfd9bfcfec4b1529ea377b683581b9"
+        },
+        "21.norm2": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "21.norm2.safetensors",
+          "sha256": "9598e8e3bfc59ea268b8053f83f6ac30a69071d612a2c1534503c95a5ae4d57b"
+        },
+        "22.fc1": {
+          "shape": [
+            4,
+            65,
+            1536
+          ],
+          "file": "22.fc1.safetensors",
+          "sha256": "df1d7ee040ec7d4cede57510f83d463366b1b304a0a25efd108912534a075e7c"
+        },
+        "23.gelu": {
+          "shape": [
+            4,
+            65,
+            1536
+          ],
+          "file": "23.gelu.safetensors",
+          "sha256": "dce64766fa963aeede438fe3c5a6b109a8a220414a5e6d5d623dc4415ada0177"
+        },
+        "24.fc2": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "24.fc2.safetensors",
+          "sha256": "073c05d0b97203b27e4f0ac43e9890483007803c7d81103f78bc807712b5873e"
+        },
+        "30.block_output": {
+          "shape": [
+            4,
+            65,
+            768
+          ],
+          "file": "30.block_output.safetensors",
+          "sha256": "d4129f47cb3fb7b0ab427f1bb2588df64590c8f285fbe367ae5a0ecea3f31139"
+        },
+        "31.cls": {
+          "shape": [
+            4,
+            768
+          ],
+          "file": "31.cls.safetensors",
+          "sha256": "3bd7074e86d93c713f6c0b4438340b7d353c657030f4993ad940e4af93a9fb88"
+        },
+        "32.position": {
+          "shape": [
+            4,
+            768
+          ],
+          "file": "32.position.safetensors",
+          "sha256": "2c00a7d38df7393c28f0876634e84325eab7e42f89ace7bcf8b54908ed642120"
+        },
+        "33.positioned": {
+          "shape": [
+            4,
+            768
+          ],
+          "file": "33.positioned.safetensors",
+          "sha256": "05f553399481d1d2ee28a53f8efe00b083b5ab0ffee02092670f7b85f0e3998f"
+        },
+        "90.output": {
+          "shape": [
+            4,
+            768
+          ],
+          "file": "90.output.safetensors",
+          "sha256": "05f553399481d1d2ee28a53f8efe00b083b5ab0ffee02092670f7b85f0e3998f"
+        }
+      },
+      "order": [
+        "00.resized",
+        "01.valid",
+        "02.safe",
+        "03.remapped",
+        "04.projected",
+        "05.embedded",
+        "06.cls_joined",
+        "10.window_tokens",
+        "11.norm1",
+        "12.qkv",
+        "13.q",
+        "14.k",
+        "15.v",
+        "16.logits",
+        "17.probs",
+        "18.attention",
+        "19.attn_projected",
+        "20.residual",
+        "21.norm2",
+        "22.fc1",
+        "23.gelu",
+        "24.fc2",
+        "30.block_output",
+        "31.cls",
+        "32.position",
+        "33.positioned",
+        "90.output"
+      ],
+      "full_sha256": "cb4c3477a52c738397141bfc48d9ec3c1435ccd0b0b5b927f9c8d5a50459878e"
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "654ef19848bdd0381e223b1b02b47de1a9a514052208c1251f5d610a6e0edf03",
+    "case.0001.input": "d037508a958b6763a28ae83cddafb80cf1bf9f41324068a8d7a4ce2241f203e3",
+    "case.0002.input": "fd21a416868f130f775ad863574e150e6b1ab9287ac2d256d712176c0afb2660",
+    "case.0003.input": "f4f872b21e1e6ac087e148b587e25d18652eade20084dc201d292c8ef5dcfd83",
+    "case.0004.input": "8861cb3aff79c6b76f349700b077d261df4bcc72a4c513a55bc4a04069b2cae3",
+    "case.0005.input": "9ec40d5c118fec4fd6092aa6b8eebf879bcd25331a212b475ccd719c897374b1",
+    "regression.txt": "3470733875914d39ddf54a241233656ba608c9d7fd68657b6c2da9e576bfd52a"
+  }
+}

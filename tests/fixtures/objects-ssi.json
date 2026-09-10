@@ -1,0 +1,2576 @@
+{
+  "scope": "original SSI normalization/own denormalization on supplied pointmaps; NOT MoGe or learned Objects parity",
+  "device": "cpu",
+  "torch": "2.7.0+cu128",
+  "threads": 1,
+  "tf32": false,
+  "deterministic_warn_only": false,
+  "repeats": 3,
+  "observer_exact": true,
+  "source_hashes": {
+    "pytorch3d/transforms/transform3d.py": "b8fdd5c9aa5dcc89b41994984472d6117cc9ccf49f8b225334197f2a373dfd84",
+    "pytorch3d/common/datatypes.py": "1e1f48bea108b715b4dfcbc0b79c915bd3e78fbe4768645c52cc2fb3919aeb6e",
+    "sam3d_objects/data/dataset/tdfy/pose_target.py": "d56de3ea82f9c16363ba5d101fe487183bdef30ecb948fbe0f529282c7888ec3",
+    "sam3d_objects/data/dataset/tdfy/img_and_mask_transforms.py": "e5ecdb46c12568a1d91e09c83842a16afaca8d1e22d73f49f0b9ded62cc3cc26",
+    "sam3d_objects/model/backbone/dit/embedder/point_remapper.py": "fae4708d051a7f11c398252643e550daea69dd21873440d870533fddc11540c0"
+  },
+  "pytorch3d_revision": "75ebeeaea0908c5527e7b1e305fbc7681382db47",
+  "max_abs": 0.0001,
+  "relative_l2": 2e-05,
+  "script_sha256": "c9623d22db9f914e804aa7642bbea00c78c43ce0126b1e4b6bef3185ac18a38c",
+  "loader_sha256": "71eef28179cfc97e4925241c969da0a6409f77aa2ecff8c65ce8253458bca55c",
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "02.centered",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "02.centered": [
+          3,
+          9,
+          13
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          13
+        ],
+        "02.centered": [
+          3,
+          9,
+          13
+        ],
+        "03.statistic": [
+          117
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "04.quantiles",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          13
+        ],
+        "02.centered": [
+          3,
+          79
+        ],
+        "03.statistic": [
+          79
+        ],
+        "04.quantiles": [
+          2
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          13
+        ],
+        "02.centered": [
+          3,
+          81
+        ],
+        "03.statistic": [
+          81
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0004",
+      "input": "case.0004.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        4,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0005",
+      "input": "case.0005.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        5,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          13
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0006",
+      "input": "case.0006.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        6,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          13
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0007",
+      "input": "case.0007.input",
+      "args": [
+        9,
+        13,
+        5,
+        7,
+        7,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          13
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          117,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          117,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          13
+        ],
+        "00.remapped": [
+          3,
+          9,
+          13
+        ],
+        "20.normalized": [
+          3,
+          9,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          117,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          117,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0008",
+      "input": "case.0008.input",
+      "args": [
+        7,
+        11,
+        5,
+        7,
+        1,
+        1,
+        0,
+        1,
+        1
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          7,
+          11
+        ],
+        "02.centered": [
+          3,
+          7,
+          11
+        ],
+        "03.statistic": [
+          77
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          77,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          77,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          7,
+          11
+        ],
+        "00.remapped": [
+          3,
+          7,
+          11
+        ],
+        "20.normalized": [
+          3,
+          7,
+          11
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          77,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          77,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          7,
+          11
+        ],
+        "40.denormalized": [
+          3,
+          7,
+          11
+        ]
+      }
+    },
+    {
+      "prefix": "case.0009",
+      "input": "case.0009.input",
+      "args": [
+        11,
+        9,
+        5,
+        7,
+        1,
+        0,
+        0,
+        1,
+        1
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          11,
+          9
+        ],
+        "02.centered": [
+          3,
+          11,
+          9
+        ],
+        "03.statistic": [
+          99
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          99,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          99,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          11,
+          9
+        ],
+        "00.remapped": [
+          3,
+          11,
+          9
+        ],
+        "20.normalized": [
+          3,
+          11,
+          9
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          99,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          99,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          11,
+          9
+        ],
+        "40.denormalized": [
+          3,
+          11,
+          9
+        ]
+      }
+    },
+    {
+      "prefix": "case.0010",
+      "input": "case.0010.input",
+      "args": [
+        9,
+        11,
+        5,
+        7,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "02.centered",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "02.centered": [
+          3,
+          9,
+          11
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          99,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          99,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          11
+        ],
+        "00.remapped": [
+          3,
+          9,
+          11
+        ],
+        "20.normalized": [
+          3,
+          9,
+          11
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          99,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          99,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          11
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          11
+        ]
+      }
+    },
+    {
+      "prefix": "case.0011",
+      "input": "case.0011.input",
+      "args": [
+        7,
+        13,
+        5,
+        7,
+        4,
+        0,
+        0,
+        1,
+        1
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "12.transformed": [
+          91,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          91,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          7,
+          13
+        ],
+        "00.remapped": [
+          3,
+          7,
+          13
+        ],
+        "20.normalized": [
+          3,
+          7,
+          13
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          91,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          91,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          7,
+          13
+        ],
+        "40.denormalized": [
+          3,
+          7,
+          13
+        ]
+      }
+    },
+    {
+      "prefix": "case.0012",
+      "input": "case.0012.input",
+      "args": [
+        9,
+        11,
+        5,
+        7,
+        6,
+        0,
+        0,
+        0,
+        1
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          11
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          99,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          99,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          11
+        ],
+        "00.remapped": [
+          3,
+          9,
+          11
+        ],
+        "20.normalized": [
+          3,
+          9,
+          11
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          99,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          99,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          11
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          11
+        ]
+      }
+    },
+    {
+      "prefix": "case.0013",
+      "input": "case.0013.input",
+      "args": [
+        7,
+        9,
+        5,
+        7,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          7,
+          9
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          63,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          63,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          7,
+          9
+        ],
+        "00.remapped": [
+          3,
+          7,
+          9
+        ],
+        "20.normalized": [
+          3,
+          7,
+          9
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          63,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          63,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          7,
+          9
+        ],
+        "40.denormalized": [
+          3,
+          7,
+          9
+        ]
+      }
+    },
+    {
+      "prefix": "case.0014",
+      "input": "case.0014.input",
+      "args": [
+        9,
+        11,
+        5,
+        7,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        0.85,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          9,
+          11
+        ],
+        "02.centered": [
+          3,
+          9,
+          11
+        ],
+        "03.statistic": [
+          99
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          99,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          99,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          9,
+          11
+        ],
+        "00.remapped": [
+          3,
+          9,
+          11
+        ],
+        "20.normalized": [
+          3,
+          9,
+          11
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          99,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          99,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          9,
+          11
+        ],
+        "40.denormalized": [
+          3,
+          9,
+          11
+        ]
+      }
+    },
+    {
+      "prefix": "case.0015",
+      "input": "case.0015.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "02.centered",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "02.centered": [
+          3,
+          257,
+          259
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    },
+    {
+      "prefix": "case.0016",
+      "input": "case.0016.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          257,
+          259
+        ],
+        "02.centered": [
+          3,
+          257,
+          259
+        ],
+        "03.statistic": [
+          66563
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    },
+    {
+      "prefix": "case.0017",
+      "input": "case.0017.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "04.quantiles",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          257,
+          259
+        ],
+        "02.centered": [
+          3,
+          39960
+        ],
+        "03.statistic": [
+          39960
+        ],
+        "04.quantiles": [
+          2
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    },
+    {
+      "prefix": "case.0018",
+      "input": "case.0018.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "02.centered",
+        "03.statistic",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          257,
+          259
+        ],
+        "02.centered": [
+          3,
+          53280
+        ],
+        "03.statistic": [
+          53280
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    },
+    {
+      "prefix": "case.0019",
+      "input": "case.0019.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        4,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    },
+    {
+      "prefix": "case.0020",
+      "input": "case.0020.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        5,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          257,
+          259
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    },
+    {
+      "prefix": "case.0021",
+      "input": "case.0021.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        6,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          257,
+          259
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    },
+    {
+      "prefix": "case.0022",
+      "input": "case.0022.input",
+      "args": [
+        257,
+        259,
+        5,
+        7,
+        7,
+        0,
+        0,
+        0,
+        0
+      ],
+      "options": [
+        0.1,
+        2.5,
+        1.3,
+        0.23
+      ],
+      "order": [
+        "00.remapped",
+        "01.mask",
+        "05.computed_scale",
+        "06.computed_shift",
+        "10.matrix",
+        "11.homogeneous",
+        "12.transformed",
+        "13.unclipped",
+        "20.normalized",
+        "21.scale",
+        "22.shift",
+        "30.matrix",
+        "31.homogeneous",
+        "32.transformed",
+        "33.metric_space",
+        "40.denormalized"
+      ],
+      "shapes": {
+        "01.mask": [
+          257,
+          259
+        ],
+        "05.computed_scale": [
+          3
+        ],
+        "06.computed_shift": [
+          3
+        ],
+        "12.transformed": [
+          66563,
+          4
+        ],
+        "10.matrix": [
+          4,
+          4
+        ],
+        "11.homogeneous": [
+          66563,
+          4
+        ],
+        "13.unclipped": [
+          3,
+          257,
+          259
+        ],
+        "00.remapped": [
+          3,
+          257,
+          259
+        ],
+        "20.normalized": [
+          3,
+          257,
+          259
+        ],
+        "21.scale": [
+          3
+        ],
+        "22.shift": [
+          3
+        ],
+        "32.transformed": [
+          66563,
+          4
+        ],
+        "30.matrix": [
+          4,
+          4
+        ],
+        "31.homogeneous": [
+          66563,
+          4
+        ],
+        "33.metric_space": [
+          3,
+          257,
+          259
+        ],
+        "40.denormalized": [
+          3,
+          257,
+          259
+        ]
+      }
+    }
+  ],
+  "rejections": [
+    {
+      "case": "empty_mask",
+      "type": "RuntimeError",
+      "message": "max(): Expected reduction dim to be specified for input.numel() == 0. Specify the reduction dim with the 'dim' argument."
+    },
+    {
+      "case": "all_invalid",
+      "type": "ValueError",
+      "message": "No valid points found in mask"
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "7a5745a6db53dd39a60a4a17f90a49be175a838312bb471aa21225a950a7eb62",
+    "case.0001.input": "0ebb230168fbd90d3776536bc2757652b293440ac870fc1a0537faa5aaa79172",
+    "case.0002.input": "59aa1ce7ff9533b4f52adf55451ece6ac0d58d0f6ec983121be5fb13a104be83",
+    "case.0003.input": "1e4a45b837a87c33a4f6768cb57e6d72d2e3c3a9c51b0ec1abec78cde49148fa",
+    "case.0004.input": "2c35eee73341c337ab502de6087197e4745190a47085f6344b42ccb047c6543f",
+    "case.0005.input": "63fff1c6328e2a15227e688286d147f1aa2873ba30cce6540d1f4a873121b7ec",
+    "case.0006.input": "c1617af8cba6c5ee1360190173e6ffb4776d5dc713bcc4b1e817de04a8f0e056",
+    "case.0007.input": "4949114e5e83a196fb05fa35dfe74cd9312238fed0c9a204a2009d9f1d08c4ea",
+    "case.0008.input": "8a8eba1338d9b6c4bc491bc89b3ad155bcabdeb1d3d619714ada3ed329441fb3",
+    "case.0009.input": "61c2d268fb5f31042319aee226677e8704a3994e8c459aabf52efa9f6db356e7",
+    "case.0010.input": "c5dca3e301efe728e4945f661aaa57ee4da263b91a3546abfb2a5bf46c35b6b2",
+    "case.0011.input": "140131ff2495002beed5d3562d8d6575f6b7392b4bdf49e779a2199e262c8db6",
+    "case.0012.input": "9fd1f732d2beb9b23d66c1a70576a9dd927df7a24f131534651915e6c168986e",
+    "case.0013.input": "9f5de5edce4e619e8d221854a83cd8cfeffbfcd64de53a9b5b43295d391e427c",
+    "case.0014.input": "a6075ab4dc83ded24cbc72306234d725b5c458a7950049f0aaa175b85a25c4e1",
+    "case.0015.input": "d960eccdef4a87283b7da5b03d9c10f2d343587f29c21b24cecd9ad6774ea741",
+    "case.0016.input": "2e883b8001e645f95f949d02ece32ed5b66cbc05aab49df06d370bb95f61c09f",
+    "case.0017.input": "241a997725a2a123612f1b8220db82e2fdfce482e81c242766c46010d629b1cc",
+    "case.0018.input": "3e5f33b4b6d29b5d4b3a4fca8a7aff7962a76f0544fa1685edb98a87ccbea811",
+    "case.0019.input": "48a3418c0ab89d1e57bcf67518e64c09dc8d19a66fa2e5995c05d1d8374e292b",
+    "case.0020.input": "6d2b3d67b3c559057d0c572bc3d6929db45558314630cd0125b455332208b506",
+    "case.0021.input": "a388abde20c4400c1d40c25bd020792c9465cd67ccba1d571914ec9df3d65745",
+    "case.0022.input": "06fc913b281a8081f695e235b53847f39aeffab7dbee16dde95d0618e547f9c3",
+    "upstream.safetensors": "530f50bb467a6ad4acd02972b8cd386712e4e66cf0772f43f22bac1c955531ca",
+    "full.safetensors": "f227afe317a9a18c112414577289bbe0557278a950a42b71dfdaba4f39dbf87a",
+    "regression.txt": "878f073704d1254ba48a32fcaf98f8090757c6f128601c7533db58f5bc7f62a2"
+  }
+}

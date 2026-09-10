@@ -1,0 +1,18 @@
+{
+  "boundary": "Original DINOv3 eval block synthetic-weight operation contract, NOT trained-model parity",
+  "source_revision": "6876159a11b4df116f30f667f8c9888617df0751",
+  "capture": "reference/capture_dino_block.py --small-regression",
+  "source_hashes": "Enforced by the capture script before importing upstream modules",
+  "image": "sha256:1e6b99c58b9c7f4dbd6169ed3f3e46c92ab1b3c11235bfde5ada09b28f2f49af",
+  "torch": "2.7.0+cu128",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "dtype": "float32",
+  "rng": "NumPy default_rng(8401)",
+  "shape": {"batch": 2, "grid_height": 2, "grid_width": 3, "dim": 8, "heads": 2, "prefix": 5, "hidden": 32},
+  "instrumentation_validation": "Original uninstrumented and observed final outputs exactly equal",
+  "auxiliary_taps": ["00.rope_sin", "01.rope_cos", "06.v", "09.logits", "10.probs"],
+  "tolerance": {"max_abs": 0.0001, "relative_l2": 0.00002, "zero_reference_floor": 1e-12},
+  "serialization": "9 significant decimal digits, exact F32 round trip; input, parameters, then 22 sorted taps",
+  "regression_sha256": "5efdb7eb05509b831e677a93d0d04084ac570da142091a4b4afed730511651fb"
+}

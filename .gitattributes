@@ -1,0 +1,8 @@
+# Keep source portable while preserving byte-verified upstream material.
+* text=auto eol=lf
+LICENSES/* -text -whitespace
+*.patch -text -whitespace
+demo/web/vendor/* -text
+*.png -text
+*.input -text
+*.weights -text

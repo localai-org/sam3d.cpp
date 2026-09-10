@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-09",
+  "status": "official_selected_bytes_verified; Body_safe_extraction_and_backbone_GGUF_verified; trained_intermediate_parity_and_auxiliary_closure_pending",
+  "weight_bytes_downloaded_or_verified": true,
+  "sam_neural_weight_bytes_downloaded_or_verified": true,
+  "dependency_closure_complete": false,
+  "body_safe_extraction": {
+    "source_state_tensors": 1127,
+    "source_elements_by_dtype": {"BF16": 840755216, "F32": 112333138, "I64": 221642},
+    "backbone_safetensors_sha256": "98afde8ac5c13c68f3b7c7baf7cc8fa525df901fe1cec44b57d018fba11d53cc",
+    "other_state_safetensors_sha256": "4c6b3f63ce8a050f6587cf833a036bad3f68377d86cfe69d591502c1373ba0a3",
+    "backbone_gguf_sha256": "9228c12b5b34cdb3627fce731a3e3d5890c54dc78ca7eb357d66056893f5bf1f",
+    "initialized_missing_state": "mask_token only: original zero initialization; all 32 stored QKV bias masks remain all-zero",
+    "validation": "all safe tensor bytes checked against source upcasts; all 552 backbone GGUF tensors read under sanitizers; not trained model parity",
+    "trained_stage_validation": "36 own-intermediate backbone boundaries pass CPU/Vulkan on official normalized dancing crop under original-control policy v1; all-block trained operations and full Body still pending",
+    "trained_stage_policy_sha256": "cdc4bd14042edb87e43c9f0655e469e572874856c29a5776cec3d6c9f4364299",
+    "evidence": "TRAINED_BODY.md"
+  },
+  "source_revisions": [
+    {"repository": "https://github.com/ggml-org/ggml", "revision": "e91ded11bdcd78c42f9c8d3978ff6686eb4c1226", "role": "native_runtime_public_submodule_v0.23.0_no_patches"},
+    {"repository": "https://github.com/facebookresearch/dinov3", "revision": "6876159a11b4df116f30f667f8c9888617df0751", "role": "body_backbone_source_oracle_no_weights"},
+    {"repository": "https://github.com/facebookresearch/sam-3d-body", "revision": "b5c765a0d89d789985e186d396315e7590887b94", "role": "official_body_oracle"},
+    {"repository": "https://github.com/facebookresearch/sam-3d-objects", "revision": "f91db411c50efee93d8db7aeb323885650f6f722", "role": "official_objects_oracle"},
+    {"repository": "https://github.com/facebookresearch/MHR", "revision": "e412e12c9d7287a598f00edf19242b476b440211", "role": "public_geometry_source_and_demo; exact_released_TorchScript_is_geometry_oracle"},
+    {"repository": "https://github.com/NVlabs/GEM-X", "revision": "32992550dba114c62243fb55e361311972dce8f9", "role": "downstream_integration_reference"},
+    {"repository": "https://github.com/AmmarkoV/SAM3DBody-cpp", "revision": "198002ede17892648d27d5c0a0085860a9e63bcd", "role": "prior_art_not_executed"},
+    {"repository": "https://github.com/Asher-1/sam-3d-objects-ggml", "revision": "1c14b7c3c3e8d9109b943ddc83a0a39c73744246", "role": "prior_art_not_executed"}
+  ],
+  "gem_submodule_revisions": {
+    "third_party/sam-3d-body": "b5c765a0d89d789985e186d396315e7590887b94",
+    "third_party/soma": "e0f8ff0ecfa3edbbb6058b1e0f08822ee2f84ee5",
+    "third_party/soma-retargeter": "b12d9a3eeff6ea64d7029684e47d1e92b9a60c2c"
+  },
+  "local_reference_revisions": {
+    "motion-bricks.cpp": "0c72c57b7f5021c3ba50f13cd2f2d9e24decbd19",
+    "trellis2cpp": "f3f57f51395bf0a67e8211d90b13e4be72550644",
+    "depth-anything.cpp": "02ba082274e001a63e50de5a1eb0ccc50c6af4b1",
+    "free-splatter.cpp": "be8cb94e51111bba8fccf8b956e84fc5415f9c08",
+    "skin-tokens.cpp": "43e885af2eadee9c40aa85849b71528d1c958293"
+  },
+  "model_repositories": [
+    {
+      "repository": "facebook/sam-3d-body-dinov3",
+      "revision": "11aaa346c7204874a1cbafe3d39a979080b2c55a",
+      "metadata_source": "https://huggingface.co/api/models/facebook/sam-3d-body-dinov3/revision/11aaa346c7204874a1cbafe3d39a979080b2c55a?blobs=true",
+      "hash_evidence": "official_pinned_downloads_locally_size_and_sha256_verified_2026-09-09",
+      "selected_files": [
+        {"path": "model.ckpt", "bytes": 2109129346, "sha256": "b5a2f9d305dd02626b967aa2e86021fba07065df66ce7a7e00ffb9664f150abf"},
+        {"path": "assets/mhr_model.pt", "bytes": 696110248, "sha256": "352e271a6c42729c68554ceaea0c955e866970160c31e35506d782dc0f7377bc"},
+        {"path": "model_config.yaml", "bytes": 1488, "sha256": "1012fc3f39cb5e90e3f8fbadf7bded31604bfafdce0321d17a7c1a2d3f08b88d", "git_blob_sha1": "c43c46e52f41c76094a6fdfe12aee0348213a82b", "hash_evidence": "Meta-hosted_bytes_locally_verified_2026-09-09"}
+      ]
+    },
+    {
+      "repository": "nvidia/GEM-X",
+      "revision": "5ccf5ca3746c3620aa4016114f069a5f6ae399cd",
+      "metadata_source": "https://huggingface.co/api/models/nvidia/GEM-X/revision/5ccf5ca3746c3620aa4016114f069a5f6ae399cd?blobs=true",
+      "hash_evidence": "published_lfs_metadata_not_locally_verified",
+      "selected_files": [
+        {"path": "sam3d_body.ckpt", "bytes": 2109129346, "sha256": "b5a2f9d305dd02626b967aa2e86021fba07065df66ce7a7e00ffb9664f150abf"},
+        {"path": "mhr_model.pt", "bytes": 696110248, "sha256": "352e271a6c42729c68554ceaea0c955e866970160c31e35506d782dc0f7377bc"},
+        {"path": "vitpose.pth", "bytes": 3388483384, "sha256": "8e3eec71dbd6bb745eba8c6debe3e4b97bcfd1d01f300099f2eedf50b9a80c8e"},
+        {"path": "gem_soma.ckpt", "bytes": 541758499, "sha256": "4c1f85ca8c1e11e6588aead49fbc024bf660708def670043e0b537c101ee298e"},
+        {"path": "model_config.yaml", "bytes": 1488, "sha256": "1012fc3f39cb5e90e3f8fbadf7bded31604bfafdce0321d17a7c1a2d3f08b88d", "hash_evidence": "downloaded_config_bytes_locally_sha256_verified"}
+      ]
+    },
+    {
+      "repository": "facebook/sam-3d-objects",
+      "revision": "2e73555018d2741ccd486e56c24fac41155a1dc6",
+      "metadata_source": "https://huggingface.co/api/models/facebook/sam-3d-objects/revision/2e73555018d2741ccd486e56c24fac41155a1dc6?blobs=true",
+      "hash_evidence": "official_pinned_downloads_locally_size_and_sha256_verified_2026-09-09",
+      "selection_note": "Principal inference checkpoints and their seven configs. Config bytes match the pinned repository Git blobs. Auxiliary DINO/MoGe closure and learned tensor inventory remain unfinished.",
+      "selected_files": [
+        {"path": "checkpoints/pipeline.yaml", "bytes": 3548, "sha256": "53c3d226b21df85c0bb3d16e6e4fa63abde0d6167525765eb929d02bfa9d358c", "git_blob_sha1": "0703a2eb4045418f1d6e38053712105d03f90d88"},
+        {"path": "checkpoints/ss_generator.yaml", "bytes": 5076, "sha256": "3c265448bca7c057f94e3ef56adea3a895a10bcd9f15f992a41dd03fa35412cd", "git_blob_sha1": "35df0ea780c4c6f6eaf490c1a828ad054d4f9f0b"},
+        {"path": "checkpoints/slat_generator.yaml", "bytes": 1986, "sha256": "53029fadff6fe34a0344381a16d64d65d0567d603484952712e8969319559c4e", "git_blob_sha1": "859964b5e87666122a7137f6dc9934444d6182ca"},
+        {"path": "checkpoints/ss_decoder.yaml", "bytes": 244, "sha256": "baacff269b664f84f7aa1896ebd66128065f6568cdb88d419d5c3d2ccb4193ae", "git_blob_sha1": "7982f7ff6cdb4bebcad49404ba03476fa69f4c6b"},
+        {"path": "checkpoints/slat_decoder_gs.yaml", "bytes": 576, "sha256": "53f054e02a0c185f0a6885d30bb6ca0ec92efe0a98148688e7f05f7c26afe670", "git_blob_sha1": "10683b1bd592e1db70eb7070a3365b536ad0ba9e"},
+        {"path": "checkpoints/slat_decoder_gs_4.yaml", "bytes": 575, "sha256": "3d1dfd4c56cdac56f30e0cf5eb310d4df973fe25c60ac0a462c86ca4e3bf8b48", "git_blob_sha1": "ef89609e6f0cf5a12398a5d5f000687bf6693916"},
+        {"path": "checkpoints/slat_decoder_mesh.yaml", "bytes": 300, "sha256": "8f46952764aa985c50109a56f0b4f07625cdb06457aaded74957d26f3520c69e", "git_blob_sha1": "74735a4b9ba1fbd76b8d1a56f27b6ebe63aeafc9"},
+        {"path": "checkpoints/ss_generator.ckpt", "bytes": 6690136964, "sha256": "225f40479e4cff4f39d6fa14c55be3abad1475bf55b61af3bec1e19ed2f6c146"},
+        {"path": "checkpoints/ss_decoder.ckpt", "bytes": 147609242, "sha256": "6dac1cd7b7fda5a38e0614fadae441f1794f80e39ea2981f1ac8aff0a7e99340"},
+        {"path": "checkpoints/slat_generator.ckpt", "bytes": 4906537684, "sha256": "91529bde8e7daa12d09618a66c319e3a5a6398db6b23b958cedcb1c3f28faabb"},
+        {"path": "checkpoints/slat_decoder_gs.ckpt", "bytes": 171476155, "sha256": "f8077c36a06eaf890dd93cda1937411f793dea1eb80b3dd9329f2038ba84a111"},
+        {"path": "checkpoints/slat_decoder_gs_4.ckpt", "bytes": 170269801, "sha256": "731a0eceaa47945b52aa27f650d695b2aea9cc70945751e5609e5cb5b49f0186"},
+        {"path": "checkpoints/slat_decoder_mesh.ckpt", "bytes": 363726862, "sha256": "85907b37b67d8ce5b099a96629bdcfbd873eb407dee6b3aa9a75deb15038db33"}
+      ]
+    }
+  ],
+  "public_geometry_releases": [
+    {
+      "repository": "https://github.com/facebookresearch/MHR",
+      "release": "v1.0.1",
+      "url": "https://github.com/facebookresearch/MHR/releases/download/v1.0.1/assets.zip",
+      "archive_bytes": 198943157,
+      "archive_sha256": "e4f4f205cd87c0fa106577ba1de4fc763e4eb197c924461d2ef7e6944e9d6b94",
+      "member": "assets/mhr_model.pt",
+      "member_bytes": 696110248,
+      "member_sha256": "352e271a6c42729c68554ceaea0c955e866970160c31e35506d782dc0f7377bc",
+      "license_member": "assets/LICENSE.txt",
+      "license_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "locally_verified": true,
+      "access": "independently public official MHR release; no SAM checkpoint access granted",
+      "reference": "tests/fixtures/mhr-schema.json",
+      "native_gguf_sha256": "d52ab772628fb6d851550381b428185a32da6398793f0ff70299bad1999ba8f8",
+      "native_skeleton_parity": "46 operation taps and uninstrumented skeleton pass CPU and NVIDIA Vulkan/CUDA; GGML projection plus CPU F32/F64 geometry",
+      "native_skeleton_local_fixture_sha256": "3b08436b0506f85a1f98acf0d4796d9440d14ab58fbc7af655a6996a48dd24e9",
+      "native_geometry_inference_parity": true,
+      "native_geometry_parity_scope": "complete released MHR forward on two official demo samples, correctives off/on; 48 operation/final-output checks pass CPU and NVIDIA Vulkan/CUDA; not SAM Body output mapping, neural inference or performance acceptance",
+      "native_geometry_skin_fixture_sha256": "b0d6e423fd19e1b1adf996ba860a40d5dff4462a711570b313415227fecd9fd3"
+    }
+  ],
+  "pending": [
+    "Complete code/weight/geometry license inventory; official SAM model access granted 2026-09-09",
+    "Objects auxiliary DINO/MoGe model revisions and dependency closure",
+    "Full Body reference must use the pinned local DINO source, not runtime torch.hub network fetch",
+    "Container digest and full package lock",
+    "Downloaded weight hash verification and tensor dtype/layout inventory",
+    "Official uninstrumented baseline and validated capture fixtures"
+  ]
+}

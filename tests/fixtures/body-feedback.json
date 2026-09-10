@@ -1,0 +1,418 @@
+{
+  "boundary": "original full_to_crop and 2D/3D keypoint feedback method ASTs, original FFNs/grid_sample; synthetic pose/state inputs, not complete pose geometry or decoder parity",
+  "revision": "b5c765a0d89d789985e186d396315e7590887b94",
+  "source_hashes": {
+    "models/modules/camera_embed.py": "42f2483368fa3249557464aaa188c5d422f4e2faeb29ecd6facc131a97141539",
+    "models/modules/transformer.py": "0cc343878ba8cdf28f9061de53ac0bc0fd6f829889ade96341729db5860ecbe4",
+    "models/modules/swiglu_ffn.py": "7a25fff5fa99c910c8daea7737f3650881a92da11388ddfbfd57794dc9de5355",
+    "models/modules/layer_scale.py": "ef4e0f769dd072425384f354c9527e2fdd7346843379e5f3b0cb2110a72c1c81",
+    "models/modules/drop_path.py": "04c2f8bf7f13382c3d5c992fca00692a0591d187a2d271f49afaa5bce2ec9525",
+    "models/meta_arch/sam3d_body.py": "851b7475f18b56891aa02606e7c0ee9e03120fa208cc85df5127b792e1abfeee",
+    "models/meta_arch/base_model.py": "baf4c93ab865e6e9f4f498056a673698e59bafe89b17f969833884a3b352e8bc"
+  },
+  "selected_methods": {
+    "sam3d_body.py": [
+      "_full_to_crop",
+      "keypoint_token_update_fn",
+      "keypoint3d_token_update_fn"
+    ],
+    "base_model.py": [
+      "_flatten_person"
+    ]
+  },
+  "method_changes": "none; unchanged AST bodies including original BaseModel flatten",
+  "capture_script_sha256": "277aa81b65176940216e247d16524e3bcc01a6f9a49b34d4f410f9680a382cbc",
+  "torch": "2.7.0+cu128",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "threads": 1,
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "cuda_device": null,
+  "unobserved_vs_observed": "exact_equal_all_cases",
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "order": [
+        "00.homogeneous",
+        "01.crop_pixels",
+        "02.crop_points",
+        "10.selected_2d",
+        "11.selected_depth",
+        "12.invalid",
+        "13.grid",
+        "14.sampled",
+        "15.masked_features",
+        "20.pose2d.0.linear",
+        "20.pose2d.1.relu",
+        "20.pose2d.2.output",
+        "21.feature_update",
+        "30.relative_3d",
+        "31.pose3d.0.linear",
+        "31.pose3d.1.relu",
+        "31.pose3d.2.output",
+        "90.tokens",
+        "91.augment"
+      ],
+      "shapes": {
+        "00.homogeneous": [
+          2,
+          9,
+          3
+        ],
+        "01.crop_pixels": [
+          2,
+          9,
+          2
+        ],
+        "02.crop_points": [
+          2,
+          9,
+          2
+        ],
+        "20.pose2d.0.linear": [
+          2,
+          6,
+          8
+        ],
+        "20.pose2d.1.relu": [
+          2,
+          6,
+          8
+        ],
+        "20.pose2d.2.output": [
+          2,
+          6,
+          8
+        ],
+        "14.sampled": [
+          2,
+          6,
+          8
+        ],
+        "15.masked_features": [
+          2,
+          6,
+          8
+        ],
+        "21.feature_update": [
+          2,
+          6,
+          8
+        ],
+        "10.selected_2d": [
+          2,
+          6,
+          2
+        ],
+        "11.selected_depth": [
+          2,
+          6
+        ],
+        "13.grid": [
+          2,
+          6,
+          2
+        ],
+        "12.invalid": [
+          2,
+          6
+        ],
+        "31.pose3d.0.linear": [
+          2,
+          4,
+          8
+        ],
+        "31.pose3d.1.relu": [
+          2,
+          4,
+          8
+        ],
+        "31.pose3d.2.output": [
+          2,
+          4,
+          8
+        ],
+        "30.relative_3d": [
+          2,
+          4,
+          3
+        ],
+        "90.tokens": [
+          2,
+          16,
+          8
+        ],
+        "91.augment": [
+          2,
+          16,
+          8
+        ]
+      }
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "order": [
+        "00.homogeneous",
+        "01.crop_pixels",
+        "02.crop_points",
+        "10.selected_2d",
+        "11.selected_depth",
+        "12.invalid",
+        "13.grid",
+        "14.sampled",
+        "15.masked_features",
+        "20.pose2d.0.linear",
+        "20.pose2d.1.relu",
+        "20.pose2d.2.output",
+        "21.feature_update",
+        "90.tokens",
+        "91.augment"
+      ],
+      "shapes": {
+        "00.homogeneous": [
+          1,
+          7,
+          3
+        ],
+        "01.crop_pixels": [
+          1,
+          7,
+          2
+        ],
+        "02.crop_points": [
+          1,
+          7,
+          2
+        ],
+        "20.pose2d.0.linear": [
+          1,
+          7,
+          8
+        ],
+        "20.pose2d.1.relu": [
+          1,
+          7,
+          8
+        ],
+        "20.pose2d.2.output": [
+          1,
+          7,
+          8
+        ],
+        "14.sampled": [
+          1,
+          7,
+          4
+        ],
+        "15.masked_features": [
+          1,
+          7,
+          4
+        ],
+        "21.feature_update": [
+          1,
+          7,
+          8
+        ],
+        "10.selected_2d": [
+          1,
+          7,
+          2
+        ],
+        "11.selected_depth": [
+          1,
+          7
+        ],
+        "13.grid": [
+          1,
+          7,
+          2
+        ],
+        "12.invalid": [
+          1,
+          7
+        ],
+        "90.tokens": [
+          1,
+          10,
+          8
+        ],
+        "91.augment": [
+          1,
+          10,
+          8
+        ]
+      }
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "order": [
+        "00.homogeneous",
+        "01.crop_pixels",
+        "02.crop_points",
+        "90.tokens",
+        "91.augment"
+      ],
+      "shapes": {
+        "00.homogeneous": [
+          2,
+          9,
+          3
+        ],
+        "01.crop_pixels": [
+          2,
+          9,
+          2
+        ],
+        "02.crop_points": [
+          2,
+          9,
+          2
+        ],
+        "90.tokens": [
+          2,
+          16,
+          8
+        ],
+        "91.augment": [
+          2,
+          16,
+          8
+        ]
+      }
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "order": [
+        "00.homogeneous",
+        "01.crop_pixels",
+        "02.crop_points",
+        "10.selected_2d",
+        "11.selected_depth",
+        "12.invalid",
+        "13.grid",
+        "14.sampled",
+        "15.masked_features",
+        "20.pose2d.0.linear",
+        "20.pose2d.1.relu",
+        "20.pose2d.2.output",
+        "21.feature_update",
+        "30.relative_3d",
+        "31.pose3d.0.linear",
+        "31.pose3d.1.relu",
+        "31.pose3d.2.output",
+        "90.tokens",
+        "91.augment"
+      ],
+      "shapes": {
+        "00.homogeneous": [
+          1,
+          9,
+          3
+        ],
+        "01.crop_pixels": [
+          1,
+          9,
+          2
+        ],
+        "02.crop_points": [
+          1,
+          9,
+          2
+        ],
+        "20.pose2d.0.linear": [
+          1,
+          6,
+          16
+        ],
+        "20.pose2d.1.relu": [
+          1,
+          6,
+          16
+        ],
+        "20.pose2d.2.output": [
+          1,
+          6,
+          16
+        ],
+        "14.sampled": [
+          1,
+          6,
+          8
+        ],
+        "15.masked_features": [
+          1,
+          6,
+          8
+        ],
+        "21.feature_update": [
+          1,
+          6,
+          16
+        ],
+        "10.selected_2d": [
+          1,
+          6,
+          2
+        ],
+        "11.selected_depth": [
+          1,
+          6
+        ],
+        "13.grid": [
+          1,
+          6,
+          2
+        ],
+        "12.invalid": [
+          1,
+          6
+        ],
+        "31.pose3d.0.linear": [
+          1,
+          4,
+          16
+        ],
+        "31.pose3d.1.relu": [
+          1,
+          4,
+          16
+        ],
+        "31.pose3d.2.output": [
+          1,
+          4,
+          16
+        ],
+        "30.relative_3d": [
+          1,
+          4,
+          3
+        ],
+        "90.tokens": [
+          1,
+          16,
+          16
+        ],
+        "91.augment": [
+          1,
+          16,
+          16
+        ]
+      }
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "4b810983dcc3e868d0c33ed2c31f3b9a6758b59c174c2039363243846ea1edf3",
+    "case.0001.input": "960b420e43a7d405f5707a9171bc1e1ee2cd0a177837e5400615cb5a202b9033",
+    "case.0002.input": "5c33efd727b9001e81f978111af0ecc2b0e4d7e1863842abe9c0931a4f26e7c4",
+    "case.0003.input": "2c51e86d4aff4f4fe98a2b24772491324d9c43c4f9b88afa99f698d26a080076",
+    "regression.txt": "ea23a573bd668f5c3df7aff91d16cb88e27d58bfd15d888fbd6e1d0b8886cb2e",
+    "rules.json": "7f324f0c3d2612d9d8fb134357ddca0727ebb1f1008984fb89db44e61059dc75",
+    "upstream.safetensors": "1cc17c88470662abb35e7873542b1b216092c6347b8a72fe2aba2a6af0d3d313"
+  }
+}

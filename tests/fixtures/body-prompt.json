@@ -1,0 +1,543 @@
+{
+  "boundary": "original Body PromptEncoder and pixel/dense PositionEmbeddingRandom; synthetic state, not learned or image-to-pose parity",
+  "revision": "b5c765a0d89d789985e186d396315e7590887b94",
+  "module_source_hashes": {
+    "camera_embed.py": "42f2483368fa3249557464aaa188c5d422f4e2faeb29ecd6facc131a97141539",
+    "transformer.py": "0cc343878ba8cdf28f9061de53ac0bc0fd6f829889ade96341729db5860ecbe4",
+    "swiglu_ffn.py": "7a25fff5fa99c910c8daea7737f3650881a92da11388ddfbfd57794dc9de5355",
+    "layer_scale.py": "ef4e0f769dd072425384f354c9527e2fdd7346843379e5f3b0cb2110a72c1c81",
+    "drop_path.py": "04c2f8bf7f13382c3d5c992fca00692a0591d187a2d271f49afaa5bce2ec9525"
+  },
+  "prompt_encoder_sha256": "a9160aa5ccdd4d5e2ae047605d86eee9e0e558344b85f716d963fd091f9a33d1",
+  "capture_script_sha256": "1ce91412e770033cf1b51abe3cc93cacebb254cce6a0688c3dc32f2be4752caa",
+  "torch": "2.7.0+cu128",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "threads": 1,
+  "cuda_device": null,
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "unobserved_vs_observed": "exact_equal_all_cases",
+  "observation": "unchanged bound _pe_encoding method with non-replacing ATen output observer; no rewritten oracle",
+  "auxiliary_taps": [],
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "order": [
+        "00.dense.00.coords",
+        "00.dense.01.doubled",
+        "00.dense.02.centered",
+        "00.dense.03.projected",
+        "00.dense.04.angles",
+        "00.dense.05.sin",
+        "00.dense.06.cos",
+        "00.dense.07.encoding",
+        "10.point.00.coords",
+        "10.point.01.doubled",
+        "10.point.02.centered",
+        "10.point.03.projected",
+        "10.point.04.angles",
+        "10.point.05.sin",
+        "10.point.06.cos",
+        "10.point.07.encoding",
+        "20.embeddings",
+        "21.mask",
+        "22.dense_nchw",
+        "30.pixel.00.coords",
+        "30.pixel.01.doubled",
+        "30.pixel.02.centered",
+        "30.pixel.03.projected",
+        "30.pixel.04.angles",
+        "30.pixel.05.sin",
+        "30.pixel.06.cos",
+        "30.pixel.07.encoding"
+      ],
+      "shapes": {
+        "00.dense.00.coords": [
+          3,
+          5,
+          2
+        ],
+        "00.dense.01.doubled": [
+          3,
+          5,
+          2
+        ],
+        "00.dense.02.centered": [
+          3,
+          5,
+          2
+        ],
+        "00.dense.03.projected": [
+          3,
+          5,
+          4
+        ],
+        "00.dense.04.angles": [
+          3,
+          5,
+          4
+        ],
+        "00.dense.05.sin": [
+          3,
+          5,
+          4
+        ],
+        "00.dense.06.cos": [
+          3,
+          5,
+          4
+        ],
+        "00.dense.07.encoding": [
+          3,
+          5,
+          8
+        ],
+        "10.point.00.coords": [
+          2,
+          5,
+          2
+        ],
+        "10.point.01.doubled": [
+          2,
+          5,
+          2
+        ],
+        "10.point.02.centered": [
+          2,
+          5,
+          2
+        ],
+        "10.point.03.projected": [
+          2,
+          5,
+          4
+        ],
+        "10.point.04.angles": [
+          2,
+          5,
+          4
+        ],
+        "10.point.05.sin": [
+          2,
+          5,
+          4
+        ],
+        "10.point.06.cos": [
+          2,
+          5,
+          4
+        ],
+        "10.point.07.encoding": [
+          2,
+          5,
+          8
+        ],
+        "30.pixel.00.coords": [
+          2,
+          5,
+          2
+        ],
+        "30.pixel.01.doubled": [
+          2,
+          5,
+          2
+        ],
+        "30.pixel.02.centered": [
+          2,
+          5,
+          2
+        ],
+        "30.pixel.03.projected": [
+          2,
+          5,
+          4
+        ],
+        "30.pixel.04.angles": [
+          2,
+          5,
+          4
+        ],
+        "30.pixel.05.sin": [
+          2,
+          5,
+          4
+        ],
+        "30.pixel.06.cos": [
+          2,
+          5,
+          4
+        ],
+        "30.pixel.07.encoding": [
+          2,
+          5,
+          8
+        ],
+        "20.embeddings": [
+          2,
+          5,
+          8
+        ],
+        "21.mask": [
+          2,
+          5
+        ],
+        "22.dense_nchw": [
+          1,
+          8,
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "order": [
+        "00.dense.00.coords",
+        "00.dense.01.doubled",
+        "00.dense.02.centered",
+        "00.dense.03.projected",
+        "00.dense.04.angles",
+        "00.dense.05.sin",
+        "00.dense.06.cos",
+        "00.dense.07.encoding",
+        "10.point.00.coords",
+        "10.point.01.doubled",
+        "10.point.02.centered",
+        "10.point.03.projected",
+        "10.point.04.angles",
+        "10.point.05.sin",
+        "10.point.06.cos",
+        "10.point.07.encoding",
+        "20.embeddings",
+        "21.mask",
+        "22.dense_nchw",
+        "30.pixel.00.coords",
+        "30.pixel.01.doubled",
+        "30.pixel.02.centered",
+        "30.pixel.03.projected",
+        "30.pixel.04.angles",
+        "30.pixel.05.sin",
+        "30.pixel.06.cos",
+        "30.pixel.07.encoding"
+      ],
+      "shapes": {
+        "00.dense.00.coords": [
+          1,
+          1,
+          2
+        ],
+        "00.dense.01.doubled": [
+          1,
+          1,
+          2
+        ],
+        "00.dense.02.centered": [
+          1,
+          1,
+          2
+        ],
+        "00.dense.03.projected": [
+          1,
+          1,
+          2
+        ],
+        "00.dense.04.angles": [
+          1,
+          1,
+          2
+        ],
+        "00.dense.05.sin": [
+          1,
+          1,
+          2
+        ],
+        "00.dense.06.cos": [
+          1,
+          1,
+          2
+        ],
+        "00.dense.07.encoding": [
+          1,
+          1,
+          4
+        ],
+        "10.point.00.coords": [
+          1,
+          1,
+          2
+        ],
+        "10.point.01.doubled": [
+          1,
+          1,
+          2
+        ],
+        "10.point.02.centered": [
+          1,
+          1,
+          2
+        ],
+        "10.point.03.projected": [
+          1,
+          1,
+          2
+        ],
+        "10.point.04.angles": [
+          1,
+          1,
+          2
+        ],
+        "10.point.05.sin": [
+          1,
+          1,
+          2
+        ],
+        "10.point.06.cos": [
+          1,
+          1,
+          2
+        ],
+        "10.point.07.encoding": [
+          1,
+          1,
+          4
+        ],
+        "30.pixel.00.coords": [
+          1,
+          1,
+          2
+        ],
+        "30.pixel.01.doubled": [
+          1,
+          1,
+          2
+        ],
+        "30.pixel.02.centered": [
+          1,
+          1,
+          2
+        ],
+        "30.pixel.03.projected": [
+          1,
+          1,
+          2
+        ],
+        "30.pixel.04.angles": [
+          1,
+          1,
+          2
+        ],
+        "30.pixel.05.sin": [
+          1,
+          1,
+          2
+        ],
+        "30.pixel.06.cos": [
+          1,
+          1,
+          2
+        ],
+        "30.pixel.07.encoding": [
+          1,
+          1,
+          4
+        ],
+        "20.embeddings": [
+          1,
+          1,
+          4
+        ],
+        "21.mask": [
+          1,
+          1
+        ],
+        "22.dense_nchw": [
+          1,
+          4,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "order": [
+        "00.dense.00.coords",
+        "00.dense.01.doubled",
+        "00.dense.02.centered",
+        "00.dense.03.projected",
+        "00.dense.04.angles",
+        "00.dense.05.sin",
+        "00.dense.06.cos",
+        "00.dense.07.encoding",
+        "10.point.00.coords",
+        "10.point.01.doubled",
+        "10.point.02.centered",
+        "10.point.03.projected",
+        "10.point.04.angles",
+        "10.point.05.sin",
+        "10.point.06.cos",
+        "10.point.07.encoding",
+        "20.embeddings",
+        "21.mask",
+        "22.dense_nchw",
+        "30.pixel.00.coords",
+        "30.pixel.01.doubled",
+        "30.pixel.02.centered",
+        "30.pixel.03.projected",
+        "30.pixel.04.angles",
+        "30.pixel.05.sin",
+        "30.pixel.06.cos",
+        "30.pixel.07.encoding"
+      ],
+      "shapes": {
+        "00.dense.00.coords": [
+          5,
+          3,
+          2
+        ],
+        "00.dense.01.doubled": [
+          5,
+          3,
+          2
+        ],
+        "00.dense.02.centered": [
+          5,
+          3,
+          2
+        ],
+        "00.dense.03.projected": [
+          5,
+          3,
+          8
+        ],
+        "00.dense.04.angles": [
+          5,
+          3,
+          8
+        ],
+        "00.dense.05.sin": [
+          5,
+          3,
+          8
+        ],
+        "00.dense.06.cos": [
+          5,
+          3,
+          8
+        ],
+        "00.dense.07.encoding": [
+          5,
+          3,
+          16
+        ],
+        "10.point.00.coords": [
+          2,
+          6,
+          2
+        ],
+        "10.point.01.doubled": [
+          2,
+          6,
+          2
+        ],
+        "10.point.02.centered": [
+          2,
+          6,
+          2
+        ],
+        "10.point.03.projected": [
+          2,
+          6,
+          8
+        ],
+        "10.point.04.angles": [
+          2,
+          6,
+          8
+        ],
+        "10.point.05.sin": [
+          2,
+          6,
+          8
+        ],
+        "10.point.06.cos": [
+          2,
+          6,
+          8
+        ],
+        "10.point.07.encoding": [
+          2,
+          6,
+          16
+        ],
+        "30.pixel.00.coords": [
+          2,
+          6,
+          2
+        ],
+        "30.pixel.01.doubled": [
+          2,
+          6,
+          2
+        ],
+        "30.pixel.02.centered": [
+          2,
+          6,
+          2
+        ],
+        "30.pixel.03.projected": [
+          2,
+          6,
+          8
+        ],
+        "30.pixel.04.angles": [
+          2,
+          6,
+          8
+        ],
+        "30.pixel.05.sin": [
+          2,
+          6,
+          8
+        ],
+        "30.pixel.06.cos": [
+          2,
+          6,
+          8
+        ],
+        "30.pixel.07.encoding": [
+          2,
+          6,
+          16
+        ],
+        "20.embeddings": [
+          2,
+          6,
+          16
+        ],
+        "21.mask": [
+          2,
+          6
+        ],
+        "22.dense_nchw": [
+          1,
+          16,
+          5,
+          3
+        ]
+      }
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "c6bedb841155d4fd1dc1151926674dae97a75071c6bb07f0fa1cf211e558564a",
+    "case.0001.input": "65857d81434e8fb3417ec3e7ba917146f1156e0e789563a7310fee3ca0ddc3f1",
+    "case.0002.input": "e1b050bbaeafea753e732b40c602c94a12b290e14a86afac28d725dcec404e32",
+    "regression.txt": "81c1a0968c54bd6e005000414fc4833ed04c3230e6139111edeeddf7b97a0834",
+    "rules.json": "4f8efd237b2226837e9c107afec31d41e09537cf1d836e002a092be948ed4bd0",
+    "upstream.safetensors": "e2b20c51b4b729dac44287cdd47ea3476a02acf010b131dbcc7f8fddd92c2ef6"
+  }
+}

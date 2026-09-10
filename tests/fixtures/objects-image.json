@@ -1,0 +1,681 @@
+{
+  "scope": "original default Objects RGBA pipeline, synthetic edge cases plus official kid_box image/mask; no pointmap/neural inference",
+  "revision": "f91db411c50efee93d8db7aeb323885650f6f722",
+  "source_hashes": {
+    "pipeline/preprocess_utils.py": "57de199943b3e22e776cc2baeec70caeceea848ccfd9ad82e6096d1ee3b869c4",
+    "pipeline/inference_pipeline.py": "e83e9560a727b06565134ea855503034d3510cbfbeeff2b6ca6dc13013536d2f",
+    "data/dataset/tdfy/preprocessor.py": "ea61061b81b2c0b08ef5b4f1092ef119fb2c20dfae30ed8f8f3e54ee1c6dd673",
+    "data/dataset/tdfy/img_and_mask_transforms.py": "e5ecdb46c12568a1d91e09c83842a16afaca8d1e22d73f49f0b9ded62cc3cc26",
+    "data/dataset/tdfy/img_processing.py": "a90b0ce2f96b5950176884a14162b2d4a340bbe1947cd7bf4db2bd03d0f5be3d"
+  },
+  "script_sha256": "f3b530763ea4f7982bd0bfdf928de53f3a2a94e85c40f8989ab389d63197c5dd",
+  "photo_sha256": "0d4d55dcebda52e7be9fd60e6fe68ce3fe52fdee5f7fe086bffda7520466e9ed",
+  "mask_sha256": "811eada8e42b6870a403bf63cbf0ba2ec06bf585c993833cc6b4a13585ec77b8",
+  "torch": "2.7.0+cu128",
+  "torchvision": "0.22.0+cu128",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "threads": 1,
+  "repeats": 3,
+  "observer_exact": true,
+  "cases": [
+    {
+      "prefix": "case.0000",
+      "input": "case.0000.input",
+      "order": [
+        "00.rgba",
+        "01.binary_mask",
+        "02.bbox",
+        "03.crop_rgb",
+        "04.crop_mask",
+        "05.masked_rgb",
+        "06.masked_mask",
+        "07.pad.0",
+        "07.pad.1",
+        "07.pad.2",
+        "07.pad.3",
+        "08.image",
+        "08.mask",
+        "08.rgb_image",
+        "08.rgb_image_mask"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          9,
+          13
+        ],
+        "01.binary_mask": [
+          1,
+          9,
+          13
+        ],
+        "02.bbox": [
+          4
+        ],
+        "03.crop_rgb": [
+          3,
+          8,
+          8
+        ],
+        "04.crop_mask": [
+          1,
+          8,
+          8
+        ],
+        "05.masked_rgb": [
+          3,
+          8,
+          8
+        ],
+        "06.masked_mask": [
+          1,
+          8,
+          8
+        ],
+        "07.pad.0": [
+          3,
+          8,
+          8
+        ],
+        "07.pad.1": [
+          1,
+          8,
+          8
+        ],
+        "07.pad.2": [
+          3,
+          13,
+          13
+        ],
+        "07.pad.3": [
+          1,
+          13,
+          13
+        ],
+        "08.mask": [
+          1,
+          1,
+          7,
+          7
+        ],
+        "08.image": [
+          1,
+          3,
+          7,
+          7
+        ],
+        "08.rgb_image": [
+          1,
+          3,
+          7,
+          7
+        ],
+        "08.rgb_image_mask": [
+          1,
+          1,
+          7,
+          7
+        ]
+      },
+      "side": 7,
+      "box_factor": 1.0,
+      "padding": 0.1,
+      "official_photo": false
+    },
+    {
+      "prefix": "case.0001",
+      "input": "case.0001.input",
+      "order": [
+        "00.rgba",
+        "01.binary_mask",
+        "02.bbox",
+        "03.crop_rgb",
+        "04.crop_mask",
+        "05.masked_rgb",
+        "06.masked_mask",
+        "07.pad.0",
+        "07.pad.1",
+        "07.pad.2",
+        "07.pad.3",
+        "08.image",
+        "08.mask",
+        "08.rgb_image",
+        "08.rgb_image_mask"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          13,
+          9
+        ],
+        "01.binary_mask": [
+          1,
+          13,
+          9
+        ],
+        "02.bbox": [
+          4
+        ],
+        "03.crop_rgb": [
+          3,
+          12,
+          12
+        ],
+        "04.crop_mask": [
+          1,
+          12,
+          12
+        ],
+        "05.masked_rgb": [
+          3,
+          12,
+          12
+        ],
+        "06.masked_mask": [
+          1,
+          12,
+          12
+        ],
+        "07.pad.0": [
+          3,
+          12,
+          12
+        ],
+        "07.pad.1": [
+          1,
+          12,
+          12
+        ],
+        "07.pad.2": [
+          3,
+          13,
+          13
+        ],
+        "07.pad.3": [
+          1,
+          13,
+          13
+        ],
+        "08.mask": [
+          1,
+          1,
+          22,
+          22
+        ],
+        "08.image": [
+          1,
+          3,
+          22,
+          22
+        ],
+        "08.rgb_image": [
+          1,
+          3,
+          22,
+          22
+        ],
+        "08.rgb_image_mask": [
+          1,
+          1,
+          22,
+          22
+        ]
+      },
+      "side": 22,
+      "box_factor": 1.6,
+      "padding": 0.1,
+      "official_photo": false
+    },
+    {
+      "prefix": "case.0002",
+      "input": "case.0002.input",
+      "order": [
+        "00.rgba",
+        "01.binary_mask",
+        "02.bbox",
+        "03.crop_rgb",
+        "04.crop_mask",
+        "05.masked_rgb",
+        "06.masked_mask",
+        "07.pad.0",
+        "07.pad.1",
+        "07.pad.2",
+        "07.pad.3",
+        "08.image",
+        "08.mask",
+        "08.rgb_image",
+        "08.rgb_image_mask"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          11,
+          17
+        ],
+        "01.binary_mask": [
+          1,
+          11,
+          17
+        ],
+        "02.bbox": [
+          4
+        ],
+        "03.crop_rgb": [
+          3,
+          8,
+          8
+        ],
+        "04.crop_mask": [
+          1,
+          8,
+          8
+        ],
+        "05.masked_rgb": [
+          3,
+          8,
+          8
+        ],
+        "06.masked_mask": [
+          1,
+          8,
+          8
+        ],
+        "07.pad.0": [
+          3,
+          8,
+          8
+        ],
+        "07.pad.1": [
+          1,
+          8,
+          8
+        ],
+        "07.pad.2": [
+          3,
+          17,
+          17
+        ],
+        "07.pad.3": [
+          1,
+          17,
+          17
+        ],
+        "08.mask": [
+          1,
+          1,
+          12,
+          12
+        ],
+        "08.image": [
+          1,
+          3,
+          12,
+          12
+        ],
+        "08.rgb_image": [
+          1,
+          3,
+          12,
+          12
+        ],
+        "08.rgb_image_mask": [
+          1,
+          1,
+          12,
+          12
+        ]
+      },
+      "side": 12,
+      "box_factor": 0.65,
+      "padding": 0.25,
+      "official_photo": false
+    },
+    {
+      "prefix": "case.0003",
+      "input": "case.0003.input",
+      "order": [
+        "00.rgba",
+        "01.binary_mask",
+        "02.bbox",
+        "03.crop_rgb",
+        "04.crop_mask",
+        "05.masked_rgb",
+        "06.masked_mask",
+        "07.pad.0",
+        "07.pad.1",
+        "07.pad.2",
+        "07.pad.3",
+        "08.image",
+        "08.mask",
+        "08.rgb_image",
+        "08.rgb_image_mask"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          12,
+          12
+        ],
+        "01.binary_mask": [
+          1,
+          12,
+          12
+        ],
+        "02.bbox": [
+          4
+        ],
+        "03.crop_rgb": [
+          3,
+          8,
+          8
+        ],
+        "04.crop_mask": [
+          1,
+          8,
+          8
+        ],
+        "05.masked_rgb": [
+          3,
+          8,
+          8
+        ],
+        "06.masked_mask": [
+          1,
+          8,
+          8
+        ],
+        "07.pad.0": [
+          3,
+          8,
+          8
+        ],
+        "07.pad.1": [
+          1,
+          8,
+          8
+        ],
+        "07.pad.2": [
+          3,
+          12,
+          12
+        ],
+        "07.pad.3": [
+          1,
+          12,
+          12
+        ],
+        "08.mask": [
+          1,
+          1,
+          12,
+          12
+        ],
+        "08.image": [
+          1,
+          3,
+          12,
+          12
+        ],
+        "08.rgb_image": [
+          1,
+          3,
+          12,
+          12
+        ],
+        "08.rgb_image_mask": [
+          1,
+          1,
+          12,
+          12
+        ]
+      },
+      "side": 12,
+      "box_factor": 1.0,
+      "padding": 0.0,
+      "official_photo": false
+    },
+    {
+      "prefix": "case.0004",
+      "input": "case.0004.input",
+      "order": [
+        "00.rgba",
+        "01.binary_mask",
+        "02.bbox",
+        "03.crop_rgb",
+        "04.crop_mask",
+        "05.masked_rgb",
+        "06.masked_mask",
+        "07.pad.0",
+        "07.pad.1",
+        "07.pad.2",
+        "07.pad.3",
+        "08.image",
+        "08.mask",
+        "08.rgb_image",
+        "08.rgb_image_mask"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          13,
+          17
+        ],
+        "01.binary_mask": [
+          1,
+          13,
+          17
+        ],
+        "02.bbox": [
+          4
+        ],
+        "03.crop_rgb": [
+          3,
+          16,
+          16
+        ],
+        "04.crop_mask": [
+          1,
+          16,
+          16
+        ],
+        "05.masked_rgb": [
+          3,
+          16,
+          16
+        ],
+        "06.masked_mask": [
+          1,
+          16,
+          16
+        ],
+        "07.pad.0": [
+          3,
+          16,
+          16
+        ],
+        "07.pad.1": [
+          1,
+          16,
+          16
+        ],
+        "07.pad.2": [
+          3,
+          17,
+          17
+        ],
+        "07.pad.3": [
+          1,
+          17,
+          17
+        ],
+        "08.mask": [
+          1,
+          1,
+          31,
+          31
+        ],
+        "08.image": [
+          1,
+          3,
+          31,
+          31
+        ],
+        "08.rgb_image": [
+          1,
+          3,
+          31,
+          31
+        ],
+        "08.rgb_image_mask": [
+          1,
+          1,
+          31,
+          31
+        ]
+      },
+      "side": 31,
+      "box_factor": 1.0,
+      "padding": 0.1,
+      "official_photo": false
+    },
+    {
+      "prefix": "case.0005",
+      "input": "case.0005.input",
+      "order": [
+        "00.rgba",
+        "01.binary_mask",
+        "02.bbox",
+        "03.crop_rgb",
+        "04.crop_mask",
+        "05.masked_rgb",
+        "06.masked_mask",
+        "07.pad.0",
+        "07.pad.1",
+        "07.pad.2",
+        "07.pad.3",
+        "08.image",
+        "08.mask",
+        "08.rgb_image",
+        "08.rgb_image_mask"
+      ],
+      "shapes": {
+        "00.rgba": [
+          4,
+          2160,
+          4096
+        ],
+        "01.binary_mask": [
+          1,
+          2160,
+          4096
+        ],
+        "02.bbox": [
+          4
+        ],
+        "03.crop_rgb": [
+          3,
+          540,
+          540
+        ],
+        "04.crop_mask": [
+          1,
+          540,
+          540
+        ],
+        "05.masked_rgb": [
+          3,
+          540,
+          540
+        ],
+        "06.masked_mask": [
+          1,
+          540,
+          540
+        ],
+        "07.pad.0": [
+          3,
+          540,
+          540
+        ],
+        "07.pad.1": [
+          1,
+          540,
+          540
+        ],
+        "07.pad.2": [
+          3,
+          4096,
+          4096
+        ],
+        "07.pad.3": [
+          1,
+          4096,
+          4096
+        ],
+        "08.mask": [
+          1,
+          1,
+          518,
+          518
+        ],
+        "08.image": [
+          1,
+          3,
+          518,
+          518
+        ],
+        "08.rgb_image": [
+          1,
+          3,
+          518,
+          518
+        ],
+        "08.rgb_image_mask": [
+          1,
+          1,
+          518,
+          518
+        ]
+      },
+      "side": 518,
+      "box_factor": 1.0,
+      "padding": 0.1,
+      "official_photo": true
+    }
+  ],
+  "rejections": [
+    {
+      "case": "empty",
+      "exception": "ZeroDivisionError",
+      "message": "division by zero"
+    },
+    {
+      "case": "single_pixel",
+      "exception": "BoundingBoxError",
+      "message": "Bounding box dimensions must be at least 2x2."
+    },
+    {
+      "case": "one_row",
+      "exception": "BoundingBoxError",
+      "message": "Bounding box dimensions must be at least 2x2."
+    },
+    {
+      "case": "one_column",
+      "exception": "BoundingBoxError",
+      "message": "Bounding box dimensions must be at least 2x2."
+    }
+  ],
+  "artifacts": {
+    "case.0000.input": "4f6d5dafca5dafdd9ebe09c5d38f608966f2661ae5c30b5dd826395054ee5980",
+    "case.0001.input": "6f38c6f0ea42dc9e18b21a0e449387b66e06ee5604c19737c67dfd33d3a7178e",
+    "case.0002.input": "cf38dd38ac1d5d56210624d01357899509f91c986cedb4c8e8139570f956040b",
+    "case.0003.input": "b01115d433c8481475a8a0323384337f442b159cf576ef285bc3aed9f1488fe4",
+    "case.0004.input": "358a14e6dedc152100ff9e91d41b8b703941559fc706f331d070cb6fa4a048af",
+    "case.0005.input": "a7283a982c7634d4b80be34166d7a2a123110fc0d27ffd6f68fb8ee752e776d7",
+    "upstream.safetensors": "b98de5250f807dd28889e5597f969f6f659aef8f52109cc160abdfc0d7a34f7a",
+    "full.safetensors": "10c1a333fe973cde0ffe7762b0b659de9adf5e0f4fd5df28b1a65a163493df7a",
+    "regression.txt": "f59846fe4df9ebdf5685cccd15be7bf2628c3855907856da6bd6d71067f3c663",
+    "rules.json": "0c979fd49f207ba7a50796ef41041d759e47eb78b35f2949ef5a68bfd678bed4"
+  }
+}

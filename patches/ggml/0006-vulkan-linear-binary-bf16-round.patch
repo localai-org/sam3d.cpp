@@ -1,0 +1,78 @@
+diff --git a/src/ggml-vulkan/vulkan-shaders/binary_round_bf16.comp b/src/ggml-vulkan/vulkan-shaders/binary_round_bf16.comp
+new file mode 100644
+--- /dev/null
++++ b/src/ggml-vulkan/vulkan-shaders/binary_round_bf16.comp
+@@ -0,0 +1,35 @@
++#version 450
++// Adapted from GGML's add.comp/mul.comp (MIT). Only indexing changes:
++// preserve the separate F32 operation and exact RNE BF16 round trip.
++#include "types.glsl"
++#include "generic_binary_head.glsl"
++#if !BINARY_MUL
++layout (binding = 3, std430) buffer PartialBuf {float partial_sums[];};
++#endif
++// 0: same shape; 1: one row repeated; 2: scalar repeated.
++layout(constant_id = 1) const uint repeat_mode = 0;
++const uint num_threads = 256;
++layout(local_size_x = num_threads, local_size_y = 1, local_size_z = 1) in;
++void main() {
++    uint idx = get_idx();
++    // Must match the backend's 512-element workgroup decomposition.
++    [[unroll]] for (uint i = 0; i < 2; ++i) {
++        if (idx < p.ne) {
++            uint b = repeat_mode == 0 ? idx : repeat_mode == 1 ? fastmod(idx, p.ne10) : 0;
++            float a_value = data_a[get_aoffset() + idx];
++            float b_value = data_b[get_boffset() + b];
++#if BINARY_MUL
++            precise float value = a_value * b_value;
++#else
++            precise float value = a_value + b_value;
++#endif
++            data_d[get_doffset() + idx] = bf16_to_fp32(fp32_to_bf16(value));
++        }
++        idx += num_threads;
++    }
++}
+diff --git a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+--- a/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -821,1 +821,3 @@
+     string_to_spv("mul_round_bf16", "mul.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}, {"FLOAT_TYPE", "float"}, {"ROUND_BF16", "1"}});
++    string_to_spv("add_round_bf16_linear", "binary_round_bf16.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}, {"BINARY_MUL", "0"}});
++    string_to_spv("mul_round_bf16_linear", "binary_round_bf16.comp", {{"A_TYPE", "float"}, {"B_TYPE", "float"}, {"D_TYPE", "float"}, {"BINARY_MUL", "1"}});
+     string_to_spv("contig_cpy_f32_i32", "contig_copy.comp", {{"A_TYPE", "float"}, {"D_TYPE", "int"}});
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -990,1 +990,2 @@
+     vk_pipeline pipeline_add_round_bf16, pipeline_mul_round_bf16;
++    std::array<vk_pipeline, 3> pipeline_add_round_bf16_linear, pipeline_mul_round_bf16_linear;
+     vk_pipeline pipeline_contig_cpy_f32_f32, pipeline_contig_cpy_f32_f16, pipeline_contig_cpy_f16_f16, pipeline_contig_cpy_f16_f32, pipeline_contig_cpy_f32_bf16, pipeline_contig_cpy_bf16_f32, pipeline_contig_cpy_f32_i32, pipeline_contig_cpy_i32_f32;
+@@ -5608,1 +5608,5 @@
+     ggml_vk_create_pipeline(device, device->pipeline_mul_round_bf16, "mul_round_bf16", mul_round_bf16_len, mul_round_bf16_data, "main", 3, sizeof(vk_op_binary_push_constants), {512, 1, 1}, {}, 1);
++    for (uint32_t mode = 0; mode < 3; ++mode) {
++        ggml_vk_create_pipeline(device, device->pipeline_add_round_bf16_linear[mode], "add_round_bf16_linear", add_round_bf16_linear_len, add_round_bf16_linear_data, "main", 4, sizeof(vk_op_binary_push_constants), {512, 1, 1}, {0, mode}, 1);
++        ggml_vk_create_pipeline(device, device->pipeline_mul_round_bf16_linear[mode], "mul_round_bf16_linear", mul_round_bf16_linear_len, mul_round_bf16_linear_data, "main", 3, sizeof(vk_op_binary_push_constants), {512, 1, 1}, {0, mode}, 1);
++    }
+     ggml_vk_create_pipeline(device, device->pipeline_cpy_f32_f16, "cpy_f32_f16", cpy_f32_f16_len, cpy_f32_f16_data, "main", 2, sizeof(vk_op_unary_push_constants), {512, 1, 1}, {}, 1);
+@@ -12175,1 +12175,18 @@
+     if (round_bf16 && op == GGML_OP_MUL) pipeline = ctx->device->pipeline_mul_round_bf16;
++    // The original fusion guards remain mandatory. Additionally require the
++    // final destination and operands to have dense, matching linear layouts.
++    // Other multidimensional broadcasts keep the general indexing shader.
++    if (round_bf16 && (op == GGML_OP_ADD || op == GGML_OP_MUL) &&
++        getenv("GGML_VK_BF16_BINARY_LINEAR") != nullptr &&
++        src0->type == GGML_TYPE_F32 && src1->type == GGML_TYPE_F32 && dst->type == GGML_TYPE_F32 &&
++        ggml_is_contiguous(src0) && ggml_is_contiguous(src1) && ggml_is_contiguous(dst) &&
++        ggml_are_same_shape(src0, dst)) {
++        int mode = -1;
++        if (ggml_are_same_shape(src0, src1)) mode = 0;
++        else if (ggml_nelements(src1) == 1) mode = 2;
++        else if (src1->ne[0] == src0->ne[0] && src1->ne[1] == 1 && src1->ne[2] == 1 && src1->ne[3] == 1) mode = 1;
++        if (mode >= 0) {
++            pipeline = op == GGML_OP_ADD ? ctx->device->pipeline_add_round_bf16_linear[mode] :
++                                          ctx->device->pipeline_mul_round_bf16_linear[mode];
++        }
++    }
+ 
+     if (pipeline == nullptr) {
