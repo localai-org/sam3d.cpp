@@ -1,13 +1,13 @@
 # sam3d.cpp
 
-A work-in-progress C++/GGML port of Meta's SAM 3D Body: recover human pose and
+A C++/GGML port of Meta's SAM 3D Body: recover human pose and
 body geometry from photographs. SAM 3D Objects is deferred to a later phase;
 its existing experimental components are retained.
 
 Original code is Apache-2.0, with SAM/DINO and other third-party exceptions:
 see [licensing](LICENSING.md). The models are **not** Apache-relicensed.
 
-**Work in progress.** A [body web demo](demo/README.md) now provides
+The [body web demo](demo/README.md) provides
 photo upload, person-box selection, mesh/skeleton viewing, original-upstream
 comparison, saved history and static GLB/OBJ downloads. It also supports offline
 video sequences and live webcams with a configurable inference-rate cap and
@@ -20,6 +20,15 @@ remain open. The API includes preprocessing and a GGUF-only body pose-branch
 session. Detailed hand refinement and performance optimization
 remain unfinished. Follow [STATUS.md](STATUS.md),
 [TODO.md](TODO.md) and the full [design](DESIGN.md).
+
+## AI use
+
+This project was produced largely automatically by GPT-6 Astra based on a playbook
+we have been figuring out to quickly create PyTorch to GGML conversions and a small
+demo app to showcase the model.
+
+Because the complexity of these projects is bounded to performing a well defined
+computation that can be fuzzed, I believe the risk to be within acceptable limits.
 
 ## Build on Linux
 
