@@ -1,6 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 // SAM3DBody.forward_decoder / PromptableDecoder adaptation. SAM license and
-// attribution: THIRD_PARTY_NOTICES.md. Composition has no reference injection.
+// attribution: NOTICE. Composition has no reference injection.
 #include "body_flow.hpp"
 #include "finite.hpp"
 #include "body_decoder.hpp"

@@ -50,7 +50,7 @@ dependency pinned by Objects. Wheel SHA-256:
 It executes unchanged selected class/function ASTs in the reviewed isolated
 container, avoiding unrelated model registry imports. Original timm config
 defaults and its own attention selector are retained. No third-party C++ engine
-is executed or used as an oracle. Attribution is in `THIRD_PARTY_NOTICES.md`.
+is executed or used as an oracle. Attribution is in `NOTICE`.
 
 `capture_objects_pointpatch.py` runs the original uninstrumented module twice
 with identical results, then observes a third run and requires exact equality.
@@ -82,7 +82,7 @@ forced/unforced dropout and width 768. A 5 GiB reference-container memory bound
 was used for full-size capture. The original modules are not memory-rewritten.
 
 ```sh
-uv run --frozen python scripts/run_objects_pointpatch.py \
+uv run --project reference/python --frozen python scripts/run_objects_pointpatch.py \
   --reference generated/fixtures/objects-pointpatch-cpu \
   --runner build/debug/bin/sam3d-pointpatch-capture \
   --module build/debug/bin/libggml-cpu.so \

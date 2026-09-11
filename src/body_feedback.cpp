@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// SAM3DBody crop/keypoint feedback adaptation; SAM license, THIRD_PARTY_NOTICES.md.
+// SAM3DBody crop/keypoint feedback adaptation; SAM license, NOTICE.
 #include "body_feedback.hpp"
 #include "finite.hpp"
 #include "ggml.h"

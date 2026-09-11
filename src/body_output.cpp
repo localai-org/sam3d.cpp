@@ -1,6 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. SAM license.
 // RoMa/SciPy quaternion matrix adaptation: NAVER Corp. / SciPy contributors,
-// BSD-3-Clause, LICENSES/RoMa.txt. See THIRD_PARTY_NOTICES.md.
+// BSD-3-Clause, LICENSES/RoMa.txt. See NOTICE.
 #include "body_output.hpp"
 #include "finite.hpp"
 #include "body_hand_frame.hpp"

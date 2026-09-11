@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// SAM 3D Body PromptEncoder adaptation; SAM license, THIRD_PARTY_NOTICES.md.
+// SAM 3D Body PromptEncoder adaptation; SAM license, NOTICE.
 #include "body_prompt.hpp"
 #include "transpose.hpp"
 #include "ggml.h"

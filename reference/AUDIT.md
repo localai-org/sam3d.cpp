@@ -7,7 +7,7 @@ reproduced. No third-party engine, installer, build system or model was run.
 No checkpoints were downloaded. Only a small YAML config was downloaded and
 hashed locally; weight hashes below are Hugging Face's published LFS metadata.
 
-The implementation decisions and future gates are in [DESIGN.md](../DESIGN.md).
+The implementation decisions and future gates are in [DESIGN.md](../docs/DESIGN.md).
 
 ## Official references
 

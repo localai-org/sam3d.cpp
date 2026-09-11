@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// CameraEncoder adaptation: SAM license, see THIRD_PARTY_NOTICES.md.
+// CameraEncoder adaptation: SAM license, see NOTICE.
 // Antialiased interpolation follows PyTorch v2.7: LICENSES/PyTorch.txt.
 #include "camera_encoder.hpp"
 #include "ggml.h"

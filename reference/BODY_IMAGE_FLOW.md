@@ -61,7 +61,7 @@ native-produced intermediates. Its second input supplies backbone parameters;
 the standalone fixture's original image is explicitly skipped.
 
 ```sh
-uv run --frozen python scripts/run_body_flow.py \
+uv run --project reference/python --frozen python scripts/run_body_flow.py \
   --reference generated/fixtures/body-image-flow-cpu \
   --runner build/debug/bin/sam3d-body-flow-capture \
   --module build/debug/bin/libggml-cpu.so \

@@ -127,7 +127,7 @@ For CUDA use its reference directory, GPU exposure and `--device cuda`.
 Then run the native comparison on the host (no host PyTorch):
 
 ```sh
-uv run --frozen python scripts/run_mhr_skeleton.py \
+uv run --project reference/python --frozen python scripts/run_mhr_skeleton.py \
   --reference generated/fixtures/mhr-skeleton-cpu \
   --runner build/debug/bin/sam3d-mhr-skeleton-capture \
   --module build/debug/bin/libggml-cpu.so \
@@ -213,7 +213,7 @@ Capture CUDA separately with its reference inputs, GPU exposure and `--device cu
 The host runner needs NumPy/safetensors, **not PyTorch**:
 
 ```sh
-uv run --frozen python scripts/run_mhr_geometry.py \
+uv run --project reference/python --frozen python scripts/run_mhr_geometry.py \
   --reference generated/fixtures/mhr-geometry-cpu \
   --runner build/debug/bin/sam3d-mhr-geometry-capture \
   --module build/debug/bin/libggml-cpu.so \
@@ -263,7 +263,7 @@ C API, image-to-mesh browser QA, Objects or optimized performance acceptance.
 ## Safe GGUF conversion
 
 ```sh
-uv run --frozen python scripts/convert_mhr_gguf.py \
+uv run --project reference/python --frozen python scripts/convert_mhr_gguf.py \
   --input generated/fixtures/mhr-cpu/state.safetensors \
   --manifest generated/fixtures/mhr-cpu/manifest.json \
   --geometry generated/fixtures/mhr-cpu/geometry.json \

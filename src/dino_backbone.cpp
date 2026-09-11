@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// DINOv3/Body contract adaptation: see THIRD_PARTY_NOTICES.md.
+// DINOv3/Body contract adaptation: see NOTICE.
 #include "dino_backbone.hpp"
 #include "bf16.hpp"
 #include "ggml.h"

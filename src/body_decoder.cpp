@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// SAM 3D Body transformer adaptation; SAM license, THIRD_PARTY_NOTICES.md.
+// SAM 3D Body transformer adaptation; SAM license, NOTICE.
 #include "body_decoder.hpp"
 #include "finite.hpp"
 #include "ggml.h"

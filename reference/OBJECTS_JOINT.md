@@ -78,7 +78,7 @@ The reference is CPU F32 PyTorch 2.7.0/torchvision 0.22, one thread, determinist
 algorithms. This stage is not a CUDA/Vulkan neural-graph comparison.
 
 ```sh
-uv run --frozen python scripts/run_objects_joint.py \
+uv run --project reference/python --frozen python scripts/run_objects_joint.py \
   --reference generated/fixtures/objects-joint-cpu \
   --runner build/debug/bin/sam3d-objects-joint-capture \
   --output generated/fixtures/objects-joint-native-cpu

@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// DINOv3 contract adaptation: LICENSES/DINOv3.md and THIRD_PARTY_NOTICES.md.
+// DINOv3 contract adaptation: LICENSES/DINOv3.md and NOTICE.
 #include "dino_block.hpp"
 #include "bf16.hpp"
 #include "ggml.h"

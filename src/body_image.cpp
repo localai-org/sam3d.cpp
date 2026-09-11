@@ -1,5 +1,5 @@
 // Affine sampling conventions adapted from OpenCV 4.11 imgwarp.cpp.
-// See THIRD_PARTY_NOTICES.md and LICENSES/OpenCV-imgwarp.txt.
+// See NOTICE and LICENSES/OpenCV-imgwarp.txt.
 #include "error.hpp"
 #include <array>
 #include <cmath>

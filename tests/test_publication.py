@@ -206,10 +206,13 @@ class PublicationTests(unittest.TestCase):
     def test_license_installation_and_gitignore(self):
         self.assertEqual((ROOT / 'LICENSE').read_bytes(), (ROOT / 'LICENSES/MHR-Apache-2.0.txt').read_bytes())
         cmake = (ROOT / 'CMakeLists.txt').read_text()
-        self.assertIn('install(FILES LICENSE NOTICE LICENSING.md LICENSES/Trellis2cpp-MIT.txt', cmake)
+        self.assertIn('install(FILES LICENSE NOTICE DESTINATION', cmake)
+        self.assertIn('install(FILES docs/LICENSING.md DESTINATION', cmake)
+        self.assertIn('install(DIRECTORY LICENSES/ DESTINATION', cmake)
         self.assertTrue((ROOT / 'LICENSES/Trellis2cpp-MIT.txt').is_file())
         ignored = ['.env', 'dir/.env.secret', 'foo.gguf', 'foo.ckpt', 'foo.key', 'photo.jpg',
-                   'generated/photo.png', 'models/file', 'build/app', 'CMakeUserPresets.json']
+                   'generated/photo.png', 'models/file', 'build/app', 'CMakeUserPresets.json',
+                   'reference/python/.venv/bin/python']
         kept = ['demo/web/localai.png', 'tests/fixtures/point-condition-0.weights', '.env.example', 'distribution/body/README.md']
         result = subprocess.run(['git', '-C', str(ROOT), 'check-ignore', '--no-index', '--stdin'],
                                 input='\n'.join(ignored + kept) + '\n', text=True, capture_output=True)

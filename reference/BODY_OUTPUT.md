@@ -71,7 +71,7 @@ CPU is exact; CUDA worst difference is 1.49e-8 on these inputs. The original fin
 tensor outputs are retained independently and compared natively too.
 
 ```sh
-uv run --frozen python scripts/run_body_output.py \
+uv run --project reference/python --frozen python scripts/run_body_output.py \
   --reference generated/fixtures/body-output-cpu \
   --runner build/debug/bin/sam3d-body-output-capture \
   --module build/debug/bin/libggml-cpu.so \

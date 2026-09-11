@@ -1,9 +1,13 @@
 # Reference setup
 
-This directory contains source/artifact checks and a source manifest, **not yet
-a runnable complete SAM reference environment**. No complete SAM model parity has passed.
-See [the design](../DESIGN.md) for the complete gated process and
-[the source audit](AUDIT.md) for reuse decisions.
+This directory contains pinned upstream capture/conversion procedures and
+numerical evidence. The supported Body pose branch has runnable original/native
+comparisons; this is not a claim of complete hand-refined or Objects parity.
+See [the roadmap](../docs/ROADMAP.md) for current scope, [the design](../docs/DESIGN.md)
+for the acceptance process and [the source audit](AUDIT.md) for reuse decisions.
+Historical component notes below describe their original, narrower milestones.
+The optional Python environment is isolated in [python/](python/); it is not
+needed to build or run the native library.
 
 The independently public official MHR geometry asset is now verified and runnable
 as a standalone upstream CPU/CUDA reference, with safe extraction and GGUF
@@ -85,8 +89,8 @@ This is artifact verification, not trained-model parity.
 Install the small data-only tools (no PyTorch):
 
 ```sh
-uv sync --frozen
-uv run --frozen python -m unittest discover -s tests -v
+uv sync --project reference/python --frozen
+uv run --project reference/python --frozen python -m unittest discover -s tests -v
 ```
 
 `scripts/check_parity.py` compares safe tensor captures in a specified operation
@@ -110,7 +114,7 @@ Example rule schema (values illustrate syntax only; not SAM tolerances):
 ```
 
 ```sh
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/upstream.safetensors \
   --candidate generated/fixtures/native.safetensors \
   --rules generated/fixtures/rules.json --report generated/parity/report.json
@@ -144,10 +148,10 @@ docker run --rm --network none --read-only --user "$(id -u):$(id -g)" \
 
 ./build/debug/bin/sam3d-crop-capture generated/fixtures/body-crop/cases.txt \
   generated/fixtures/body-crop/native.txt
-uv run --frozen python scripts/pack_crop_capture.py \
+uv run --project reference/python --frozen python scripts/pack_crop_capture.py \
   --input generated/fixtures/body-crop/native.txt \
   --output generated/fixtures/body-crop/native.safetensors
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-crop/upstream.safetensors \
   --candidate generated/fixtures/body-crop/native.safetensors \
   --rules generated/fixtures/body-crop/rules.json \
@@ -179,10 +183,10 @@ docker run --rm --network none --read-only --user "$(id -u):$(id -g)" \
   -v "$PWD:/work:ro" -v "$PWD/generated/fixtures/body-image:/output:rw" \
   sam3d-reference-image --upstream /work/reference/upstream/sam-3d-body --output /output
 ./build/debug/bin/sam3d-image-capture generated/fixtures/body-image generated/fixtures/body-image-native
-uv run --frozen python scripts/pack_image_capture.py \
+uv run --project reference/python --frozen python scripts/pack_image_capture.py \
   --input generated/fixtures/body-image-native \
   --output generated/fixtures/body-image-native/native.safetensors
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-image/upstream.safetensors \
   --candidate generated/fixtures/body-image-native/native.safetensors \
   --rules generated/fixtures/body-image/rules.json \
@@ -222,11 +226,11 @@ docker run --rm --network none --read-only --user "$(id -u):$(id -g)" \
   --entrypoint python sam3d-reference-image /work/reference/capture_dino_patch.py \
   --upstream /work/reference/upstream/dinov3 --output /output
 
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/dino-patch --output generated/fixtures/dino-patch-cpu \
   --binary build/debug/bin/sam3d-patch-capture --module build/debug/bin/libggml-cpu.so \
   --backend CPU
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/dino-patch/upstream.safetensors \
   --candidate generated/fixtures/dino-patch-cpu/native.safetensors \
   --rules generated/fixtures/dino-patch/rules.json \
@@ -280,11 +284,11 @@ docker run --rm --network none --read-only --user "$(id -u):$(id -g)" \
   -v "$PWD:/work:ro" -v "$PWD/generated/fixtures/dino-block:/output:rw" \
   --entrypoint python sam3d-reference-image /work/reference/capture_dino_block.py \
   --upstream /work/reference/upstream/dinov3 --output /output
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/dino-block --output generated/fixtures/dino-block-cpu \
   --binary build/debug/bin/sam3d-block-capture --module build/debug/bin/libggml-cpu.so \
   --backend CPU
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/dino-block/upstream.safetensors \
   --candidate generated/fixtures/dino-block-cpu/native.safetensors \
   --rules generated/fixtures/dino-block/rules.json \
@@ -423,10 +427,10 @@ Use the camera reference image and the documented CUDA/offline container flags,
 substituting `/work/reference/capture_body_camera.py`. Native comparison:
 
 ```sh
-uv run --frozen python scripts/run_body_camera.py \
+uv run --project reference/python --frozen python scripts/run_body_camera.py \
   --reference generated/fixtures/body-camera --output generated/fixtures/body-camera-native \
   --binary build/debug/bin/sam3d-body-camera-capture
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-camera/upstream.safetensors \
   --candidate generated/fixtures/body-camera-native/native.safetensors \
   --rules generated/fixtures/body-camera/rules.json \
@@ -467,12 +471,12 @@ NVIDIA CDI/CUBLAS flags. `--small-regression` emits the original six-case text
 fixture used in normal CTest. Native CPU comparison:
 
 ```sh
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/body-decoder-cpu \
   --output generated/fixtures/body-decoder-native-cpu \
   --binary build/debug/bin/sam3d-decoder-capture \
   --module build/debug/bin/libggml-cpu.so --backend CPU --threads 12
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-decoder-cpu/upstream.safetensors \
   --candidate generated/fixtures/body-decoder-native-cpu/native.safetensors \
   --rules generated/fixtures/body-decoder-cpu/rules.json \
@@ -510,12 +514,12 @@ NVIDIA/CUBLAS container flags for CUDA. `--small-regression` produces either of
 the two 50KB original fixtures used in normal CTest. Native comparison:
 
 ```sh
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/body-prompt-cpu \
   --output generated/fixtures/body-prompt-native-cpu \
   --binary build/debug/bin/sam3d-prompt-capture \
   --module build/debug/bin/libggml-cpu.so --backend CPU
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-prompt-cpu/upstream.safetensors \
   --candidate generated/fixtures/body-prompt-native-cpu/native.safetensors \
   --rules generated/fixtures/body-prompt-cpu/rules.json \
@@ -558,12 +562,12 @@ Use the same offline camera container with
 CUDA reference and `--small-regression` emits the normal CTest fixture. Run:
 
 ```sh
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/body-condition-cpu \
   --output generated/fixtures/body-condition-native-cpu \
   --binary build/debug/bin/sam3d-condition-capture \
   --module build/debug/bin/libggml-cpu.so --backend CPU --threads 12
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-condition-cpu/upstream.safetensors \
   --candidate generated/fixtures/body-condition-native-cpu/native.safetensors \
   --rules generated/fixtures/body-condition-cpu/rules.json \
@@ -597,12 +601,12 @@ Use the offline camera reference image with `/work/reference/capture_camera_head
 `--small-regression` emits the 16KB original CTest fixture. Native CPU comparison:
 
 ```sh
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/camera-head-cpu \
   --output generated/fixtures/camera-head-native-cpu \
   --binary build/debug/bin/sam3d-camera-head-capture \
   --module build/debug/bin/libggml-cpu.so --backend CPU --threads 12
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/camera-head-cpu/upstream.safetensors \
   --candidate generated/fixtures/camera-head-native-cpu/native.safetensors \
   --rules generated/fixtures/camera-head-cpu/rules.json \
@@ -639,12 +643,12 @@ Use the documented offline camera container with
 `--small-regression` emits the 96KB original CTest fixture. CPU comparison:
 
 ```sh
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/body-feedback-cpu \
   --output generated/fixtures/body-feedback-native-cpu \
   --binary build/debug/bin/sam3d-feedback-capture \
   --module build/debug/bin/libggml-cpu.so --backend CPU
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-feedback-cpu/upstream.safetensors \
   --candidate generated/fixtures/body-feedback-native-cpu/native.safetensors \
   --rules generated/fixtures/body-feedback-cpu/rules.json \
@@ -700,12 +704,12 @@ image/install step is needed. It records individual Python source hashes too.
 the six-case normal CTest fixture. Native CPU comparison:
 
 ```sh
-uv run --frozen python scripts/run_patch_capture.py \
+uv run --project reference/python --frozen python scripts/run_patch_capture.py \
   --reference generated/fixtures/body-pose-cpu \
   --output generated/fixtures/body-pose-native-cpu \
   --binary build/debug/bin/sam3d-pose-capture \
   --module build/debug/bin/libggml-cpu.so --backend CPU
-uv run --frozen python scripts/check_parity.py \
+uv run --project reference/python --frozen python scripts/check_parity.py \
   --reference generated/fixtures/body-pose-cpu/upstream.safetensors \
   --candidate generated/fixtures/body-pose-native-cpu/native.safetensors \
   --rules generated/fixtures/body-pose-cpu/rules.json \

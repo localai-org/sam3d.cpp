@@ -1,6 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 // Modified: checked C++ SSI normalizers and homogeneous transforms.
-// SAM License and PyTorch3D BSD terms: see THIRD_PARTY_NOTICES.md.
+// SAM License and PyTorch3D BSD terms: see NOTICE.
 #include "objects_ssi.hpp"
 #include <algorithm>
 #include <cmath>

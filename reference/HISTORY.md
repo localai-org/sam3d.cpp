@@ -1,11 +1,16 @@
-# Implementation status
+# Development history
+
+Historical implementation and profiling notes, retained for provenance. Entries
+describe the state at the time of each experiment and may be superseded by later
+entries. This is not the current task list; see [the roadmap](../docs/ROADMAP.md)
+and [project overview](../README.md) for supported functionality and remaining work.
 
 Updated 2026-09-10. **Video:** offline file sampling, persistent sequences,
 scrubbing and live webcam tracking now reuse the same native Body worker.
 Live mode has a configurable Hz cap, one frame in flight and immediate result
 presentation with a 25 ms blend (no delayed playback buffer). Remote cameras require HTTPS. This is
 single-person frame-wise estimation, not a learned temporal model or automatic
-identity tracker. See [video QA and limitations](reference/BODY_VIDEO.md).
+identity tracker. See [video QA and limitations](../reference/BODY_VIDEO.md).
 The production live upload pipeline now overlaps worker encoding with inference,
 retaining just one replaceable prepared frame. Direct camera-frame capture and
 byte-exact typed image packing now reach **8.1 Hz**, **176 ms** median first render
@@ -23,8 +28,8 @@ median, all 25 complete outputs byte-identical to the accepted baseline.
 CPU/Vulkan correctness builds retain their sanitizers. Browser and server stage
 timers now separate encoding, transport, preprocessing and native inference;
 native latency is not live webcam throughput.
-See [the final experiment](reference/experiments/image-gather.md) and
-[live profiling](reference/BODY_LIVE_PERFORMANCE.md).
+See [the final experiment](../reference/experiments/image-gather.md) and
+[live profiling](../reference/BODY_LIVE_PERFORMANCE.md).
 
 The scope remains **Body only**, following the user's
 scope reduction. A real single-image Body web demo is now available; full trained
@@ -46,7 +51,7 @@ warmups, twenty timed alternating images each). A narrow scalar F32 GEMM tile
 cuts precise-prefix work from ~5.1 to ~1.8 ms without changing output bits.
 The latest 8×8 tile saves ~0.7 ms against the same-binary 16×8 control
 (91.5 ms); increasing reduction depth did not improve it. See the
-[tile follow-up](reference/experiments/f32-narrow-depth.md).
+[tile follow-up](../reference/experiments/f32-narrow-depth.md).
 The preceding exact four-influence SSE2 skinning
 saves another ~1.5 ms with unchanged accumulation order and bit-identical outputs;
 96 added randomized/tail/duplicate-index cases pass. Bounded pinned-transfer batching
@@ -66,38 +71,38 @@ Packing the two encoder feed-forward projections was also tested and rejected:
 all trained outputs were exact, but UBSan full latency rose from 110.65 to
 114.75 ms. It saved only ~0.3 ms of matrix work and increased downstream
 layout/conversion costs. The prototype is archived, not active; see
-[the experiment](reference/experiments/packed-ffn.md).
+[the experiment](../reference/experiments/packed-ffn.md).
 A now-deployed optimization fuses the SiLU gate while preserving both
 BF16 rounding boundaries: repeated release timing is **88.25–88.29 ms** versus
 90.61 ms disabled in the same binary. All full outputs, both encoder trajectories,
 646 strict F32 checks, CPU sanitizers and 408 GPU off/on cases pass. Actual
 kernel traces confirm 32 gate fusions per image; GPU time is 69.14 ms. The
 updated UBSan demo passes actual headless Chrome upload/render/overlay/history/
-export QA, including exact mesh reload. See [the fusion investigation](reference/experiments/bf16-silu-gate.md),
+export QA, including exact mesh reload. See [the fusion investigation](../reference/experiments/bf16-silu-gate.md),
 including allocator pitfalls and the fresh warm CPU profile. The target remains open.
 Two exact SSE2 image-normalization variants were subsequently measured and
 removed: neither established a useful gain over production. All results were
 exact; the restored baseline remains about 88.4 ms. See the
-[archived experiments](reference/experiments/rejected-image-simd.md).
+[archived experiments](../reference/experiments/rejected-image-simd.md).
 A subsequent opt-in affine fusion measures **86.68–86.98 ms** release median,
 versus 88.03 ms disabled in the same binary. All 1,248 exact device cases,
 both encoder policies, both final-body gates, 646 strict F32 checks and 25
 public-F32 outputs pass; profiling confirms 162 affine dispatches per image.
 Both 48-test sanitizer-build suites, 112 Python tests and Go race tests also
 pass. The deployed demo still uses the accepted SiLU build; affine demo
-integration/QA is pending. See [the affine experiment](reference/experiments/bf16-affine.md).
+integration/QA is pending. See [the affine experiment](../reference/experiments/bf16-affine.md).
 The subsequent normalization/affine candidate reaches **86.39–86.55 ms**
 versus 87.12 ms disabled in the same release binary. It preserves all full
 outputs, both encoder/final-body policies, strict F32 and normal sanitizer
 regressions. A first prototype was rejected for changing normalization
 contraction; the corrected shader passes 720 exact device cases and executes
-64 fusions/image. GPU time is 67.44 ms. See [the normalization experiment](reference/experiments/bf16-norm-affine.md).
+64 fusions/image. GPU time is 67.44 ms. See [the normalization experiment](../reference/experiments/bf16-norm-affine.md).
 The 80–85 ms target and deployment/Chrome QA of the new fusions remain pending.
 Profiling mode needs
 an extra upload synchronization because GGML's timestamp logger requires an
 empty compute context; the normal path retains one final synchronization.
 The failed diagnostic attempt and tested fix are recorded in the
-[transfer experiment](reference/experiments/batched-transfers.md). The earlier
+[transfer experiment](../reference/experiments/batched-transfers.md). The earlier
 resident stem removed 7.24 MB of uploads, 5.24 MB of downloads and one graph
 call per image. Both CPU ASan/UBSan/LSan
 and Vulkan UBSan builds pass all 48 normal tests. The new transfer test covers
@@ -121,18 +126,18 @@ cancellation/recovery, warm reuse, overlay, exact GLB export/reload and history/
 mobile scrolling pass. The latest warm UBSan browser job is 0.253 seconds
 including export (one QA request, not a benchmark median). No private GGML commits are used; changes are
 reviewable build-copy patches.
-See the [active goal](reference/BODY_BF16_GOAL.md),
-[numerical evidence](reference/BODY_PRECISION.md) and
-[visual and live-demo evidence](reference/BODY_BF16_VISUAL.md).
+See the [active goal](../reference/BODY_BF16_GOAL.md),
+[numerical evidence](../reference/BODY_PRECISION.md) and
+[visual and live-demo evidence](../reference/BODY_BF16_VISUAL.md).
 
-The [single-image demo](demo/README.md) now supports photo upload, explicit person
+The [single-image demo](../demo/README.md) now supports photo upload, explicit person
 selection/camera settings, a mesh/skeleton viewer, original-upstream overlay,
 GLB/OBJ downloads and persistent history. A real headless Chrome upload on
 NVIDIA Vulkan passes end-to-end QA, including cancellation/recovery and mobile
 scrolling. Its full result is byte-identical to the accepted native C API output;
 all original final geometry/projection comparisons pass. Video was added later
 as described above.
-See [demo evidence](reference/BODY_DEMO.md). Normal regression is now 48 native
+See [demo evidence](../reference/BODY_DEMO.md). Normal regression is now 48 native
 sanitizer tests, 112 Python tests and the Go demo tests.
 
 Photo upload now attempts bounded local FFmpeg conversion before person selection
@@ -141,7 +146,7 @@ and retains a conversion/error notice; original uploads allow 128 MiB, prepared
 inference inputs remain limited to 20 MiB / 16 MP. Real Chrome tests cover BMP,
 17.5 MP resizing, a file over 20 MiB, malformed-input failure and recovery.
 
-The earlier strict-F32 [Vulkan profile](reference/BODY_PERFORMANCE.md) measures **0.393–0.404 s
+The earlier strict-F32 [Vulkan profile](../reference/BODY_PERFORMANCE.md) measures **0.393–0.404 s
 warm inference** (395 ms median), **2.669 s cold / 0.462 s warm browser jobs**, and **69% mean
 warm GPU utilization** (99% peak, not sustained 90%). The live demo now uses a
 bounded persistent model worker, a GPU-resident 32-block backbone graph, and
@@ -155,7 +160,7 @@ cancellation/recovery, warm reuse, original overlay and exact GLB export.
 Reusable decoder/geometry graphs, remaining CPU/GPU alternation and the 90% utilization
 target remain open; full CPU model numerical gaps are not waived.
 
-The earlier [Vulkan optimization pass](reference/BODY_PERFORMANCE.md) reduced
+The earlier [Vulkan optimization pass](../reference/BODY_PERFORMANCE.md) reduced
 native inference from 39.9 s to about 3.25 s, and the updated live demo completes
 the real Chrome sample job in 3.32 s including exports. It retains UBSan,
 assertions and strict F32, removes redundant backbone weight scans, retains
@@ -201,8 +206,8 @@ final-feature limits also pass. Legacy failures remain recorded. Actual
 math-SDPA operand scaling has been traced and matched: all 704 trained
 own-intermediate operation checks now pass on CPU and NVIDIA Vulkan under the
 frozen original-control policy. Observer-neutrality and synthetic regressions
-also pass; see [operation evidence](reference/TRAINED_OPERATIONS.md).
-See [trained evidence and remaining diagnostics](reference/TRAINED_BODY.md).
+also pass; see [operation evidence](../reference/TRAINED_OPERATIONS.md).
+See [trained evidence and remaining diagnostics](../reference/TRAINED_BODY.md).
 
 The trained raw-RGB Body branch is now connected: its first Vulkan run passes
 646 comparisons, including actual operations in all six decoder layers and all
@@ -222,9 +227,9 @@ before inference and its model/request before reading results. It exposes
 explicit capabilities, tensor shapes and coordinate metadata. A separately
 configured C-only installed consumer passes sanitizer tests. Request/options
 and result getters each pass 100,000 sanitizer fuzz cases (seeds 932/933);
-GGUF loading is excluded. See the [API guide](docs/API.md). Hand refinement,
+GGUF loading is excluded. See the [API guide](../docs/API.md). Hand refinement,
 lower-level feature APIs and Objects inference remain unfinished.
-See [trained branch evidence](reference/TRAINED_BODY_BRANCH.md).
+See [trained branch evidence](../reference/TRAINED_BODY_BRANCH.md).
 
 Hand refinement is now audited through its actual full-method crop, separate
 decoder, validity checks, body reprompt and IK/geometry merge. The first native
@@ -251,8 +256,8 @@ embedding and shared box heads. Right-hand Vulkan passes 590/646 generic checks,
 including every independent final field; its original CPU/CUDA control passes
 538/646. These use a fixed original-derived hand ROI, not native body-to-hand
 selection. Intermediate numerical acceptance and final refinement remain open;
-see [hand-image evidence](reference/HAND_IMAGES.md) and
-[hand refinement evidence and next gates](reference/HAND_REFINEMENT.md).
+see [hand-image evidence](../reference/HAND_IMAGES.md) and
+[hand refinement evidence and next gates](../reference/HAND_REFINEMENT.md).
 
 The optimized sanitizer CPU preset now passes all 42 normal tests without
 disabling assertions or ASan/UBSan. A global OOM killed the invoking Codex
@@ -260,16 +265,16 @@ process during overlapping verification; the affected run's partial artifacts
 are not treated as clean-exit evidence. A serial cgroup-bounded runner now
 verifies actual limits and preserves host headroom. Its intentional tiny OOM
 test stayed inside the test cgroup, and subsequent lock recovery passed.
-See [memory safeguards and evidence](reference/MEMORY_SAFETY.md).
+See [memory safeguards and evidence](../reference/MEMORY_SAFETY.md).
 
-See [Body evidence](reference/BODY_IMAGE_FLOW.md) and
-[Objects image evidence](reference/OBJECTS_IMAGE.md) and
-[point-window evidence](reference/OBJECTS_POINTPATCH.md) and
-[SSI evidence](reference/OBJECTS_SSI.md) and
-[joint-transform evidence](reference/OBJECTS_JOINT.md) and
-[composed-preprocessing evidence](reference/OBJECTS_PREPROCESS.md) and
-[condition-fusion evidence](reference/OBJECTS_FUSER.md) and
-[point-conditioning composition](reference/OBJECTS_POINT_CONDITION.md) for the limits of these claims.
+See [Body evidence](../reference/BODY_IMAGE_FLOW.md) and
+[Objects image evidence](../reference/OBJECTS_IMAGE.md) and
+[point-window evidence](../reference/OBJECTS_POINTPATCH.md) and
+[SSI evidence](../reference/OBJECTS_SSI.md) and
+[joint-transform evidence](../reference/OBJECTS_JOINT.md) and
+[composed-preprocessing evidence](../reference/OBJECTS_PREPROCESS.md) and
+[condition-fusion evidence](../reference/OBJECTS_FUSER.md) and
+[point-conditioning composition](../reference/OBJECTS_POINT_CONDITION.md) for the limits of these claims.
 
 ## Verification history (earlier counts and intermediate failures retained)
 
@@ -285,7 +290,7 @@ See [Body evidence](reference/BODY_IMAGE_FLOW.md) and
 - Twelve weight-free tests pass, including negative CLI, incorrect layout,
   missing taps, near-zero reference, large integer index and source/hash cases.
   These establish tool behavior, **not SAM model parity**.
-- Python data-tool dependencies are pinned in `pyproject.toml`/`uv.lock`.
+- Python data-tool dependencies are now pinned under `reference/python/`.
   Checkpoints, source clones, generated reports and environments are ignored.
 - The native C++23 Body crop-geometry component and opaque C API build with
   GCC/Clang. The C-only ownership/error/geometry test passes with ASan/UBSan and
@@ -395,7 +400,7 @@ See [Body evidence](reference/BODY_IMAGE_FLOW.md) and
   GGUF loading remains excluded from fuzzing per the design.
 - This is format/architecture validation, **not trained backbone parity**.
   Trusted extraction, learned conversion, complete models, inference C API and
-  demo are still unfinished. See [reference/GGUF.md](reference/GGUF.md).
+  demo are still unfinished. See [reference/GGUF.md](../reference/GGUF.md).
 
 ## Whole backbone composition
 

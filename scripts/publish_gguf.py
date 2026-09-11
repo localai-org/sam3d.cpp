@@ -236,7 +236,7 @@ def main(argv=None) -> int:
             try:
                 upload(ROOT, args.repo_id, manifest, models, payloads, args.create_repo)
             except ImportError:
-                print("upload requires: uv sync --frozen --extra download", file=sys.stderr)
+                print("upload requires: uv sync --project reference/python --frozen --extra download", file=sys.stderr)
                 return 1
             except Exception as error:
                 # HTTP exceptions can inherit OSError. Keep them out of the

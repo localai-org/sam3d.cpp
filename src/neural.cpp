@@ -1,5 +1,5 @@
 // DINOv3 patch contract: Copyright (c) Meta Platforms, Inc. and affiliates.
-// Adaptation details and DINOv3 terms: THIRD_PARTY_NOTICES.md / LICENSES/DINOv3.md.
+// Adaptation details and DINOv3 terms: NOTICE / LICENSES/DINOv3.md.
 #include "neural.hpp"
 #include "bf16.hpp"
 #include "ggml.h"

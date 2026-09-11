@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. Adapted from SAM3DBody
-// _get_hand_box / run_inference; SAM license, THIRD_PARTY_NOTICES.md.
+// _get_hand_box / run_inference; SAM license, NOTICE.
 #include "body_hand_crop.hpp"
 #include <algorithm>
 #include <cmath>

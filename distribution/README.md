@@ -32,14 +32,14 @@ quantized artifact requires independent conversion/parity review first.
 
 ## Upload — a separate explicit action
 
-First review [LICENSING.md](../LICENSING.md) and all model license texts. Commit
+First review [LICENSING.md](../docs/LICENSING.md) and all model license texts. Commit
 the release source and ensure the checkout/submodule is clean. Install the
 optional pinned HF tooling and authenticate without putting tokens in scripts:
 
 ```sh
-uv sync --frozen --extra download
-uv run --frozen --extra download hf auth login
-uv run --frozen --extra download python scripts/publish_gguf.py \
+uv sync --project reference/python --frozen --extra download
+uv run --project reference/python --frozen --extra download hf auth login
+uv run --project reference/python --frozen --extra download python scripts/publish_gguf.py \
   --backbone /path/to/body-dinov3-f32.gguf \
   --branch /path/to/body-pose-branch-f32.gguf \
   --mhr /path/to/mhr-lod1-f32.gguf \
@@ -66,13 +66,13 @@ the tool does not delete it automatically. Network errors may require checking
 the remote commit before retrying.
 
 Source-repository installation packages retain `LICENSE`, `NOTICE`,
-`LICENSING.md` and applicable third-party notices. The model bundle's root
+`docs/LICENSING.md` and applicable third-party license texts. The model bundle's root
 `LICENSE` is deliberately **SAM**, not the source project's Apache license.
 
 ## Verification
 
 ```sh
-uv run --frozen python -m unittest discover -s tests -p 'test_publication.py' -v
+uv run --project reference/python --frozen python -m unittest discover -s tests -p 'test_publication.py' -v
 ```
 
 Tests use synthetic tiny files and mock HF calls: no weights, downloads, remote

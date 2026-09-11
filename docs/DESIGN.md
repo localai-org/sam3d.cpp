@@ -1,24 +1,19 @@
 # sam3d.cpp design and implementation process
 
-Latest requested work phase: [practical BF16 Body parity and 80–85 ms warm
-Vulkan inference](reference/BODY_BF16_GOAL.md). BF16 tolerances must account for
-upstream floating-point variation; isolated hand/finger discrepancies and detailed
-hand refinement are non-blocking. The broader backlog below is not a requirement
-to finish before pursuing this narrower performance goal.
+This document defines architecture and the reference/parity process, not a live
+task checklist. The [roadmap](ROADMAP.md) is authoritative for current scope and
+remaining work; [development history](../reference/HISTORY.md) records experiments.
 
-Active scope, revised 2026-09-09: **SAM 3D Body only**. Complete native Body
-inference, operation/layer and end-to-end CPU/Vulkan parity, the real Body web
-demo, headless Chrome visual/numerical QA, and optimized upstream/native
-performance parity. Objects is deferred to a later goal, not a dependency or
-completion criterion for this one. Preserve its existing code, references and
-tests; Objects sections below are future design, not active work. This revision
-supersedes the earlier two-model goal wording. See [STATUS.md](STATUS.md) for
-measured progress. Body pose-branch inference and its single-image web demo now
-work, with real headless Chrome and original-example comparison evidence.
-Full Body acceptance, detailed hand refinement and performance parity remain
-incomplete. Video is explicitly deferred by the latest user request.
-Source and published model identities are recorded
-in [the audit](reference/AUDIT.md) and [the source manifest](reference/sources.json).
+The supported implementation is the **SAM 3D Body pose branch**, with native
+CPU/Vulkan inference and an image/offline-video/live-webcam demo. Video currently
+uses independent frame estimates, not GEM temporal inference. Detailed hand
+refinement, feature-only GEM integration and SAM 3D Objects are future work.
+Sections describing those extensions are design, not claims of shipped support.
+BF16 tolerances account for upstream floating-point variation, with isolated
+hand metrics kept non-blocking for the supported Body branch. Full-model and
+matched-workload performance acceptance remain separate gates.
+Source and model identities are recorded
+in [the audit](../reference/AUDIT.md) and [the source manifest](../reference/sources.json).
 
 ## 1. What this project provides
 
@@ -28,7 +23,7 @@ An independent C++23/GGML library for Meta's SAM 3D models:
   from an image. Expose the intermediate features that GEM-X actually consumes.
 - **Objects (deferred):** reconstruct object geometry and appearance from an image
   and mask. It is a separate model family, not another head of Body.
-- **gem-x.cpp is a consumer:** it owns video tracking, GEM's temporal model,
+- **gem-x.cpp is a consumer:** it owns GEM's learned temporal tracking model,
   SOMA decoding and downstream motion adapters. Neither library should require
   the other's demo, a Python runtime, or a physics engine.
 
@@ -95,25 +90,25 @@ F32, compared against a separately identified upstream F32 execution.
 
 These are compatibility and static-review findings, not claims of malicious
 code or demonstrated exploits. Neither third-party C++ engine was configured,
-built or executed. The [audit](reference/AUDIT.md) explains the stopping points.
+built or executed. The [audit](../reference/AUDIT.md) explains the stopping points.
 
 ### Local reusable code
 
 Sibling paths below are development references, not build/runtime dependencies.
 Their audited revisions are in the source manifest. Copy only bounded,
 reviewed portions and record the original repository, revision, files, license
-and modifications in `THIRD_PARTY_NOTICES.md` when adoption happens.
+and modifications in `NOTICE` when adoption happens.
 
 | Source | Reuse candidates and qualification |
 | --- | --- |
-| [motion-bricks.cpp reference process](../motion-bricks.cpp/reference/README.md), [implementation plan](../motion-bricks.cpp/docs/IMPLEMENTATION.md) | Source/hash preflight, safe extraction, actual-upstream captures, repeated black-box baselines, stage and final-output checks. Historical status/tolerances are not SAM acceptance criteria. |
-| [motion-bricks.cpp API](../motion-bricks.cpp/docs/API.md), [error boundary](../motion-bricks.cpp/src/error.hpp) | Opaque handles, independent inference/controller levels, fixed caller error buffers, exception containment, backend selection. |
-| [SkinTokens GGML preparation](../skin-tokens.cpp/cmake/PrepareGGML.cmake) | Pristine upstream submodule plus fingerprinted build-copy patching; adapt path validation and support the no-patch case. Do not copy unrestricted recursive-deletion targets. |
-| [TRELLIS implementation](../trellis2cpp/trellis2.cpp), [DINO test](../trellis2cpp/tests/test_dino.cpp), [preprocessing test](../trellis2cpp/tests/test_preprocess.cpp) | DINOv3 attention/RoPE/LayerScale, tensor taps and sparse-transformer patterns. Its ViT-L/16 is not Body H+ or GEM's custom ViTPose H; dimensions, FFN, positions and tokens must be ported from the selected model. |
-| [Depth Anything backbone](../depth-anything.cpp/src/dino_backbone.cpp), [ViT blocks](../depth-anything.cpp/src/vit_block.cpp), [preprocessing](../depth-anything.cpp/src/preprocess.cpp) | Patch layout, attention, position interpolation and image math. Exclude DA-specific camera tokens and multiview logic unless the target genuinely uses them. |
-| [FreeSplatter image code](../free-splatter.cpp/src/image.cpp), [pose code](../free-splatter.cpp/src/pose.cpp), [tap comparison](../free-splatter.cpp/scripts/compare_taps.py) | Camera/image utilities, Gaussian representation and inspection patterns; verify coordinate conventions and attribute activation/order before reuse. |
+| [motion-bricks.cpp reference process](../../motion-bricks.cpp/reference/README.md), [implementation plan](../../motion-bricks.cpp/docs/IMPLEMENTATION.md) | Source/hash preflight, safe extraction, actual-upstream captures, repeated black-box baselines, stage and final-output checks. Historical status/tolerances are not SAM acceptance criteria. |
+| [motion-bricks.cpp API](../../motion-bricks.cpp/docs/API.md), [error boundary](../../motion-bricks.cpp/src/error.hpp) | Opaque handles, independent inference/controller levels, fixed caller error buffers, exception containment, backend selection. |
+| [SkinTokens GGML preparation](../../skin-tokens.cpp/cmake/PrepareGGML.cmake) | Pristine upstream submodule plus fingerprinted build-copy patching; adapt path validation and support the no-patch case. Do not copy unrestricted recursive-deletion targets. |
+| [TRELLIS implementation](../../trellis2cpp/trellis2.cpp), [DINO test](../../trellis2cpp/tests/test_dino.cpp), [preprocessing test](../../trellis2cpp/tests/test_preprocess.cpp) | DINOv3 attention/RoPE/LayerScale, tensor taps and sparse-transformer patterns. Its ViT-L/16 is not Body H+ or GEM's custom ViTPose H; dimensions, FFN, positions and tokens must be ported from the selected model. |
+| [Depth Anything backbone](../../depth-anything.cpp/src/dino_backbone.cpp), [ViT blocks](../../depth-anything.cpp/src/vit_block.cpp), [preprocessing](../../depth-anything.cpp/src/preprocess.cpp) | Patch layout, attention, position interpolation and image math. Exclude DA-specific camera tokens and multiview logic unless the target genuinely uses them. |
+| [FreeSplatter image code](../../free-splatter.cpp/src/image.cpp), [pose code](../../free-splatter.cpp/src/pose.cpp), [tap comparison](../../free-splatter.cpp/scripts/compare_taps.py) | Camera/image utilities, Gaussian representation and inspection patterns; verify coordinate conventions and attribute activation/order before reuse. |
 
-Use the [SkinTokens parity postmortem](../SkinTokens-parity-postmortem.md) as a
+Use the [SkinTokens parity postmortem](../../SkinTokens-parity-postmortem.md) as a
 methodological constraint: agreement with a rewritten oracle can reproduce the
 same layout bug twice. Final-output checks cannot be replaced by decoder checks
 that inject official intermediate tensors.
@@ -227,10 +222,11 @@ and tested. Valid live pointers and truthful capacities remain caller duties.
 
 ## 6. Implementation milestones and acceptance
 
-Each row is a gate, not an assertion that it has already passed. Active gates
-are R0 for Body, B1–B4, D1 and Body-only P1/P2. G1 is separate consumer work;
-O1–O5 and D2 are deferred. Body/GEM and Objects retain separate manifests and
-progress reporting.
+Each row defines an acceptance gate, not an assertion that it has passed or an
+immediate task assignment. The supported Body branch has scoped evidence for
+reference, inference and demo work; B4 hand refinement, G1 and Objects are future
+extensions. Consult the roadmap for remaining numerical/release work. Body/GEM
+and Objects retain separate manifests and progress reporting.
 
 Layer-by-layer parity is the default development method for **every** component,
 not just an optional debugging aid. Establish an actual-upstream capture, compare
@@ -481,20 +477,12 @@ If publishing through our HF organization, use `LocalAI-io`, upstream-linked
 model cards and a generic download workflow. No HF repository is authorized or
 created by this design task.
 
-## 9. Immediate next tasks
+## 9. Current work
 
-- [x] Locate official references and third-party Body/Objects ports.
-- [x] Pin source and published checkpoint identities; perform a source-only audit.
-- [x] Select reusable local infrastructure and write this process/design.
-- [ ] Resolve model access/licenses and pin remaining auxiliary dependencies.
-- [ ] Build the reviewed official reference environment and pass R0.
-- [ ] Inventory safe tensors/assets and define versioned Body GGUF/API schemas.
-- [ ] Implement B1 on CPU, then Vulkan; proceed through the gated sequence above.
-- [ ] Select and capture an official Body image/visualization fixture; record reproducible settings and rights. Objects fixtures and code re-audit are deferred.
-- [ ] Deliver the LocalAI-styled Body demo (D1). Objects extension D2 is deferred.
-- [ ] Run headless Chrome QA on the real upload/inference/view/export/history workflow and inspect captured screenshots.
-- [ ] Deliver the final upstream/native visual comparison and numerical end-to-end report for each shipped mode.
-- [ ] After functional completion, profile validated optimized PyTorch (including compilation where useful), then achieve matched-workload CPU and NVIDIA CUDA-versus-Vulkan performance parity (P1/P2).
+Maintain the current task list in [ROADMAP.md](ROADMAP.md), not here. It separates
+completed Body capabilities, remaining release actions, known numerical limits
+and future features. Detailed verification remains in the component reference
+reports and [development history](../reference/HISTORY.md).
 
 [gem-extractor]: https://github.com/NVlabs/GEM-X/blob/32992550dba114c62243fb55e361311972dce8f9/gem/utils/sam3db_extractor.py
 [sonic-limitations]: https://nvlabs.github.io/GR00T-WholeBodyControl/tutorials/live_camera_teleop.html#limitations

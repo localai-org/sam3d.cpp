@@ -1,6 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 // SAM3DBody get_ray_condition / _get_decoder_condition adaptation, SAM license.
-// See THIRD_PARTY_NOTICES.md; this does not implement a neural decoder.
+// See NOTICE; this does not implement a neural decoder.
 #include "error.hpp"
 #include <array>
 #include <cmath>

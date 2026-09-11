@@ -102,14 +102,14 @@ from the original RGB sample, not a normalized-input or feature fixture.
 Run the native comparison (the module/device flags select CPU or Vulkan):
 
 ```sh
-uv run --frozen python scripts/run_body_flow.py \
+uv run --project reference/python --frozen python scripts/run_body_flow.py \
   --runner build/debug/bin/sam3d-body-flow-capture \
   --module build/debug/bin/libggml-cpu.so --backend CPU --threads 6 \
   --gguf models/mhr-lod1-f32.gguf \
   --backbone-gguf models/body-dinov3-f32.gguf \
   --reference generated/fixtures/body-trained-decoder-operations-cpu \
   --output generated/fixtures/body-trained-decoder-operations-native-cpu
-uv run --frozen python scripts/check_trained_body_branch.py \
+uv run --project reference/python --frozen python scripts/check_trained_body_branch.py \
   --reference generated/fixtures/body-trained-decoder-operations-cpu \
   --candidate generated/fixtures/body-trained-decoder-operations-native-cpu \
   --backbone-reference generated/fixtures/body-trained-backbone-cpu \

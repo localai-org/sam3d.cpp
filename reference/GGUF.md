@@ -24,7 +24,7 @@ and mask conditioning. The learned **no-mask embedding is included**.
 After the verified restricted Body extraction, convert without Torch:
 
 ```sh
-uv run --frozen python scripts/convert_body_branch.py \
+uv run --project reference/python --frozen python scripts/convert_body_branch.py \
   --input models/body-other-state.safetensors \
   --manifest models/extraction.json \
   --output models/body-pose-branch-f32.gguf
@@ -76,7 +76,7 @@ overwriting an existing destination, including a dangling symlink.
 Once a verified safe intermediate and manifest exist:
 
 ```sh
-uv run --frozen python scripts/convert_gguf.py \
+uv run --project reference/python --frozen python scripts/convert_gguf.py \
   --input models/body-dinov3-f32.safetensors \
   --manifest models/body-dinov3-manifest.json \
   --output models/body-dinov3-f32.gguf
@@ -110,7 +110,7 @@ docker run --rm --network none --read-only --user "$(id -u):$(id -g)" \
   -v "$PWD:/work:ro" -v "$PWD/generated/fixtures/dino-schema:/output:rw" \
   --entrypoint python sam3d-reference-image /work/reference/capture_dino_schema.py \
   --upstream /work/reference/upstream/dinov3 --output /output
-uv run --frozen python scripts/check_gguf_contract.py \
+uv run --project reference/python --frozen python scripts/check_gguf_contract.py \
   --reference-schema generated/fixtures/dino-schema/schema.json \
   --verifier build/debug/bin/sam3d-gguf-verify \
   --archive-test build/debug/bin/sam3d-archive-test

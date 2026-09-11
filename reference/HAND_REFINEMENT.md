@@ -103,7 +103,7 @@ python /work/reference/capture_hand_crop.py \
 Then run the native sanitizer-enabled comparison on the host:
 
 ```sh
-uv run --frozen python scripts/run_hand_crop.py \
+uv run --project reference/python --frozen python scripts/run_hand_crop.py \
   --runner build/debug/bin/sam3d-hand-crop-capture \
   --reference generated/fixtures/body-hand-crop-upstream \
   --output generated/fixtures/body-hand-crop-native-cpu

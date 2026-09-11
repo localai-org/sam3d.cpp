@@ -1,6 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. SAM license.
 // Rotation quaternion/Euler adaptations: Copyright (c) 2020 NAVER Corp.;
-// SciPy contributors. BSD-3-Clause; see LICENSES/RoMa.txt and THIRD_PARTY_NOTICES.md.
+// SciPy contributors. BSD-3-Clause; see LICENSES/RoMa.txt and NOTICE.
 #include "body_pose.hpp"
 #include "finite.hpp"
 #include "body_hand_frame.hpp"

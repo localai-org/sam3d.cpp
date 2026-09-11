@@ -1,5 +1,5 @@
 // Composition of Meta SAM 3D Objects preprocessing, PointPatchEmbed and
-// EmbedderFuser contracts; see THIRD_PARTY_NOTICES.md and SAM License.
+// EmbedderFuser contracts; see NOTICE and SAM License.
 #include "objects_point_condition.hpp"
 #include <stdexcept>
 namespace sam3d {

@@ -1,6 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. SAM license.
 // RoMa/SciPy rotation adaptations: NAVER Corp. / SciPy contributors,
-// BSD-3-Clause; LICENSES/RoMa.txt, THIRD_PARTY_NOTICES.md.
+// BSD-3-Clause; LICENSES/RoMa.txt, NOTICE.
 #include "body_hand_frame.hpp"
 #include <algorithm>
 #include <array>

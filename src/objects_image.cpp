@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// Objects image/mask transforms: SAM license; THIRD_PARTY_NOTICES.md.
+// Objects image/mask transforms: SAM license; NOTICE.
 // Antialiased bicubic conventions follow PyTorch v2.7.0: LICENSES/PyTorch.txt.
 #include "objects_image.hpp"
 #include <algorithm>

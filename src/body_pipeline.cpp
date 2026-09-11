@@ -1,6 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 // Composition follows SAM3DBody.forward_pose_branch. SAM license and detailed
-// attribution: THIRD_PARTY_NOTICES.md. No reference intermediates are accepted.
+// attribution: NOTICE. No reference intermediates are accepted.
 #include "body_pipeline.hpp"
 #include "sam3d.h"
 #include "ggml.h"

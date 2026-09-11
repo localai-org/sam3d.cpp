@@ -3,7 +3,7 @@
 /models/
 /data/
 /reference/upstream/
-/.venv/
+.venv/
 /.cache/
 __pycache__/
 *.py[cod]

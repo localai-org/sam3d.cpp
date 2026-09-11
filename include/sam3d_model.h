@@ -36,7 +36,7 @@ S3D_API s3d_status s3d_runtime_options_create(s3d_runtime_options **out,char *er
 S3D_API void s3d_runtime_options_free(s3d_runtime_options *options);
 /* Default F32. BF16 rounds only the image encoder, matching upstream's scope;
  * decoder, MHR and public result buffers remain F32. Uses the same F32 GGUFs.
- * Experimental: consult STATUS.md for the current numerical acceptance gate. */
+ * Consult docs/ROADMAP.md for the current numerical acceptance limits. */
 S3D_API s3d_status s3d_runtime_options_set_backbone_precision(s3d_runtime_options *options,
     uint32_t precision,char *error,uint64_t capacity);
 S3D_API s3d_status s3d_runtime_options_get_backbone_precision(const s3d_runtime_options *options,

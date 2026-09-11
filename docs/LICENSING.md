@@ -1,20 +1,20 @@
 # Licensing
 
 Copyright 2026 sam3d.cpp contributors. Original contributions are licensed
-under [Apache-2.0](LICENSE), **except for third-party material and adaptations
-identified in file headers and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)**.
+under [Apache-2.0](../LICENSE), **except for third-party material and adaptations
+identified in file headers and [NOTICE](../NOTICE)**.
 Those retain their original terms. This is not an Apache-only distribution.
 The Apache grant does not offer an alternative license for Meta derivatives.
 
 | Material | Applicable terms |
 | --- | --- |
 | Original library/API infrastructure, demo and tooling, excluding identified adaptations | Apache-2.0 |
-| Adapted SAM 3D Body/Objects model and preprocessing implementations and associated reference material | [SAM License](LICENSES/SAM.txt) |
-| Adapted DINOv3 embedding, transformer and backbone implementations | [DINOv3 License](LICENSES/DINOv3.md), plus SAM terms where SAM-derived material is incorporated |
-| MHR geometry/constants and adaptations | [Apache-2.0](LICENSES/MHR-Apache-2.0.txt), with [Momentum MIT](LICENSES/Momentum.txt) for Momentum-derived implementations |
-| GGML submodule and GGML-derived Vulkan patches | [GGML MIT](ggml/LICENSE) |
-| Other copied/adapted algorithms and helpers | Their retained notices in `LICENSES/`; file-by-file provenance in `THIRD_PARTY_NOTICES.md` |
-| Bundled Three.js | [Three.js MIT](demo/web/vendor/THREE-LICENSE.txt) |
+| Adapted SAM 3D Body/Objects model and preprocessing implementations and associated reference material | [SAM License](../LICENSES/SAM.txt) |
+| Adapted DINOv3 embedding, transformer and backbone implementations | [DINOv3 License](../LICENSES/DINOv3.md), plus SAM terms where SAM-derived material is incorporated |
+| MHR geometry/constants and adaptations | [Apache-2.0](../LICENSES/MHR-Apache-2.0.txt), with [Momentum MIT](../LICENSES/Momentum.txt) for Momentum-derived implementations |
+| GGML submodule and GGML-derived Vulkan patches | [GGML MIT](../ggml/LICENSE) |
+| Other copied/adapted algorithms and helpers | Their retained notices in `LICENSES/`; file-by-file provenance in `NOTICE` |
+| Bundled Three.js | [Three.js MIT](../demo/web/vendor/THREE-LICENSE.txt) |
 
 The provenance document identifies files, original repositories/revisions,
 copyright holders and modifications. Multiple applicable notices must be
@@ -47,12 +47,13 @@ full hand-refined estimator, or SAM 3D Objects.
 
 ## Distributing source or binaries
 
-Retain `LICENSE`, `NOTICE`, this file, `THIRD_PARTY_NOTICES.md` and applicable
-third-party license files. CMake installs these native-runtime notices with the
-library. The optional demo embeds its web assets; include the Three.js license
+Retain `LICENSE`, the consolidated `NOTICE`, this file and applicable
+third-party license files. CMake installs the notices under `share/sam3d`,
+preserving the `docs/`, `LICENSES/` and bundled dependency license paths.
+The optional demo embeds its web assets; include the Three.js license
 when distributing its binary. Further modifications should be identified and
 must not remove upstream copyright notices or license conditions.
 
-See [publication instructions](distribution/README.md) for the proposed HF
+See [publication instructions](../distribution/README.md) for the proposed HF
 bundle and its explicit-file uploader. No upstream gate, publisher approval or
 license obligation is waived by this project.

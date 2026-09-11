@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// PerspectiveHead/geometry_utils adaptation; SAM license, THIRD_PARTY_NOTICES.md.
+// PerspectiveHead/geometry_utils adaptation; SAM license, NOTICE.
 #include "body_camera_head.hpp"
 #include "ggml.h"
 #include <algorithm>

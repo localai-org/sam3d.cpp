@@ -70,7 +70,7 @@ observed outputs and independent full outputs. `S3DOIM01` native test inputs
 contain only raw RGBA pixels/stride and explicit options, not computed crops.
 
 ```sh
-uv run --frozen python scripts/run_objects_image.py \
+uv run --project reference/python --frozen python scripts/run_objects_image.py \
   --reference generated/fixtures/objects-image-cpu \
   --runner build/debug/bin/sam3d-objects-image-capture \
   --output generated/fixtures/objects-image-native-cpu

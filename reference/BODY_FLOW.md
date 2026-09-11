@@ -85,7 +85,7 @@ Reference TF32 is disabled; SDPA uses its math backend. Source, model, wheel,
 script and artifact hashes are retained in each manifest.
 
 ```sh
-uv run --frozen python scripts/run_body_flow.py \
+uv run --project reference/python --frozen python scripts/run_body_flow.py \
   --reference generated/fixtures/body-flow-cpu \
   --runner build/debug/bin/sam3d-body-flow-capture \
   --module build/debug/bin/libggml-cpu.so \
@@ -190,7 +190,7 @@ angular numerical-floor handling rather than tuning a threshold to native output
 Reproduce the report with:
 
 ```sh
-uv run --frozen python scripts/check_body_rotation_trace.py \
+uv run --project reference/python --frozen python scripts/check_body_rotation_trace.py \
   generated/fixtures/body-rotation-full-cpu \
   --compare-reference generated/fixtures/body-rotation-shared-input-cuda
 ```

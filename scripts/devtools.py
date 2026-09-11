@@ -1,5 +1,5 @@
 # Trellis2cpp adaptation: Copyright (c) 2026 rms80; MIT.
-# See LICENSES/Trellis2cpp-MIT.txt and THIRD_PARTY_NOTICES.md.
+# See LICENSES/Trellis2cpp-MIT.txt and NOTICE.
 """Minimal local Chrome DevTools client. Adapted from trellis2cpp's reviewed
 scripts/headless_smoke.py, with bounded frames, continuation and ping handling.
 Only connects to the disposable browser's loopback DevTools socket.

@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// PointPatchEmbed adaptation: SAM License; THIRD_PARTY_NOTICES.md.
+// PointPatchEmbed adaptation: SAM License; NOTICE.
 // Window Block semantics follow Ross Wightman's timm 0.9.16 (Apache-2.0).
 // Copyright 2019 Ross Wightman. Modified: C++/GGML graph and bounded chunks.
 #include "objects_pointpatch.hpp"

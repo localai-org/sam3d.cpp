@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
-// SAM3DBody.forward_decoder input adaptation; SAM license, THIRD_PARTY_NOTICES.md.
+// SAM3DBody.forward_decoder input adaptation; SAM license, NOTICE.
 #include "body_condition.hpp"
 #include "finite.hpp"
 #include "camera_encoder.hpp"

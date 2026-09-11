@@ -73,7 +73,7 @@ The Objects source is `f91db411c50efee93d8db7aeb323885650f6f722`. PyTorch3D is
 Objects. Selected source files were downloaded from the official repository and
 reviewed before execution. Their hashes are recorded in
 `reference/original_objects_ssi.py` and the fixture manifest. Attribution and
-installed license text are in `THIRD_PARTY_NOTICES.md` and `LICENSES/PyTorch3D.txt`.
+installed license text are in `NOTICE` and `LICENSES/PyTorch3D.txt`.
 
 The loader executes unchanged selected original class/function ASTs inside the
 reviewed offline/read-only container. Postponed annotations avoid importing
@@ -111,7 +111,7 @@ contains `pytorch3d/transforms/transform3d.py` and `pytorch3d/common/datatypes.p
 there is no C++ extension build or PyTorch3D installation.
 
 ```sh
-uv run --frozen python scripts/run_objects_ssi.py \
+uv run --project reference/python --frozen python scripts/run_objects_ssi.py \
   --reference generated/fixtures/objects-ssi-cpu \
   --runner build/debug/bin/sam3d-objects-ssi-capture \
   --output generated/fixtures/objects-ssi-native-cpu
