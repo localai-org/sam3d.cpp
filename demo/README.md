@@ -35,11 +35,12 @@ cameras are reported in the UI. Stop, changing modes, leaving the page or hiding
 the tab releases the camera and cancels pending live work.
 
 The configurable **maximum inference Hz** is a cap, not a throughput guarantee
-(1–30 Hz, default 10). The browser keeps one request in flight while preparing
-the next frame in a dedicated encoding worker. There is only one replaceable
-prepared frame and one active encoding; live mode drops stale frames instead of
-building a queue. Prefetch timing uses recent request/encoding durations to
-reduce frame age. The server also enforces the live cap. The displayed recent Hz
+(1–30 Hz, default 10). The browser permits two ordered live requests while
+preparing frames in a dedicated encoding worker. The server can decode and pack
+one frame while the preceding frame runs inference, with one bounded decoded
+frame slot. There is still only one replaceable encoded frame and one active
+encoding; live mode drops stale camera frames instead of building a backlog.
+The server also enforces the live cap. The displayed recent Hz
 uses the last 20 request intervals, not the entire session including cold load.
 Live results start displaying on the next render, with a **25 ms blend from the
 currently displayed pose** and no delayed playback timeline. Gaps snap to the
@@ -66,9 +67,13 @@ before video-element rendering/readback. Other browsers retain video-element
 capture. Superseded source frames are explicitly closed; stop also releases the
 reader and its cloned camera track. Stop, mode changes and page exit terminate the worker;
 capture/encoding never queues unlimited work. No WebRTC dependency is required.
-In the matched headless test, new results reach first render submission in
-about **176 ms**, settling in **202 ms**, at **8.1 Hz**. These exclude camera
-exposure and physical display delay; see [latency evidence](../reference/BODY_LIVE_PERFORMANCE.md#follow-up-low-latency-presentation-and-camera-capture).
+In the matched standard-mode headless test, new results reach first render
+submission in about **176 ms**, settling in **202 ms**, at **8.1 Hz**. With the
+deployed approximate BF16 `fast384` mode and the two-request pipeline, a strict
+10 Hz cap measures **9.85 Hz** (100.7 ms median request interval); raising the
+cap to 30 Hz measures **14.25 Hz**. These exclude camera exposure and physical
+display delay; see [latency evidence](../reference/BODY_LIVE_PERFORMANCE.md#follow-up-low-latency-presentation-and-camera-capture)
+and the [Fast384 pipeline profile](../reference/BODY_LIVE_PERFORMANCE.md#fast384-two-request-pipeline).
 The server accepts at most 1 MP / 2 MiB per frame. Offline sequences are capped at
 1,800 samples and share the configured data budget. Live tracking keeps geometry
 only while displaying it unless **Record take** is active.

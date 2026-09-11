@@ -221,6 +221,58 @@ Browser diagnostics now include `first_render_ms`, `response_to_render_ms`,
 `settled_render_ms`, `source_age_ms` and the actual frame-source path. They are
 bounded, like the existing timing buffers.
 
+## Fast384 two-request pipeline
+
+The live client and server now permit two ordered HTTP requests for a live
+track. While the native worker infers one frame, the browser can encode the next
+camera frame and the server can read, decode and pack it into one buffered frame
+slot. A third request is rejected and the browser retains only one replaceable
+encoded frame, so latency and memory cannot grow into a video backlog. Offline
+sampling remains strictly sequential. The server releases its upload admission
+token after the decoded frame enters the bounded queue and allows 5 ms of
+wall-clock delivery jitter; source timestamps still enforce the selected sample
+interval.
+
+The browser dispatcher consumes results in request order, snapshots crop/camera
+settings per request and cancels both outstanding requests on stop. Direct
+camera capture tests freshness using the source `VideoFrame` arrival time rather
+than the HTML video element's playback clock. Presentation diagnostics now
+record results superseded before first or settled render instead of incorrectly
+requiring every high-rate result to finish its blend.
+
+Local-only Chrome 151/SwiftShader profiles used the same 960×540 moving source,
+fixed `[710,30,960,535]` crop, native Vulkan backend, BF16 `fast384` mode and
+validated production flags. The 60-frame Y4M payload was repeated within one
+longer file so Chromium did not cross its artificial two-second virtual-camera
+loop boundary during the measured window. Five warmups preceded forty samples.
+There were no browser errors, nonfinite results or unbounded queues.
+
+| Profile | Completed Hz | Median interval | Median native inference | Median source-to-response | Median first/settled render |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Previous one-request pipeline, 30 Hz cap | 12.02 | 83.2 ms | 62.7 ms | 121.2 ms | 136.7 / 164.0 ms |
+| Two-request pipeline, 10 Hz cap | 9.85 | 100.7 ms | 65.4 ms | 165.2 ms | 182.7 / 208.1 ms |
+| Two-request pipeline, 30 Hz cap | **14.25** | **70.4 ms** | 66.0 ms | 193.7 ms | 211.1 / 241.7 ms |
+
+The uncapped improvement is about **18.5%**. It deliberately trades roughly one
+inference interval of latency for throughput. The strict 10 Hz maximum lands
+slightly below 10 because browser timers do not fire early; selecting a higher
+cap sustains well above 10 Hz.
+
+More request overlap cannot reach 20 Hz with the current native path. The live
+native median alone is 66.0 ms, a 15.15 Hz upper bound before parsing and
+protocol work. The isolated Fast384 native benchmark is faster at 54.9 ms but
+still bounds a sequential worker to 18.2 Hz. A true 20 Hz result requires native
+inference below 50 ms, a batched graph that improves aggregate throughput, or
+multiple safely concurrent model workers with an acceptable VRAM cost.
+
+Artifacts: `generated/diagnostics/fast384-live-30hz-local-v1/` is the
+single-request baseline;
+`generated/diagnostics/fast384-live-pipelined-10hz-local-v5/` and
+`fast384-live-pipelined-30hz-local-v3/` are the final bounded pipeline runs.
+These ignored diagnostics are performance evidence, not ground-truth pose
+validation. Numerical divergence of Fast384 from the standard mode is reported
+separately in [BODY_FAST_INFERENCE.md](BODY_FAST_INFERENCE.md).
+
 ## Moving-video source
 
 Use actual moving frames from Meta's related SAM 3 repository, not the earlier

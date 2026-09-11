@@ -11,7 +11,7 @@
  <p id="camera-notice" class="notice" hidden>Webcams require HTTPS or localhost and camera permission. Plain HTTP on a remote/Tailscale address cannot access a webcam. Offline video still works.</p>
  <div class="fields"><label>Maximum inference Hz<input id="track-hz" type="number" min="1" max="30" step="1" value="10"></label><label id="start-time-label">Start at (seconds)<input id="track-start-time" type="number" min="0" step="0.1" value="0"></label><label id="duration-label">Process seconds<input id="track-duration" type="number" min="0.1" max="1800" step="0.1" value="10"></label></div>
  <label class="check"><input id="follow-box" type="checkbox" checked> Follow projected person box</label>
- <p class="small">Select one person in the preview below before starting. One frame in flight; actual rate may be lower than the cap. Live results start displaying immediately with a 25 ms blend, no playback buffer or prediction. No automatic detection, identity tracking or temporal model.</p>
+ <p class="small">Select one person in the preview below before starting. Live upload/preparation overlaps the preceding inference with at most two requests; actual rate may be lower than the cap. Live results start displaying immediately with a 25 ms blend, no playback buffer or prediction. No automatic detection, identity tracking or temporal model.</p>
  <button id="track-start" class="primary" disabled>Start tracking</button><button id="track-stop" hidden>Stop tracking</button>
  <button id="track-record" hidden>● Record take</button><p id="record-status" role="status" class="small"></p>
  <div id="track-status" role="status">Choose a video or open the webcam.</div>

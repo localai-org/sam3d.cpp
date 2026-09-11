@@ -79,6 +79,19 @@ func trackingWorker(t *testing.T) (*app, context.Context) {
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan struct{})
 	go func() { a.worker(ctx); close(done) }()
+	deadline := time.Now().Add(time.Second)
+	for {
+		a.mu.Lock()
+		ready := a.workerLive
+		a.mu.Unlock()
+		if ready {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("worker did not start")
+		}
+		time.Sleep(time.Millisecond)
+	}
 	t.Cleanup(func() { cancel(); <-done })
 	return a, ctx
 }
@@ -174,6 +187,57 @@ func TestLiveCapAndNoHistory(t *testing.T) {
 	if exists {
 		t.Fatal("live session retained")
 	}
+}
+func TestLiveAllowsOneFrameAhead(t *testing.T) {
+	t.Setenv("SAM3D_FAKE_IMAGE_HANG", "1")
+	a, _ := trackingWorker(t)
+	tk := createTestTrack(t, a, "live")
+	a.mu.Lock()
+	a.tracks[tk.ID].Hz = 30
+	a.mu.Unlock()
+	responses := make(chan *httptest.ResponseRecorder, 2)
+	ctx1, cancel1 := context.WithCancel(context.Background())
+	ctx2, cancel2 := context.WithCancel(context.Background())
+	defer cancel1()
+	defer cancel2()
+	waitInflight := func(want int) {
+		t.Helper()
+		deadline := time.Now().Add(2 * time.Second)
+		for {
+			a.mu.Lock()
+			got := a.tracks[tk.ID].inflight
+			a.mu.Unlock()
+			if got == want {
+				return
+			}
+			if time.Now().After(deadline) {
+				t.Fatalf("inflight=%d, want %d", got, want)
+			}
+			time.Sleep(time.Millisecond)
+		}
+	}
+	go func() { responses <- postTestFrame(a, tk.ID, "0", ctx1) }()
+	waitInflight(1)
+	time.Sleep(35 * time.Millisecond)
+	go func() { responses <- postTestFrame(a, tk.ID, "0.04", ctx2) }()
+	waitInflight(2)
+	time.Sleep(35 * time.Millisecond)
+	if w := postTestFrame(a, tk.ID, "0.08", context.Background()); w.Code != 429 {
+		t.Fatal("third live frame entered bounded pipeline", w.Code)
+	}
+	cancel1()
+	cancel2()
+	for range 2 {
+		select {
+		case w := <-responses:
+			if w.Code != 408 {
+				t.Fatal("cancelled pipelined frame", w.Code, w.Body.String())
+			}
+		case <-time.After(3 * time.Second):
+			t.Fatal("pipelined frame did not cancel")
+		}
+	}
+	waitInflight(0)
 }
 func TestTrackingCancellationReapsWorker(t *testing.T) {
 	t.Setenv("SAM3D_FAKE_IMAGE_HANG", "1")

@@ -75,16 +75,25 @@ def main():
             assert report['finite_geometry']
             frames=diagnostic['timings'][a.warmup:a.warmup+a.frames]
             report['client_ms']={key:summary([f[key] for f in frames]) for key in ['capture_ms','jpeg_ms','headers_ms','download_ms','unpack_ms','request_ms','total_ms','interval_ms']}
-            for key in ['queue_ms','source_age_ms','worker_encode_ms','worker_draw_ms','worker_blob_ms','first_render_ms','response_to_render_ms','settled_render_ms']:
+            for key in ['queue_ms','source_age_ms','worker_encode_ms','worker_draw_ms','worker_blob_ms']:
                 if all(key in f for f in frames):report['client_ms'][key]=summary([f[key] for f in frames])
             if 'maxPrepared' in diagnostic:
-                assert diagnostic['maxPrepared']<=1 and diagnostic['maxInFlight']==1
+                assert diagnostic['maxPrepared']<=1 and diagnostic['maxInFlight']<=2
                 assert all(b['capture_time']-a['capture_time']>=1/report['cap_hz']-.001 for a,b in zip(frames,frames[1:]))
                 report['pipeline']={k:diagnostic[k] for k in ['encoder','maxPrepared','dropped','maxInFlight']}
                 report['pipeline']['frame_sources']=sorted(set(f.get('frame_source','unrecorded') for f in frames))
             if 'blend_ms' in diagnostic:
                 report['presentation']={'blend_ms':diagnostic['blend_ms'],'scope':'capture to Three.js render submission; not camera exposure or GPU/compositor/physical scanout'}
-                assert all(f['total_ms']<=f['first_render_ms']<=f['settled_render_ms'] for f in frames)
+                presented=[f for f in frames if 'first_render_ms' in f]
+                settled=[f for f in frames if 'settled_render_ms' in f]
+                assert presented and settled
+                assert all(f['total_ms']<=f['first_render_ms'] for f in presented)
+                assert all(f['total_ms']<=f['settled_render_ms'] and f.get('first_render_ms',f['settled_render_ms'])<=f['settled_render_ms'] for f in settled)
+                report['client_ms']['first_render_ms']=summary([f['first_render_ms'] for f in presented])
+                report['client_ms']['response_to_render_ms']=summary([f['response_to_render_ms'] for f in presented])
+                report['client_ms']['settled_render_ms']=summary([f['settled_render_ms'] for f in settled])
+                report['presentation']['superseded_before_first_render']=len(frames)-len(presented)
+                report['presentation']['superseded_before_settled_render']=len(frames)-len(settled)
             keys=set.intersection(*(set(f['server']) for f in frames))
             report['server_ms']={key:summary([f['server'][key] for f in frames]) for key in sorted(keys)}
             assert 'infer' in keys and 'server' in keys,'native stage instrumentation not active'

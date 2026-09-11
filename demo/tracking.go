@@ -24,6 +24,7 @@ import (
 
 const maxTrackFrames = 1800
 const trackFrameBytes = 16 + (18439*3+127*3+3)*4
+const liveRateJitterSeconds = 0.005
 
 type trackSample struct {
 	Time     float64  `json:"time"`
@@ -48,7 +49,10 @@ type track struct {
 	busy       bool
 	last       time.Time
 	lastTime   float64
-	cancel     context.CancelFunc
+	lastSubmit float64
+	inflight   int
+	next       uint64
+	cancels    map[uint64]context.CancelFunc
 }
 type frameRequest struct {
 	ctx     context.Context
@@ -152,8 +156,8 @@ func (a *app) trackRoutes(m *http.ServeMux) {
 			return
 		}
 		t.State = "complete"
-		if t.cancel != nil {
-			t.cancel()
+		for _, cancel := range t.cancels {
+			cancel()
 		}
 		if e := a.saveTrack(t); e != nil {
 			fail(w, 500, e)
@@ -274,9 +278,15 @@ func (a *app) createTrack(w http.ResponseWriter, r *http.Request) {
 func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 	started := time.Now()
 	timings := map[string]float64{}
+	uploadHeld := false
 	select {
 	case a.uploads <- struct{}{}:
-		defer func() { <-a.uploads }()
+		uploadHeld = true
+		defer func() {
+			if uploadHeld {
+				<-a.uploads
+			}
+		}()
 	default:
 		fail(w, 429, "another image/frame is being processed")
 		return
@@ -294,12 +304,30 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 		fail(w, 409, "track is not recording")
 		return
 	}
-	if t.busy || len(a.queue) > 0 || (t.Mode == "live" && t.Count > 0 && time.Since(t.last).Seconds() < 1/t.Hz) {
+	if !a.workerLive {
 		a.mu.Unlock()
-		fail(w, 429, "worker busy or rate cap reached; retry with latest frame")
+		fail(w, 429, "inference worker is not ready")
 		return
 	}
-	if (t.Count > 0 && stamp-t.lastTime < 1/t.Hz-0.001) || (t.Mode == "offline" && t.Count >= maxTrackFrames) {
+	limit := 1
+	if t.Mode == "live" {
+		limit = 2
+	}
+	// Browser timers and request delivery can move a nominally capped frame a
+	// few milliseconds earlier. Keep a small admission tolerance; the selected
+	// timestamps and bounded pipeline still constrain sustained work.
+	if t.inflight >= limit || len(a.queue) > 0 || (t.Mode == "live" && (t.Count > 0 || t.inflight > 0) && time.Since(t.last).Seconds() < 1/t.Hz-liveRateJitterSeconds) {
+		a.mu.Unlock()
+		fail(w, 429, "live pipeline full or rate cap reached; retry with latest frame")
+		return
+	}
+	previous := t.lastTime
+	hasPrevious := t.Count > 0
+	if t.inflight > 0 {
+		previous = t.lastSubmit
+		hasPrevious = true
+	}
+	if (hasPrevious && stamp-previous < 1/t.Hz-0.001) || (t.Mode == "offline" && t.Count >= maxTrackFrames) {
 		a.mu.Unlock()
 		fail(w, 400, "timestamps must increase at the selected sampling interval; offline limit is 1800 frames")
 		return
@@ -315,11 +343,24 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 	if take != nil && stamp < take.Start {
 		take = nil
 	}
+	requestID := t.next
+	t.next++
+	if t.cancels == nil {
+		t.cancels = map[uint64]context.CancelFunc{}
+	}
+	t.cancels[requestID] = cancel
+	t.inflight++
 	t.busy = true
-	t.cancel = cancel
 	t.last = time.Now()
+	t.lastSubmit = stamp
 	a.mu.Unlock()
-	defer func() { a.mu.Lock(); t.busy = false; t.cancel = nil; a.mu.Unlock() }()
+	defer func() {
+		a.mu.Lock()
+		delete(t.cancels, requestID)
+		t.inflight--
+		t.busy = t.inflight > 0
+		a.mu.Unlock()
+	}()
 	data, e := io.ReadAll(http.MaxBytesReader(w, r.Body, 2<<20))
 	timings["read"] = elapsedMS(started)
 	if e != nil {
@@ -342,9 +383,13 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 	packed := packImage(im, s)
 	timings["pack"] = elapsedMS(packStarted)
 	req := &frameRequest{ctx: ctx, t: t, take: take, packed: packed, preview: data, s: s, stamp: stamp, reply: make(chan frameReply, 1), timings: timings}
-	// No video backlog. Still jobs and all clients share the same consumer.
+	// Live mode permits one decoded frame to wait while the preceding frame is
+	// inferred. The upload token is retained through this ordered enqueue, so
+	// concurrent handlers cannot reverse frame timestamps.
 	select {
 	case a.frames <- req:
+		<-a.uploads
+		uploadHeld = false
 	default:
 		fail(w, 429, "inference worker is busy; retry shortly")
 		return

@@ -91,6 +91,7 @@ type app struct {
 	native     *residentWorker // owned exclusively by the single queue consumer
 	tracks     map[string]*track
 	frames     chan *frameRequest
+	workerLive bool
 }
 
 func digest(path string) (string, error) {
@@ -397,6 +398,14 @@ func (a *app) routes() http.Handler {
 	})
 }
 func (a *app) worker(ctx context.Context) {
+	a.mu.Lock()
+	a.workerLive = true
+	a.mu.Unlock()
+	defer func() {
+		a.mu.Lock()
+		a.workerLive = false
+		a.mu.Unlock()
+	}()
 	defer a.stopResident()
 	interval := a.cfg.workerIdle
 	if interval <= 0 {
@@ -607,7 +616,7 @@ func loadApp(c config) (*app, error) {
 	if e := os.MkdirAll(c.data, 0700); e != nil {
 		return nil, e
 	}
-	a := &app{cfg: c, jobs: map[string]*job{}, queue: make(chan string, 2), uploads: make(chan struct{}, 1), provenance: map[string]string{}, tracks: map[string]*track{}, frames: make(chan *frameRequest)}
+	a := &app{cfg: c, jobs: map[string]*job{}, queue: make(chan string, 2), uploads: make(chan struct{}, 1), provenance: map[string]string{}, tracks: map[string]*track{}, frames: make(chan *frameRequest, 1)}
 	if e := a.loadTracks(); e != nil {
 		return nil, e
 	}

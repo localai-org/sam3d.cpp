@@ -110,7 +110,7 @@ def verify(c, box):
     try:
         start(10);c.wait('window.sam3dQA.tracking.frames>=5',60)
         d=c.evaluate('window.sam3dQA.tracking');stop()
-        assert d['maxInFlight']==1 and d['maxPrepared']<=1 and d['dropped']>0
+        assert d['maxInFlight']<=2 and d['maxPrepared']<=1 and d['dropped']>0
         assert max(t['queue_ms'] for t in d['timings'][1:])<250
         assert not d['errors']
         result['slow_transport']={k:d[k] for k in ['frames','dropped','maxPrepared','maxInFlight']}

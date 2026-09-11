@@ -44,10 +44,9 @@ export function initTracking(view) {
  });
  async function sendFrame(prepared,s,token){
   const {blob,stamp}=prepared,measured={...prepared.timing,queue_ms:performance.now()-prepared.completed};
-  const query=new URLSearchParams({time:String(stamp),settings:JSON.stringify(s)});
-  while(token===epoch){
-   diagnostics.maxInFlight=Math.max(diagnostics.maxInFlight,1);
-   const requestStarted=performance.now();
+	 const query=new URLSearchParams({time:String(stamp),settings:JSON.stringify(s)});
+	 while(token===epoch){
+	  const requestStarted=performance.now();
    measured.sent=requestStarted;
    const response=await fetch(`/api/tracks/${session.id}/frame?${query}`,{method:'POST',body:blob,signal:abort.signal});
    measured.headers_ms=performance.now()-requestStarted;
@@ -63,8 +62,9 @@ export function initTracking(view) {
  }
  async function run(token,hz,duration){
   const begin=performance.now();startClock=begin;lastCapture=-1;diagnostics.frames=0;diagnostics.actualHz=0;diagnostics.blend_ms=live.duration;
-  let index=0,s=view.settings(),previousSent=null,nextSend=begin,encoder=null,producer=null,slot=null,cameraFrames=null;
-  let captureNotBefore=begin,encodeEstimate=0,requestEstimate=0;
+	 let index=0,s=view.settings(),previousSent=null,nextSend=begin,encoder=null,producer=null,dispatcher=null,slot=null,cameraFrames=null,lastCameraReceived=-1;
+	 let activeRequests=0,requestWaiter=null,capacityWaiter=null,dispatchDone=false,dispatchError=null;
+	 const requests=[];
   diagnostics.timings=[];diagnostics.renderTimings=[];
   diagnostics.maxInFlight=0;diagnostics.maxPrepared=0;diagnostics.dropped=0;diagnostics.encoding=false;diagnostics.prepared=0;diagnostics.presentedFrame=0;diagnostics.settledFrame=0;
   try {
@@ -76,57 +76,80 @@ export function initTracking(view) {
    const created=await view.api('/api/tracks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,name,hz,width:canvas.width,height:canvas.height})});
    session=created;controls();
    if(token!==epoch)return;
-   async function prepare(stamp){
-    const selected=performance.now(),snapshot=cameraFrames?.take(),captured=snapshot?Math.min(selected,snapshot.received):selected;diagnostics.encoding=true;
+   async function prepare(stamp,snapshot=cameraFrames?.take()){
+	    const selected=performance.now(),captured=snapshot?Math.min(selected,snapshot.received):selected;diagnostics.encoding=true;
     try{
      const encoded=await encoder.encode(snapshot?.frame||video,canvas.width,canvas.height),completed=performance.now();
      encoded.timing.source_age_ms=selected-captured;encoded.timing.frame_source=snapshot?'camera-track':'video-element';
-     encodeEstimate=encodeEstimate?encodeEstimate*.75+(completed-selected)*.25:completed-selected;
-     return {...encoded,stamp,captured,completed};
+	   return {...encoded,stamp,captured,completed};
     }finally{snapshot?.frame.close();diagnostics.encoding=false}
    }
    if(mode==='live')producer=(async()=>{
     let next=performance.now();
     try{
      while(token===epoch&&!slot.closed&&!document.hidden){
-      const now=performance.now(),wanted=Math.max(next,captureNotBefore);if(now<wanted){await sleep(Math.min(50,Math.ceil(wanted-now)));continue}
-      if(video.currentTime===lastCapture){await sleep(10);continue}
-      lastCapture=video.currentTime;next=now+1000/hz;
-      slot.put(await prepare((now-startClock)/1000));
+	    const now=performance.now();if(now<next){await sleep(Math.min(50,Math.ceil(next-now)));continue}
+	    let snapshot=null;
+	    if(cameraFrames){
+	     snapshot=cameraFrames.take();
+	     if(!snapshot||snapshot.received===lastCameraReceived){snapshot?.frame.close();await sleep(5);continue}
+	     lastCameraReceived=snapshot.received;
+	    }else{
+	     if(video.currentTime===lastCapture){await sleep(10);continue}
+	     lastCapture=video.currentTime;
+	    }
+	    next=now+1000/hz;
+	    slot.put(await prepare((now-startClock)/1000,snapshot));
       diagnostics.maxPrepared=slot.maximum;diagnostics.prepared=slot.frame?1:0;diagnostics.dropped=slot.dropped;
      }
      slot.close();
     }catch(e){slot.close(e)}
-   })();
-   while(token===epoch){
-    let prepared;
-    if(mode==='offline'){
-     const stamp=Number($('track-start-time').value)+index/hz;if(index/hz>=duration-1e-6)break;
-     await seek(Math.min(stamp,video.duration-.001),token);
-     if(token!==epoch)break;
-     capture();prepared=await prepare(stamp);
-    }else{
-     if(document.hidden)break;
-     const now=performance.now();if(now<nextSend){await sleep(Math.min(50,Math.ceil(nextSend-now)));continue}
-     prepared=await slot.take();diagnostics.prepared=0;if(!prepared)break;
-     // A stopped/paused camera must not send an arbitrarily old cached image.
-     if(performance.now()-prepared.captured>Math.max(250,2000/hz))continue;
-    }
-    if(token!==epoch)break;
-    nextSend=performance.now()+1000/hz;
-    // Aim to finish the next encode just before this request returns. If it
-    // stalls, the producer still refreshes the single slot at the Hz cap.
-    // Do not learn the cold model-load duration as steady-state request time.
-    captureNotBefore=performance.now()+Math.max(0,requestEstimate-encodeEstimate-10);
-    const frame=await sendFrame(prepared,s,token);if(token!==epoch)break;
-    if(!frame)continue;
+	   })();
+	  if(mode==='live')dispatcher=(async()=>{
+	   try{
+	    while(token===epoch&&!document.hidden){
+	     while(activeRequests>=2&&token===epoch)await new Promise(resolve=>capacityWaiter=resolve);
+	     if(token!==epoch||document.hidden)break;
+	     const now=performance.now();if(now<nextSend){await sleep(Math.min(50,Math.ceil(nextSend-now)));continue}
+	     const prepared=await slot.take();diagnostics.prepared=0;if(!prepared)break;
+	     // A stopped/paused camera must not send an arbitrarily old cached image.
+	     if(performance.now()-prepared.captured>Math.max(250,2000/hz))continue;
+	     nextSend=performance.now()+1000/hz;
+	     const requestSettings={box:[...s.box],camera:[...s.camera]};
+	     activeRequests++;diagnostics.maxInFlight=Math.max(diagnostics.maxInFlight,activeRequests);
+	     const settled=sendFrame(prepared,requestSettings,token).then(frame=>({frame}),error=>({error})).finally(()=>{
+	      activeRequests--;if(capacityWaiter){const wake=capacityWaiter;capacityWaiter=null;wake()}
+	     });
+	     requests.push({prepared,settled});
+	     if(requestWaiter){const wake=requestWaiter;requestWaiter=null;wake()}
+	    }
+	   }catch(e){dispatchError=e}
+	   finally{dispatchDone=true;if(requestWaiter){const wake=requestWaiter;requestWaiter=null;wake()}}
+	  })();
+	  while(token===epoch){
+	   let prepared,frame;
+	   if(mode==='offline'){
+	    const stamp=Number($('track-start-time').value)+index/hz;if(index/hz>=duration-1e-6)break;
+	    await seek(Math.min(stamp,video.duration-.001),token);
+	    if(token!==epoch)break;
+	    capture();prepared=await prepare(stamp);
+	    nextSend=performance.now()+1000/hz;
+	    frame=await sendFrame(prepared,s,token);
+	   }else{
+	    while(!requests.length&&!dispatchDone&&token===epoch)await new Promise(resolve=>requestWaiter=resolve);
+	    if(!requests.length){if(dispatchError)throw dispatchError;break}
+	    const request=requests.shift(),outcome=await request.settled;prepared=request.prepared;
+	    if(outcome.error)throw outcome.error;
+	    frame=outcome.frame;
+	   }
+	   if(token!==epoch)break;
+	   if(!frame)continue;
     diagnostics.frames++;index++;
     const latency=(performance.now()-prepared.captured)/1000,sent=frame.timing.sent;
     const timing={...frame.timing,frame:index,capture_time:prepared.stamp,total_ms:latency*1000,interval_ms:previousSent===null?null:sent-previousSent};
     diagnostics.timings.push(timing);
     previousSent=sent;if(diagnostics.timings.length>240)diagnostics.timings.shift();
-    if(index>=2)requestEstimate=Math.min(...diagnostics.timings.slice(-8).filter(t=>t.frame>1).map(t=>t.request_ms));
-    diagnostics.sessionHz=diagnostics.frames/((performance.now()-begin)/1000);
+	   diagnostics.sessionHz=diagnostics.frames/((performance.now()-begin)/1000);
     const intervals=diagnostics.timings.slice(-20).map(t=>t.interval_ms).filter(t=>t!==null);
     diagnostics.actualHz=intervals.length?1000*intervals.length/intervals.reduce((a,b)=>a+b,0):diagnostics.sessionHz;
     if(mode==='live'){
@@ -144,7 +167,8 @@ export function initTracking(view) {
    }
   }catch(e){if(token===epoch){diagnostics.errors.push(e.message);message(e.message,true)}}
   finally{
-   slot?.close();encoder?.close();cameraFrames?.close();if(producer)await producer;if(cameraFrames)await cameraFrames.done;cancelPipeline=null;diagnostics.encoding=false;diagnostics.prepared=0;
+	  slot?.close();encoder?.close();cameraFrames?.close();if(capacityWaiter){const wake=capacityWaiter;capacityWaiter=null;wake()}if(requestWaiter){const wake=requestWaiter;requestWaiter=null;wake()}
+	  if(producer)await producer;if(dispatcher)await dispatcher;await Promise.allSettled(requests.map(r=>r.settled));if(cameraFrames)await cameraFrames.done;cancelPipeline=null;diagnostics.encoding=false;diagnostics.prepared=0;
    if(session&&token===epoch){const id=session.id;session=null;try{await view.api(`/api/tracks/${id}/finish`,{method:'POST'})}catch{}}
    if(token===epoch){recording=null;task=null;controls();await history()}
   }
