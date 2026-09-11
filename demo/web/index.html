@@ -9,15 +9,16 @@
  <label class="upload" id="video-upload-label">Select video<input id="video-upload" type="file" accept="video/*"></label>
  <button id="camera-open" hidden>Open webcam</button>
  <p id="camera-notice" class="notice" hidden>Webcams require HTTPS or localhost and camera permission. Plain HTTP on a remote/Tailscale address cannot access a webcam. Offline video still works.</p>
- <div class="fields"><label>Maximum inference Hz<input id="track-hz" type="number" min="1" max="30" step="1" value="10"></label><label id="duration-label">Process seconds<input id="track-duration" type="number" min="0.1" max="1800" step="0.1" value="10"></label></div>
+ <div class="fields"><label>Maximum inference Hz<input id="track-hz" type="number" min="1" max="30" step="1" value="10"></label><label id="start-time-label">Start at (seconds)<input id="track-start-time" type="number" min="0" step="0.1" value="0"></label><label id="duration-label">Process seconds<input id="track-duration" type="number" min="0.1" max="1800" step="0.1" value="10"></label></div>
  <label class="check"><input id="follow-box" type="checkbox" checked> Follow projected person box</label>
  <p class="small">Select one person in the preview below before starting. One frame in flight; actual rate may be lower than the cap. Live results start displaying immediately with a 25 ms blend, no playback buffer or prediction. No automatic detection, identity tracking or temporal model.</p>
  <button id="track-start" class="primary" disabled>Start tracking</button><button id="track-stop" hidden>Stop tracking</button>
+ <button id="track-record" hidden>● Record take</button><p id="record-status" role="status" class="small"></p>
  <div id="track-status" role="status">Choose a video or open the webcam.</div>
  <p id="track-metrics" class="small"></p>
  </div>
- <div id="track-playback" hidden><div class="row"><button id="track-play">Play</button><span id="track-time"></span></div><input id="track-seek" aria-label="Video pose timeline" type="range" min="0" max="1" step="0.001" value="0"><a id="track-manifest" download>Download sequence manifest</a></div>
- <p class="small">Offline sequences are saved; webcam frames are temporary. Uploaded video stays in your browser; only sampled images go to this server. Source video is not saved in history.</p>
+ <div id="track-playback" hidden><div class="row"><button id="track-play">Play</button><span id="track-time"></span></div><input id="track-seek" aria-label="Video pose timeline" type="range" min="0" max="1" step="0.001" value="0"><div class="fields"><label>Export from<input id="trim-start" type="number" min="0" step="0.001"></label><label>Export to<input id="trim-end" type="number" min="0" step="0.001"></label></div><a id="track-export" download>Export skeleton animation GLB</a><br><a id="track-manifest" download>Download sequence manifest</a></div>
+ <p class="small">Offline sequences are saved. Live tracking is temporary until you press Record; takes save skeleton poses and one preview image. Uploaded video stays in your browser; only sampled images go to this server. Source video is not saved in history.</p>
  <div id="track-history"></div>
  </section>
  <section><h2>Select a person</h2><p>Drag a box around one person in the preview. For video, select the person before starting tracking.</p>
@@ -34,15 +35,16 @@
  <div class="fields"><label>fx<input id="fx" type="number" min="1" max="100000" step="any"></label><label>fy<input id="fy" type="number" min="1" max="100000" step="any"></label><label>cx<input id="cx" type="number" min="0" step="any"></label><label>cy<input id="cy" type="number" min="0" step="any"></label></div></details>
  <button id="generate" class="primary" disabled>Estimate 3D body</button><button id="cancel" hidden>Cancel generation</button>
  <div id="status" role="status" aria-live="polite">Choose an image to begin.</div><p id="elapsed" class="small"></p>
- <p class="notice">Body pose only. Detailed hand refinement is not yet enabled. Photo exports are static meshes; video sequences contain sampled meshes, not animated rigs or textures.</p>
+ <p class="notice">Body pose only. Detailed hand refinement is not yet enabled. Export a posed skeleton from a photo, or a skeleton animation from video and recorded live takes.</p>
  </section>
  <section><h2>View & download</h2>
  <label class="check"><input id="mesh" type="checkbox" checked> Body mesh</label><label class="check"><input id="skeleton" type="checkbox" checked> Skeleton (127 joints)</label>
  <label class="check"><input id="projection" type="checkbox" checked> Skeleton overlay on photo</label>
  <label class="check"><input id="reference" type="checkbox" disabled> Compare upstream (orange)</label><p id="comparison" class="small">Comparison is available for the official example with matching settings.</p>
  <div class="row"><button id="reset">Reset view</button><button id="front">Front</button><button id="side">Side</button></div>
- <div id="downloads" hidden><a id="glb" download>Download GLB</a><a id="obj" download>OBJ</a><a id="metadata" download>Settings JSON</a></div>
- <p class="small">GLB / OBJ: static posed mesh, metres, Y-up. Orbit: drag · zoom: wheel · pan: right-drag or Shift-drag.</p>
+ <label>Skeleton movement<select id="export-movement"><option value="in-place">In place</option><option value="camera">Estimated camera-relative movement</option></select></label>
+ <div id="downloads" hidden><a id="skeleton-glb" download>Export skeleton GLB</a><a id="glb" download>Body mesh GLB</a><a id="obj" download>OBJ</a><a id="metadata" download>Settings JSON</a></div>
+ <p class="small">Skeleton GLB: named joint hierarchy, metres, Y-up. Mesh GLB / OBJ: static body. Orbit: drag · zoom: wheel · pan: right-drag or Shift-drag.</p>
  </section>
  <section><h2>Past reconstructions</h2><div id="history"><p class="small">No saved bodies yet.</p></div></section>
 </aside>

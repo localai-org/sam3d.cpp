@@ -8,6 +8,7 @@ export function bracket(samples, time) {
  return [lo,next,dt>0?Math.max(0,Math.min(1,(time-samples[lo].time)/dt)):0];
 }
 export function decodeFrame(buffer,faces) {
+ if(buffer.byteLength===16+(127*8+3)*4 && new TextDecoder().decode(new Uint8Array(buffer,0,8))==='S3DSKL01')return decodeSkeletonFrame(buffer);
  const floats=18439*3+127*3+3, size=16+floats*4;
  if(buffer.byteLength!==size&&buffer.byteLength!==size+36874*3*4)throw Error('Invalid video frame size');
  const view=new DataView(buffer);
@@ -39,4 +40,17 @@ export function followBox(body,s,w,h) {
  const box=s.box.map((v,i)=>v+Math.max(-(i%2?h:w)*.05,Math.min((i%2?h:w)*.05,(want[i]-v)*.25)));
  if(box[2]-box[0]<8||box[3]-box[1]<8)return s;
  return {camera:[...c],box};
+}
+
+export function decodeSkeletonFrame(buffer){
+ if(buffer.byteLength!==16+(127*8+3)*4)throw Error('Invalid skeleton frame size');
+ const view=new DataView(buffer);if(new TextDecoder().decode(new Uint8Array(buffer,0,8))!=='S3DSKL01')throw Error('Invalid skeleton frame version');
+ const time=view.getFloat64(8,true);if(!Number.isFinite(time)||time<0)throw Error('Invalid skeleton timestamp');
+ const joints=new Float32Array(127*3),camera=new Float32Array(3);
+ for(let j=0;j<127;j++){
+  let norm=0;for(let k=0;k<8;k++){const x=view.getFloat32(16+(j*8+k)*4,true);if(!Number.isFinite(x))throw Error('Nonfinite skeleton');if(k<3){if(Math.abs(x)>10000)throw Error('Extreme skeleton');joints[j*3+k]=x*.01*(k===0?1:-1)}else if(k<7)norm+=x*x;else if(x<1e-5||x>1e5)throw Error('Invalid skeleton scale')}
+  if(Math.abs(norm-1)>.01)throw Error('Invalid skeleton rotation');
+ }
+ for(let k=0;k<3;k++){camera[k]=view.getFloat32(16+(127*8+k)*4,true);if(!Number.isFinite(camera[k])||Math.abs(camera[k])>100)throw Error('Invalid skeleton camera')}
+ return {time,body:{schema:'sam3d.body.skeleton.v1',faces:new Uint32Array(),tensors:{vertices:new Float32Array(),joints,camera_translation:camera}}};
 }

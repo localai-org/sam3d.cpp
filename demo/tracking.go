@@ -42,6 +42,9 @@ type track struct {
 	Provenance map[string]string `json:"provenance"`
 	Samples    []trackSample     `json:"samples"`
 	Count      int               `json:"count"`
+	Skeleton   bool              `json:"skeleton"`
+	Start      float64           `json:"start,omitempty"`
+	Recording  *track            `json:"recording,omitempty"`
 	busy       bool
 	last       time.Time
 	lastTime   float64
@@ -50,6 +53,7 @@ type track struct {
 type frameRequest struct {
 	ctx     context.Context
 	t       *track
+	take    *track
 	packed  []byte
 	preview []byte
 	s       settings
@@ -103,7 +107,7 @@ func (a *app) loadTracks() error {
 			return e
 		}
 		var t track
-		if json.Unmarshal(b, &t) != nil || t.ID != entry.Name() || t.Mode != "offline" || len(t.Samples) > maxTrackFrames {
+		if json.Unmarshal(b, &t) != nil || t.ID != entry.Name() || (t.Mode != "offline" && t.Mode != "take") || len(t.Samples) > maxTrackFrames {
 			return fmt.Errorf("invalid saved track %s", entry.Name())
 		}
 		if t.State == "recording" {
@@ -128,6 +132,7 @@ func strictJSON(r io.Reader, v any) error {
 	return nil
 }
 func (a *app) trackRoutes(m *http.ServeMux) {
+	a.skeletonRoutes(m)
 	m.HandleFunc("POST /api/tracks", a.createTrack)
 	m.HandleFunc("POST /api/tracks/{id}/frame", a.submitFrame)
 	m.HandleFunc("POST /api/tracks/{id}/finish", func(w http.ResponseWriter, r *http.Request) {
@@ -136,6 +141,14 @@ func (a *app) trackRoutes(m *http.ServeMux) {
 		t := a.tracks[r.PathValue("id")]
 		if t == nil {
 			fail(w, 404, "track not found")
+			return
+		}
+		if t.Mode == "take" {
+			fail(w, 409, "stop the take through its live session's record/stop endpoint")
+			return
+		}
+		if e := a.finishRecording(t, "complete"); e != nil {
+			fail(w, 500, e)
 			return
 		}
 		t.State = "complete"
@@ -156,7 +169,7 @@ func (a *app) trackRoutes(m *http.ServeMux) {
 		defer a.mu.Unlock()
 		list := []*track{}
 		for _, t := range a.tracks {
-			if t.Mode == "offline" {
+			if t.Mode != "live" {
 				list = append(list, t)
 			}
 		}
@@ -181,10 +194,10 @@ func (a *app) trackRoutes(m *http.ServeMux) {
 		}
 		a.mu.Lock()
 		t := a.tracks[id]
-		allowed := t != nil && t.Mode == "offline" && (name == "track.json" || name == "faces.bin" || name == "preview.jpg")
-		if t != nil && t.Mode == "offline" && len(name) == 10 && strings.HasSuffix(name, ".bin") {
+		allowed := t != nil && t.Mode != "live" && (name == "track.json" || name == "faces.bin" || name == "preview.jpg")
+		if t != nil && t.Mode != "live" && ((len(name) == 10 && strings.HasSuffix(name, ".bin") && t.Mode == "offline") || (len(name) == 11 && strings.HasSuffix(name, ".pose") && t.Skeleton)) {
 			index, e := strconv.Atoi(name[:6])
-			allowed = e == nil && index >= 0 && index < len(t.Samples) && name == fmt.Sprintf("%06d.bin", index)
+			allowed = e == nil && index >= 0 && index < len(t.Samples) && name == fmt.Sprintf("%06d%s", index, filepath.Ext(name))
 		}
 		a.mu.Unlock()
 		if !allowed {
@@ -212,11 +225,15 @@ func (a *app) createTrack(w http.ResponseWriter, r *http.Request) {
 	live := 0
 	offline := 0
 	for id, t := range a.tracks {
-		if t.Mode == "offline" {
+		if t.Mode != "live" {
 			offline++
 			continue
 		}
 		if !t.busy && time.Since(t.last) > time.Minute {
+			if e := a.finishRecording(t, "interrupted"); e != nil {
+				fail(w, 500, e)
+				return
+			}
 			delete(a.tracks, id)
 		} else {
 			live++
@@ -239,7 +256,7 @@ func (a *app) createTrack(w http.ResponseWriter, r *http.Request) {
 	if len(in.Name) > 160 {
 		in.Name = in.Name[:160]
 	}
-	t := &track{ID: hex.EncodeToString(nonce[:]), Name: in.Name, Mode: in.Mode, Hz: in.Hz, Width: in.Width, Height: in.Height, Created: time.Now().UTC(), State: "recording", Precision: a.cfg.precisionName(), Provenance: a.provenance, Samples: []trackSample{}, last: time.Now()}
+	t := &track{ID: hex.EncodeToString(nonce[:]), Name: in.Name, Mode: in.Mode, Hz: in.Hz, Width: in.Width, Height: in.Height, Created: time.Now().UTC(), State: "recording", Skeleton: true, Precision: a.cfg.precisionName(), Provenance: a.provenance, Samples: []trackSample{}, last: time.Now()}
 	if t.Mode == "offline" {
 		if e = os.Mkdir(a.trackDir(t.ID), 0700); e != nil {
 			fail(w, 500, e)
@@ -272,7 +289,7 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 	}
 	a.mu.Lock()
 	t := a.tracks[r.PathValue("id")]
-	if t == nil || t.State != "recording" {
+	if t == nil || t.Mode == "take" || t.State != "recording" {
 		a.mu.Unlock()
 		fail(w, 409, "track is not recording")
 		return
@@ -294,6 +311,10 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), a.cfg.timeout)
 	defer cancel()
+	take := t.Recording
+	if take != nil && stamp < take.Start {
+		take = nil
+	}
 	t.busy = true
 	t.cancel = cancel
 	t.last = time.Now()
@@ -320,7 +341,7 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 	packStarted := time.Now()
 	packed := packImage(im, s)
 	timings["pack"] = elapsedMS(packStarted)
-	req := &frameRequest{ctx: ctx, t: t, packed: packed, preview: data, s: s, stamp: stamp, reply: make(chan frameReply, 1), timings: timings}
+	req := &frameRequest{ctx: ctx, t: t, take: take, packed: packed, preview: data, s: s, stamp: stamp, reply: make(chan frameReply, 1), timings: timings}
 	// No video backlog. Still jobs and all clients share the same consumer.
 	select {
 	case a.frames <- req:
@@ -334,6 +355,13 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 			fail(w, 500, reply.err)
 			return
 		}
+		a.mu.Lock()
+		if req.take != nil {
+			w.Header().Set("X-Take-ID", req.take.ID)
+			w.Header().Set("X-Take-Count", strconv.Itoa(req.take.Count))
+			w.Header().Set("X-Take-State", req.take.State)
+		}
+		a.mu.Unlock()
 		w.Header().Set("Content-Type", "application/octet-stream")
 		timings["server"] = elapsedMS(started)
 		w.Header().Set("Server-Timing", timingHeader(timings))
@@ -437,6 +465,9 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 			}
 		}
 		if e == nil {
+			e = saveSkeletonFrame(destination, t.Count, b, r.stamp)
+		}
+		if e == nil {
 			e = os.WriteFile(filepath.Join(destination, fmt.Sprintf("%06d.bin", t.Count)), compactFrame(b, r.stamp, false), 0600)
 		}
 		if e != nil {
@@ -444,6 +475,12 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 			return
 		}
 		t.Samples = append(t.Samples, trackSample{r.stamp, r.s})
+	}
+	if r.take != nil && r.take.State == "recording" {
+		if e = a.appendRecording(t, r.take, b, r); e != nil {
+			reply.err = e
+			return
+		}
 	}
 	t.Count++
 	t.lastTime = r.stamp

@@ -17,7 +17,8 @@ var shapes = map[string][]uint64{
 	"camera_translation": {1, 3}, "camera_parameters": {1, 3}, "pose_raw": {1, 266},
 	"global_rotation": {1, 3}, "body_pose": {1, 133}, "shape": {1, 45}, "scale": {1, 28},
 	"hand": {1, 108}, "face": {1, 72}, "mhr_model_parameters": {1, 204},
-	"hand_boxes": {1, 2, 4}, "hand_logits": {1, 2, 2}, "faces": {36874, 3},
+	"joint_transforms": {1, 127, 8},
+	"hand_boxes":       {1, 2, 4}, "hand_logits": {1, 2, 2}, "faces": {36874, 3},
 }
 
 type bodyResult struct {

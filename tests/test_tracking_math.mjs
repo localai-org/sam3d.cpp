@@ -18,3 +18,8 @@ assert.throws(()=>mixBodies(a.body,b,NaN,out));assert.throws(()=>mixBodies(a.bod
 const s={box:[0,0,960,720],camera:[1000,1000,480,360]};
 const followed=followBox(a.body,s,960,720);assert.ok(followed.box.every((v,i)=>Number.isFinite(v)&&Math.abs(v-s.box[i])<=(i%2?720:960)*.05));
 console.log('Tracking interpolation, binary validation, clamp/no-extrapolation and crop tests passed.');
+const sk=new ArrayBuffer(16+(127*8+3)*4),sv=new DataView(sk);new Uint8Array(sk,0,8).set(new TextEncoder().encode('S3DSKL01'));sv.setFloat64(8,.17,true);
+for(let j=0;j<127;j++){sv.setFloat32(16+(j*8)*4,100,true);sv.setFloat32(16+(j*8+1)*4,200,true);sv.setFloat32(16+(j*8+6)*4,1,true);sv.setFloat32(16+(j*8+7)*4,1,true)}
+const skeleton=decodeFrame(sk);assert.equal(skeleton.time,.17);assert.equal(skeleton.body.schema,'sam3d.body.skeleton.v1');assert.equal(skeleton.body.tensors.vertices.length,0);assert.deepEqual([...skeleton.body.tensors.joints.slice(0,3)],[1,-2,-0]);
+sv.setFloat32(16+7*4,0,true);assert.throws(()=>decodeFrame(sk));sv.setFloat32(16+7*4,1,true);sv.setFloat32(16+6*4,0,true);assert.throws(()=>decodeFrame(sk));
+console.log('Skeleton-only playback decoding and transform validation passed.');

@@ -3,7 +3,9 @@
 Upload a photograph, drag a box around one person, then select **Estimate 3D
 body**. The photo/skeleton overlay and orbitable body mesh show the same native
 result. Previous reconstructions restore the input image, box and camera settings.
-GLB and OBJ downloads are static posed meshes in metres, Y-up—not animated rigs.
+Mesh GLB and OBJ downloads are static posed meshes in metres, Y-up.
+**Skeleton GLB** exports the named 127-joint MHR hierarchy: a static photo pose
+or an animation from a video/live take.
 
 This is the working **body pose branch**, not the full hand-refined estimator.
 There is no automatic person detection, camera estimation, texture generation
@@ -15,10 +17,11 @@ own padded crop, so the selection rectangle is not a hard pixel mask.
 ## Offline video and live webcam
 
 Select **Offline video**, choose a browser-decodable video (typically MP4/WebM),
-select one person in the preview, set the sampling rate and duration, and start.
+select one person in the preview, set the source start time, sampling rate and duration, and start.
 Frames are processed sequentially; offline processing does not discard samples
 to keep up with playback. Completed poses persist in video history, including
-partial sequences stopped by the user. Play, pause and scrub the saved sequence.
+partial sequences stopped by the user. Play, pause and scrub the saved sequence, then choose trim start/end times and
+**Export skeleton GLB**.
 The source video stays in the browser; only sampled JPEG frames are uploaded.
 The current source can be scrubbed alongside the poses. After a history reload,
 only the saved first-frame thumbnail is available, not the original video.
@@ -43,7 +46,7 @@ currently displayed pose** and no delayed playback timeline. Gaps snap to the
 new result; nothing is predicted or extrapolated. This prioritizes reaction time
 over perfectly even motion between estimates. Offline playback retains timestamped
 interpolation. Raw estimates are never smoothed or rewritten on disk. Blending
-is presentation, not an anatomical constraint or an animated-rig export.
+is presentation only; skeleton exports use the raw recorded estimates.
 The live photo preview is current; its pose overlay still trails by processing
 latency, but there is no additional multi-frame playback buffer.
 
@@ -67,7 +70,8 @@ In the matched headless test, new results reach first render submission in
 about **176 ms**, settling in **202 ms**, at **8.1 Hz**. These exclude camera
 exposure and physical display delay; see [latency evidence](../reference/BODY_LIVE_PERFORMANCE.md#follow-up-low-latency-presentation-and-camera-capture).
 The server accepts at most 1 MP / 2 MiB per frame. Offline sequences are capped at
-1,800 samples and share the configured data budget; webcam geometry is not saved.
+1,800 samples and share the configured data budget. Live tracking keeps geometry
+only while displaying it unless **Record take** is active.
 One queue consumer owns native inference across still images and all video clients.
 Busy replies provide backpressure; cold loading and inference failures are visible,
 and cancellation discards/reaps the worker before another request can reuse it.
@@ -79,17 +83,44 @@ is little-endian: 8-byte `S3DTRK01`, float64 source timestamp (seconds), then F3
 vertices `[18439,3]`, joints `[127,3]`, camera translation `[3]` in native body
 coordinates. Exactly 222,820 bytes per frame; no alignment padding. The browser
 applies the same fixed Y/Z sign conversion as photo exports. These are independent
-posed meshes, not animation-ready skeletal GLBs. The manifest download plus the
-frame files can be consumed by another application.
+posed meshes. New sequences also save compact `000000.pose` skeleton sidecars
+for animation export without rerunning inference.
 
 HTTP endpoints: `POST /api/tracks` creates a session; `POST /api/tracks/ID/frame`
 accepts a PNG/JPEG body with `time` and JSON `settings` query parameters;
-`POST /api/tracks/ID/finish` ends it; `GET /api/tracks` lists offline history.
+`POST /api/tracks/ID/finish` ends it; `GET /api/tracks` lists videos and saved takes.
 Frame replies use the binary layout above and append shared triangle indices
 only on the first reply. Saved files are under `/tracks/ID/NAME`. Live sessions
 are temporary and expire; there is no cross-client broadcast or authentication.
 
 See [video QA](../reference/BODY_VIDEO.md) for actual browser evidence and limits.
+
+## Skeleton export and recording
+
+While live tracking is running, select **Record take**. **Stop recording** saves
+that take while tracking continues; Record starts another take. History supports
+replay, rename, delete and GLB download. Stopping tracking also saves its active
+take. Saved poses survive restart; an interrupted recording retains completed
+samples. Frames already in flight when recording starts, or unfinished when it
+stops, are excluded. An empty take can be deleted but has no exportable pose.
+
+The default **In place** export fixes the pelvis position on all three axes at
+the first selected pose, retaining orientation and joint motion. **Estimated
+camera-relative** adds the estimated camera translation; this is not recovered
+world motion. Trim selects existing samples inclusively and rebases animation
+time to the first selected sample. A single selected sample exports a static
+pose. Changing trim or movement does not rerun inference.
+
+The GLB contains named parent/child nodes with local translation, quaternion
+rotation and scale, in metres and Y-up. It has no character mesh or skin and is
+not automatically a Blender armature. Importers must preserve empty nodes and
+node animation. Body proportions can vary between frames because exports retain
+raw estimates. Retargeting, fixed proportions, temporal cleanup and refined
+hands are outside this implementation. Older results without joint transforms
+must be reprocessed to enable skeleton export. Rebuild both the native runner
+and Go demo together for the expanded result schema.
+
+See [skeleton export format and tests](../docs/SKELETON-EXPORT.md).
 
 ## Build and start on Linux
 

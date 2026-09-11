@@ -26,7 +26,8 @@ const std::vector<body_output_field> &body_output_fields(){
         {"face","layer.5.pose.pose.27.face",{1,72}},
         {"mhr_model_parameters","layer.5.pose.pose.90.model_params",{1,204}},
         {"hand_boxes","branch.hand_box",{1,2,4}},
-        {"hand_logits","branch.hand_logits",{1,2,2}}
+        {"hand_logits","branch.hand_logits",{1,2,2}},
+        {"joint_transforms","layer.5.pose.mhr.skeleton",{1,127,8}}
     };return fields;
 }
 std::unique_ptr<s3d_body_result,decltype(&s3d_body_result_free)> make_body_result(
@@ -64,6 +65,7 @@ s3d_status s3d_body_result_get_metadata(const s3d_body_result *r,const char *key
             {"scope","one_person;no_mask;body_pose_branch;no_hand_crop_refinement"},
             {"geometry_units","metres"},
             {"coordinates","vertices/joints/keypoints: MHR multiplied by diag(1,-1,-1); add camera_translation for projection"},
+            {"joint_transform_coordinates","MHR global translation centimetres, quaternion XYZW, uniform scale; 8 floats per joint"},
             {"joint_rotation_coordinates","original MHR global rotation matrices; not axis-flipped or parent-local"}};
         auto it=metadata.find(std::string_view(key,size_t(bytes)));s3d::require(it!=metadata.end(),"unknown result metadata key");
         *value=it->second;*value_bytes=std::strlen(it->second);

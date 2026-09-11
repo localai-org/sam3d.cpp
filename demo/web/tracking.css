@@ -5,3 +5,7 @@
 #track-seek{width:100%;margin:14px 0}
 #track-playback{margin:15px 0}
 #track-history{display:flex;flex-direction:column;gap:6px}
+#track-record{width:100%;margin-top:8px}
+#track-record[aria-pressed="true"]{background:#922f40;border-color:#e77887}
+#record-status{font-size:12px;color:#f2a9b5;margin:8px 0;overflow-wrap:anywhere}
+#export-movement{width:100%;padding:8px;background:#142138;color:#e6edf9;border:1px solid #34435f;border-radius:7px}

@@ -50,6 +50,16 @@ func syntheticResult() []byte {
 				v[i] = math.Float32bits(float32(i%17) / 10)
 			}
 		}
+		if name == "joint_transforms" {
+			for j := 0; j < 127; j++ {
+				for k := 0; k < 8; k++ {
+					v[j*8+k] = 0
+				}
+				v[j*8] = math.Float32bits(float32(j))
+				v[j*8+6] = math.Float32bits(1)
+				v[j*8+7] = math.Float32bits(1)
+			}
+		}
 		binary.Write(&b, binary.LittleEndian, v)
 	}
 	return b.Bytes()

@@ -4,6 +4,7 @@ import {LivePresentation} from './live-presentation.js';
 
 export function initTracking(view) {
  const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+ let recording=null,recordBusy=false,recordStarted=0;
  const video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='auto';
  const canvas=document.createElement('canvas'),cx=canvas.getContext('2d');
  const diagnostics={mode:'photo',running:false,frames:0,actualHz:0,interpolations:0,maxInFlight:0,errors:[],buffer:0,timings:[],renderTimings:[]};
@@ -13,11 +14,11 @@ export function initTracking(view) {
  let mixed=null,startClock=0,lastCapture=-1,playback=null,playing=false,playClock=0,playOrigin=0,fetching=false,cache=new Map(),lastDisplay=null;
  function message(text,error=false){$('track-status').textContent=text;$('track-status').className=error?'error':''}
  function rate(){const v=Number($('track-hz').value);if(!Number.isInteger(v)||v<1||v>30)throw Error('Choose a maximum rate from 1 to 30 Hz.');return v}
- function controls(){const running=!!task;$('track-start').disabled=!ready||running;$('track-stop').hidden=!running;for(const id of ['track-hz','track-duration','video-upload','camera-open','follow-box'])$(id).disabled=running;view.lock(running);diagnostics.running=running}
+ function controls(){const running=!!task;$('track-start').disabled=!ready||running;$('track-stop').hidden=!running;for(const id of ['track-hz','track-duration','video-upload','camera-open','follow-box'])$(id).disabled=running;view.lock(running);diagnostics.running=running;$('track-record').hidden=mode!=='live'||!session||!running;$('track-record').disabled=recordBusy;$('track-stop').disabled=recordBusy;$('input-mode').disabled=recordBusy;$('track-record').setAttribute('aria-pressed',String(!!recording));$('track-record').textContent=recording?'■ Stop recording':'● Record take';for(const id of ['track-start-time'])$(id).disabled=running}
  function releaseSource(){ready=false;video.pause();stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;video.removeAttribute('src');video.load();if(url)URL.revokeObjectURL(url);url=null;controls()}
  function resetPlayback(){playing=false;playback=null;cache.clear();live.reset();presentation=null;renderedPresentation=null;faces=null;mixed=null;lastDisplay=null;$('track-playback').hidden=true;$('track-play').textContent='Play';view.clear()}
- async function stop(){epoch++;abort?.abort();cancelPipeline?.();const pending=task;if(pending)await pending;task=null;abort=null;if(session){const id=session.id;session=null;try{await view.api(`/api/tracks/${id}/finish`,{method:'POST'})}catch(e){message(e.message,true)}}playing=false;controls();await history()}
- async function changeMode(next){await stop();releaseSource();resetPlayback();mode=next;diagnostics.mode=mode;$('input-mode').value=mode;view.mode(mode!=='photo');$('video-options').hidden=mode==='photo';$('video-upload-label').hidden=mode!=='offline';$('camera-open').hidden=mode!=='live';$('duration-label').hidden=mode!=='offline';$('camera-notice').hidden=mode!=='live'||!!navigator.mediaDevices?.getUserMedia;message('Choose a video or open the webcam.')}
+ async function stop(){epoch++;abort?.abort();cancelPipeline?.();const pending=task;if(pending)await pending;task=null;abort=null;if(session){const id=session.id;session=null;try{await view.api(`/api/tracks/${id}/finish`,{method:'POST'})}catch(e){message(e.message,true)}}recording=null;$('record-status').textContent='';playing=false;controls();await history()}
+ async function changeMode(next){await stop();releaseSource();resetPlayback();mode=next;diagnostics.mode=mode;$('input-mode').value=mode;view.mode(mode!=='photo');$('video-options').hidden=mode==='photo';$('video-upload-label').hidden=mode!=='offline';$('camera-open').hidden=mode!=='live';$('duration-label').hidden=mode!=='offline';$('start-time-label').hidden=mode!=='offline';$('camera-notice').hidden=mode!=='live'||!!navigator.mediaDevices?.getUserMedia;message('Choose a video or open the webcam.')}
  const guarded=fn=>async(...args)=>{try{await fn(...args)}catch(e){diagnostics.errors.push(e.message);message(e.message,true);controls()}};
  $('input-mode').onchange=guarded(()=>changeMode($('input-mode').value));
  function once(event,token){return new Promise((resolve,reject)=>{const timer=setTimeout(()=>finish(Error('Video decoding timed out. Use a browser-supported MP4/WebM video.')),15000);function finish(error){clearTimeout(timer);video.removeEventListener(event,ok);video.removeEventListener('error',bad);error?reject(error):resolve()}function ok(){finish(token===epoch?null:Error('Video selection changed'))}function bad(){finish(Error('Browser cannot decode this video; try H.264 MP4 or VP9 WebM.'))}video.addEventListener(event,ok,{once:true});video.addEventListener('error',bad,{once:true})})}
@@ -56,7 +57,7 @@ export function initTracking(view) {
    const unpackStarted=performance.now(),frame=decodeFrame(buffer,faces);measured.unpack_ms=performance.now()-unpackStarted;
    measured.request_ms=performance.now()-requestStarted;measured.response_bytes=buffer.byteLength;
    measured.server={};for(const item of (response.headers.get('Server-Timing')||'').split(',')){const match=item.trim().match(/^([a-z_]+);dur=([0-9.]+)$/);if(match)measured.server[match[1]]=Number(match[2])}
-   frame.timing=measured;faces=frame.body.faces;return frame;
+   frame.timing=measured;if(recording&&response.headers.get('X-Take-ID')===recording.id){recording.count=Number(response.headers.get('X-Take-Count'));if(response.headers.get('X-Take-State')!=='recording'){recording=null;controls();history();$('record-status').textContent='Take saved (recording limit reached).'}}faces=frame.body.faces;return frame;
   }
   return null;
  }
@@ -73,7 +74,7 @@ export function initTracking(view) {
    slot=new LatestFrameSlot();
    cancelPipeline=()=>{slot.close();encoder.close();cameraFrames?.close()};
    const created=await view.api('/api/tracks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,name,hz,width:canvas.width,height:canvas.height})});
-   session=created;
+   session=created;controls();
    if(token!==epoch)return;
    async function prepare(stamp){
     const selected=performance.now(),snapshot=cameraFrames?.take(),captured=snapshot?Math.min(selected,snapshot.received):selected;diagnostics.encoding=true;
@@ -100,7 +101,7 @@ export function initTracking(view) {
    while(token===epoch){
     let prepared;
     if(mode==='offline'){
-     const stamp=index/hz;if(stamp>=duration-1e-6)break;
+     const stamp=Number($('track-start-time').value)+index/hz;if(index/hz>=duration-1e-6)break;
      await seek(Math.min(stamp,video.duration-.001),token);
      if(token!==epoch)break;
      capture();prepared=await prepare(stamp);
@@ -137,7 +138,7 @@ export function initTracking(view) {
     message(mode==='offline'?`Processing ${Math.min(duration,prepared.stamp+1/hz).toFixed(1)} / ${duration.toFixed(1)} seconds…`:'Tracking live · latest frames only');
    }
    if(token===epoch&&session){
-    const record=await view.api(`/api/tracks/${session.id}/finish`,{method:'POST'});session=null;
+    const record=await view.api(`/api/tracks/${session.id}/finish`,{method:'POST'});session=null;recording=null;$('record-status').textContent='';
     if(token===epoch&&mode==='offline'){await loadTrack(record,false);message(`Saved ${record.count} frames. Play or scrub the result.`)}
     else if(token===epoch){releaseSource();message('Live tracking stopped.')}
    }
@@ -145,11 +146,12 @@ export function initTracking(view) {
   finally{
    slot?.close();encoder?.close();cameraFrames?.close();if(producer)await producer;if(cameraFrames)await cameraFrames.done;cancelPipeline=null;diagnostics.encoding=false;diagnostics.prepared=0;
    if(session&&token===epoch){const id=session.id;session=null;try{await view.api(`/api/tracks/${id}/finish`,{method:'POST'})}catch{}}
-   if(token===epoch){task=null;controls();await history()}
+   if(token===epoch){recording=null;task=null;controls();await history()}
   }
  }
  $('track-start').onclick=guarded(async()=>{
-  if(task||!ready)return;const hz=rate();const duration=mode==='offline'?Math.min(Number($('track-duration').value),video.duration):0;
+  if(task||!ready)return;const hz=rate();const duration=mode==='offline'?Math.min(Number($('track-duration').value),video.duration-Number($('track-start-time').value)):0;
+  if(mode==='offline'&&(!Number.isFinite(Number($('track-start-time').value))||Number($('track-start-time').value)<0))throw Error('Choose a valid start time.');
   if(mode==='offline'&&(!Number.isFinite(duration)||duration<=0||Math.ceil(duration*hz)>1800))throw Error('Choose a duration/rate giving at most 1,800 frames.');
   const s=view.settings(),b=s.box,c=s.camera;
   if(![...b,...c].every(Number.isFinite)||b[0]<0||b[1]<0||b[2]>canvas.width||b[3]>canvas.height||b[2]-b[0]<8||b[3]-b[1]<8||c[0]<1||c[1]<1)throw Error('Select a valid person box and camera first.');
@@ -157,15 +159,35 @@ export function initTracking(view) {
  });
  $('track-stop').onclick=guarded(async()=>{await stop();if(mode==='live')releaseSource();message('Stopped. Completed offline frames are retained in history.')});
  function display(body){if(!mixed)mixed={schema:'sam3d.body.track.v1',faces:body.faces,tensors:{}};view.show(body);diagnostics.interpolations++}
- function interpolate(a,b,alpha){if(!mixed)mixed={schema:'sam3d.body.track.v1',faces:a.faces,tensors:{}};display(mixBodies(a,b,alpha,mixed))}
- async function history(){const list=await view.api('/api/tracks');$('track-history').replaceChildren();for(const t of list){const button=document.createElement('button');button.className='history-item';button.textContent=`${t.name} · ${t.count} frames · ${t.state}`;button.onclick=guarded(async()=>{await changeMode('offline');await loadTrack(t,true)});$('track-history').append(button)}}
+ function interpolate(a,b,alpha){if(!mixed)mixed={schema:a.schema,faces:a.faces,tensors:{}};display(mixBodies(a,b,alpha,mixed))}
+ function exportLink(){
+  if(!playback)return;const start=Number($('trim-start').value),end=Number($('trim-end').value);
+  const valid=Number.isFinite(start)&&Number.isFinite(end)&&start>=playback.samples[0].time&&end<=playback.samples.at(-1).time&&start<=end&&playback.samples.some(s=>s.time>=start&&s.time<=end);
+  $('track-export').hidden=!playback.skeleton||!valid;
+  $('track-export').href=`/api/tracks/${playback.id}/skeleton.glb?movement=${$('export-movement').value}&start=${start}&end=${end}`;
+ }
+ for(const id of ['trim-start','trim-end','export-movement'])$(id).addEventListener('change',exportLink);
+ $('track-record').onclick=guarded(async()=>{
+  if(!session||recordBusy)return;const token=epoch,id=session.id;recordBusy=true;controls();
+  try{
+   if(recording){const take=await view.api(`/api/tracks/${id}/record/stop`,{method:'POST'});if(token!==epoch||session?.id!==id)return;recording=null;$('record-status').textContent=`Saved ${take.count} poses. Open the take in history to preview or export.`;await history()}
+   else{const take=await view.api(`/api/tracks/${id}/record`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({time:(performance.now()-startClock)/1000})});if(token!==epoch||session?.id!==id)return;recording=take;recordStarted=performance.now()}
+  }finally{recordBusy=false;controls()}
+ });
+ async function history(){
+  const list=await view.api('/api/tracks');$('track-history').replaceChildren();
+  for(const t of list){const row=document.createElement('div'),button=document.createElement('button');button.className='history-item';button.textContent=`${t.name} · ${t.count} poses · ${t.state}`;button.onclick=guarded(async()=>{await changeMode('offline');const latest=await view.api(`/api/tracks/${t.id}`);await loadTrack(latest,true)});row.append(button);
+   const rename=document.createElement('button');rename.textContent='Rename';rename.className='quiet';rename.onclick=guarded(async()=>{const name=prompt('Take name',t.name);if(name?.trim()){await view.api(`/api/tracks/${t.id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});await history()}});row.append(rename);
+   const remove=document.createElement('button');remove.textContent='Delete';remove.className='quiet';remove.disabled=t.state==='recording';remove.onclick=guarded(async()=>{if(confirm(`Delete ${t.name}?`)){await view.api(`/api/tracks/${t.id}`,{method:'DELETE'});if(playback?.id===t.id)resetPlayback();await history()}});row.append(remove);$('track-history').append(row);
+  }
+ }
  async function loadTrack(t,fromHistory){
   if(!t.samples.length){message('This sequence has no completed frames.',true);return}
   const token=epoch;resetPlayback();
-  const response=await fetch(`/tracks/${t.id}/faces.bin`);if(!response.ok)throw Error('Saved topology unavailable');const buffer=await response.arrayBuffer();
+  if(t.mode!=='take'){const response=await fetch(`/tracks/${t.id}/faces.bin`);if(!response.ok)throw Error('Saved topology unavailable');const buffer=await response.arrayBuffer();
   if(token!==epoch)return;
-  if(buffer.byteLength!==36874*3*4)throw Error('Invalid saved topology');faces=new Uint32Array(buffer);
-  playback=t;$('track-playback').hidden=false;$('track-seek').min=t.samples[0].time;$('track-seek').max=t.samples.at(-1).time;$('track-seek').value=t.samples[0].time;$('track-manifest').href=`/tracks/${t.id}/track.json`;
+  if(buffer.byteLength!==36874*3*4)throw Error('Invalid saved topology');faces=new Uint32Array(buffer);}else faces=new Uint32Array();
+  playback=t;$('track-playback').hidden=false;$('track-seek').min=t.samples[0].time;$('track-seek').max=t.samples.at(-1).time;$('track-seek').value=t.samples[0].time;$('track-manifest').href=`/tracks/${t.id}/track.json`;$('trim-start').value=t.samples[0].time;$('trim-end').value=t.samples.at(-1).time;exportLink();
   if(fromHistory){
    const im=await createImageBitmap(await (await fetch(`/tracks/${t.id}/preview.jpg`)).blob());
    if(token!==epoch){im.close();return}
@@ -175,7 +197,7 @@ export function initTracking(view) {
  }
  async function getFrame(i){
   if(cache.has(i))return cache.get(i);const t=playback;if(!t)return null;
-  const response=await fetch(`/tracks/${t.id}/${String(i).padStart(6,'0')}.bin`);if(!response.ok)throw Error('Saved pose unavailable');
+  const response=await fetch(`/tracks/${t.id}/${String(i).padStart(6,'0')}.${t.mode==='take'?'pose':'bin'}`);if(!response.ok)throw Error('Saved pose unavailable');
   const frame=decodeFrame(await response.arrayBuffer(),faces);if(playback!==t)return null;
   if(Math.abs(frame.time-t.samples[i].time)>.00001)throw Error('Saved timestamp mismatch');
   cache.set(i,frame);while(cache.size>8)cache.delete(cache.keys().next().value);return frame;
@@ -190,7 +212,7 @@ export function initTracking(view) {
  $('track-play').onclick=()=>{if(!playback)return;playing=!playing;if(playing){if(Number($('track-seek').value)>=playback.samples.at(-1).time)$('track-seek').value=playback.samples[0].time;playOrigin=Number($('track-seek').value);playClock=performance.now()}$('track-play').textContent=playing?'Pause':'Play'};
  $('track-seek').oninput=()=>{playing=false;$('track-play').textContent='Play';paintPlayback(Number($('track-seek').value))};
  function tick(now){
-  const tickStarted=performance.now();
+  const tickStarted=performance.now();if(recording)$('record-status').textContent=`● Recording · ${((now-recordStarted)/1000).toFixed(1)} s · ${recording.count} poses`;
   if(mode==='live'&&ready&&video.readyState>=2&&video.currentTime!==previewTime)capture();
   if(mode==='live'&&task&&presentation&&(!live.finished||presentation!==renderedPresentation)){
    const value=live.sample(performance.now());display(value.body);

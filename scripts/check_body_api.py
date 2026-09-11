@@ -26,6 +26,7 @@ FIELDS={
  'mhr_model_parameters':('layer.5.pose.pose.90.model_params',(1,204)),
  'hand_boxes':('branch.hand_box',(1,2,4)),
  'hand_logits':('branch.hand_logits',(1,2,2)),
+ 'joint_transforms':('layer.5.pose.mhr.skeleton',(1,127,8)),
  'faces':('head_pose.faces',(36874,3))}
 
 def read_output(path):
@@ -36,8 +37,8 @@ def read_output(path):
             if len(data)!=n:raise ValueError('truncated API output')
             return data
         def unpack(fmt):return struct.unpack(fmt,read(struct.calcsize(fmt)))
-        if read(8)!=b'S3DOUT01' or unpack('<I')[0]!=19:raise ValueError('invalid API header/count')
-        for _ in range(19):
+        if read(8)!=b'S3DOUT01' or unpack('<I')[0]!=len(FIELDS):raise ValueError('invalid API header/count')
+        for _ in range(len(FIELDS)):
             length=unpack('<I')[0]
             if not 1<=length<=64:raise ValueError('invalid tensor name length')
             name=read(length).decode('ascii')

@@ -29,7 +29,7 @@ let nativeGroup=null,originalGroup=null,mesh=null,bones=null,azimuth=.3,elevatio
 function toWorld(v){return [v[0],-v[1],-v[2]]}
 function converted(v){const out=new Float32Array(v);for(let i=0;i<out.length;i+=3){out[i+1]*=-1;out[i+2]*=-1}return out}
 function disposeGroup(group){if(!group)return;scene.remove(group);group.traverse(o=>{o.geometry?.dispose();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material?.dispose()})}
-function validateBody(b){const t=b?.tensors,track=b?.schema==='sam3d.body.track.v1';if((!track&&b?.schema!=='sam3d.body.pose_branch.v1')||!t||t.vertices?.length!==18439*3||t.joints?.length!==127*3||b.faces?.length!==36874*3||t.camera_translation?.length!==3||(!track&&t.keypoints_pixels?.length!==140))throw Error('Invalid body result schema');for(const key of track?['vertices','joints','camera_translation']:['vertices','joints','camera_translation','keypoints_pixels','vertices_pixels'])if(!t[key]?.every(Number.isFinite))throw Error(`Nonfinite ${key}`);if(!b.faces.every(v=>Number.isInteger(v)&&v>=0&&v<18439))throw Error('Invalid mesh indices')}
+function validateBody(b){const t=b?.tensors,skeleton=b?.schema==='sam3d.body.skeleton.v1',track=skeleton||b?.schema==='sam3d.body.track.v1';if((!track&&b?.schema!=='sam3d.body.pose_branch.v1')||!t||t.vertices?.length!==(skeleton?0:18439*3)||t.joints?.length!==127*3||b.faces?.length!==(skeleton?0:36874*3)||t.camera_translation?.length!==3||(!track&&t.keypoints_pixels?.length!==140))throw Error('Invalid body result schema');for(const key of track?['vertices','joints','camera_translation']:['vertices','joints','camera_translation','keypoints_pixels','vertices_pixels'])if(!t[key]?.every(Number.isFinite))throw Error(`Nonfinite ${key}`);if(!b.faces.every(v=>Number.isInteger(v)&&v>=0&&v<18439))throw Error('Invalid mesh indices')}
 function makeBody(b,reference=false){validateBody(b);const group=new THREE.Group();const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(converted(b.tensors.vertices),3));g.setIndex(new THREE.BufferAttribute(new Uint32Array(b.faces),1));g.computeVertexNormals();
  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:reference?0xffad61:0x61b7d4,roughness:.75,metalness:0,side:THREE.DoubleSide,transparent:reference,opacity:reference?.36:1,depthWrite:!reference,wireframe:reference}));group.add(m);
  // Joint 0 is MHR's artificial body_world frame, not an anatomical bone.
@@ -42,9 +42,10 @@ function updateCamera(){camera.aspect=$('viewer').clientWidth/Math.max(1,$('view
 function reset(view='oblique'){target.copy(frameCentre);azimuth=view==='front'?0:view==='side'?Math.PI/2:.3;elevation=view==='oblique'?.1:0;const aspect=$('viewer').clientWidth/Math.max(1,$('viewer').clientHeight),fov=THREE.MathUtils.degToRad(camera.fov);distance=frameSize*.68/Math.tan(fov/2)/Math.min(1,aspect);updateCamera()}
 function clearResult(){state.result=null;disposeGroup(nativeGroup);disposeGroup(originalGroup);nativeGroup=originalGroup=mesh=bones=null;$('downloads').hidden=true;$('viewer-empty').hidden=false;$('geometry-info').textContent='';$('reference').checked=false;$('reference').disabled=true;$('reference-legend').hidden=true;grid.visible=false;window.sam3dQA.rendered=false;controls()}
 function showResult(b){clearResult();state.result=b;const parts=makeBody(b);nativeGroup=parts.group;mesh=parts.mesh;bones=parts.bones;
- const bounds=new THREE.Box3().setFromBufferAttribute(mesh.geometry.getAttribute('position'));bounds.getCenter(frameCentre);const size=bounds.getSize(new THREE.Vector3());frameSize=Math.max(size.x,size.y,size.z);if(!Number.isFinite(frameSize)||frameSize<=0||frameSize>100)throw Error('Invalid or extreme mesh extent');
+ const bounds=new THREE.Box3().setFromBufferAttribute(b.tensors.vertices.length?mesh.geometry.getAttribute('position'):new THREE.Float32BufferAttribute(converted(b.tensors.joints).slice(3),3));bounds.getCenter(frameCentre);const size=bounds.getSize(new THREE.Vector3());frameSize=Math.max(size.x,size.y,size.z);if(!Number.isFinite(frameSize)||frameSize<=0||frameSize>100)throw Error('Invalid or extreme mesh extent');
  grid.position.y=bounds.min.y-.006;grid.visible=true;reset();$('viewer-empty').hidden=true;$('geometry-info').textContent=`18,439 vertices · 127 joints · ${size.y.toFixed(2)} m high`;
- mesh.visible=$('mesh').checked;bones.visible=$('skeleton').checked;
+ mesh.visible=$('mesh').checked&&state.result?.tensors.vertices.length>0;bones.visible=$('skeleton').checked;
+ $('skeleton-glb').href=`/api/jobs/${state.job.id}/skeleton.glb?movement=${$('export-movement').value}`;
  for(const [id,file]of [['glb','body.glb'],['obj','body.obj'],['metadata','job.json']])$(id).href=`/files/${state.job.id}/${file}`;
  const matching=state.referenceManifest&&state.job.native_input_sha256===state.referenceManifest.native_input_sha256;$('reference').disabled=!matching;
  $('comparison').textContent=matching?'Original PyTorch body-branch output is available for this exact RGB, box and camera. Both use the same coordinates.':'Comparison requires the official example and unchanged box/camera settings.';
@@ -59,7 +60,7 @@ new ResizeObserver(()=>{renderer.setSize($('viewer').clientWidth,$('viewer').cli
 let tracking=null;
 function render(now){tracking?.tick(now);renderer.render(scene,camera);tracking?.afterRender();window.sam3dQA.camera={position:camera.position.toArray(),target:target.toArray()};window.sam3dQA.drawCalls=renderer.info.render.calls;requestAnimationFrame(render)}render();
 for(const id of ['reset','front','side'])$(id).onclick=()=>reset(id==='reset'?'oblique':id);
-$('mesh').onchange=()=>{if(mesh)mesh.visible=$('mesh').checked};$('skeleton').onchange=()=>{if(bones)bones.visible=$('skeleton').checked};$('projection').onchange=drawPhoto;
+$('mesh').onchange=()=>{if(mesh)mesh.visible=$('mesh').checked&&state.result?.tensors.vertices.length>0};$('skeleton').onchange=()=>{if(bones)bones.visible=$('skeleton').checked};$('projection').onchange=drawPhoto;
 $('reference').onchange=async()=>{try{if($('reference').checked&&!originalGroup){state.reference=state.reference||await api('/reference/result.json');originalGroup=makeBody(state.reference,true).group}if(originalGroup)originalGroup.visible=$('reference').checked;$('reference-legend').hidden=!$('reference').checked;drawPhoto()}catch(e){$('reference').checked=false;status(e.message,true)}};
 
 const photo=$('photo'),pc=photo.getContext('2d');
@@ -124,15 +125,15 @@ tracking=initTracking({api,settings,setSettings,
  preview(canvas,name,initial){state.image?.close?.();state.image=canvas;state.name=name;if(photo.width!==canvas.width)photo.width=canvas.width;if(photo.height!==canvas.height)photo.height=canvas.height;photo.hidden=false;$('photo-empty').hidden=true;$('input-name').textContent=name;$('image-size').textContent=`${canvas.width} × ${canvas.height}`;if(initial){const f=Math.hypot(canvas.width,canvas.height);setSettings({box:[0,0,canvas.width,canvas.height],camera:[f,f,canvas.width/2,canvas.height/2]})}drawPhoto()},
  lock(on){for(const id of [...boxIDs,...camIDs,'whole'])$(id).disabled=on;photo.style.pointerEvents=on?'none':''},
  clear:clearResult,
- show(b){if(!nativeGroup||state.result?.schema!=='sam3d.body.track.v1'){
+ show(b){if(!nativeGroup||state.result?.schema!==b.schema){
   clearResult();const parts=makeBody(b);nativeGroup=parts.group;mesh=parts.mesh;bones=parts.bones;
-  const bounds=new THREE.Box3().setFromBufferAttribute(mesh.geometry.getAttribute('position'));bounds.getCenter(frameCentre);frameSize=bounds.getSize(new THREE.Vector3()).length();grid.position.y=bounds.min.y-.006;grid.visible=true;reset();$('viewer-empty').hidden=true;
+  const bounds=new THREE.Box3().setFromBufferAttribute(b.tensors.vertices.length?mesh.geometry.getAttribute('position'):new THREE.Float32BufferAttribute(converted(b.tensors.joints).slice(3),3));bounds.getCenter(frameCentre);frameSize=bounds.getSize(new THREE.Vector3()).length();grid.position.y=bounds.min.y-.006;grid.visible=true;reset();$('viewer-empty').hidden=true;
  }
  state.result=b;const v=b.tensors.vertices,j=b.tensors.joints,pos=mesh.geometry.attributes.position;
  for(let i=0;i<v.length;i++)pos.array[i]=v[i]*(i%3===0?1:-1);pos.needsUpdate=true;mesh.geometry.computeVertexNormals();mesh.geometry.computeBoundingSphere();
  const edges=bones.geometry.attributes.position;let k=0;for(let i=2;i<127;i++)for(const joint of [i,topology.parents[i]])for(let d=0;d<3;d++)edges.array[k++]=j[joint*3+d]*(d===0?1:-1);edges.needsUpdate=true;bones.geometry.computeBoundingSphere();
  const points=bones.children[0].geometry.attributes.position;for(let i=3;i<j.length;i++)points.array[i-3]=j[i]*(i%3===0?1:-1);points.needsUpdate=true;bones.children[0].geometry.computeBoundingSphere();
- mesh.visible=$('mesh').checked;bones.visible=$('skeleton').checked;$('downloads').hidden=true;$('geometry-info').textContent='Video · interpolated display · raw estimates saved unchanged';drawPhoto();window.sam3dQA.rendered=true;
+ mesh.visible=$('mesh').checked&&state.result?.tensors.vertices.length>0;bones.visible=$('skeleton').checked;$('downloads').hidden=true;$('geometry-info').textContent='Video · interpolated display · raw estimates saved unchanged';drawPhoto();window.sam3dQA.rendered=true;
  }});
 window.sam3dQA.tracking=tracking.diagnostics;
 try {
@@ -160,3 +161,5 @@ try {
  controls();
 } catch(error) { status(error.message,true) }
 setInterval(()=>refresh().catch(e=>status(e.message,true)),1500);setInterval(updateElapsed,250);
+
+$('export-movement').addEventListener('change',()=>{if(state.job)$('skeleton-glb').href=`/api/jobs/${state.job.id}/skeleton.glb?movement=${$('export-movement').value}`});

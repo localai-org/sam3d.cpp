@@ -166,16 +166,20 @@ tracing unset for timing. The scalar fallbacks remain available.
 `get_metadata("schema")` returns `sam3d.body.pose_branch.v1`; the capability bit
 is `S3D_CAP_BODY_POSE_BRANCH`, **not full Body/refined-hand support**.
 Metadata keys also include `scope`, `geometry_units`, `coordinates` and
-`joint_rotation_coordinates`.
+`joint_rotation_coordinates` and `joint_transform_coordinates`.
 
 All tensors are contiguous row-major with the logical dimensions below. Batch
 dimension is retained even for the sole supported sample. All are F32 except
-`faces`, which is signed I32. Shapes and names are stable for this schema.
+`faces`, which is signed I32. Existing shapes and names are stable for this schema. The additive
+`joint_transforms` field brings the current count to 20; enumerate by name rather
+than assuming a fixed count or index. Rebuild strict CLI-format consumers with
+the updated runner.
 
 | Tensor | Shape | Meaning |
 | --- | --- | --- |
 | `vertices`, `joints`, `keypoints` | `[1,18439,3]`, `[1,127,3]`, `[1,70,3]` | Body coordinates, metres |
 | `faces` | `[36874,3]` | Original zero-based vertex indices |
+| `joint_transforms` | `[1,127,8]` | Original MHR global state: centimetre XYZ translation, XYZW quaternion, uniform scale |
 | `joint_rotations` | `[1,127,3,3]` | Original MHR global matrices; **not** parent-local or axis-flipped |
 | `vertices_pixels`, `keypoints_pixels` | `[1,18439,2]`, `[1,70,2]` | Original-image projected pixel coordinates |
 | `camera_translation`, `camera_parameters` | `[1,3]` each | Metric translation; original raw head camera vector respectively |
@@ -197,8 +201,8 @@ normalization or recentering is hidden in the library output.
 
 The pure-C consumer in `tests/body_api_capture.c` invokes the actual shared
 library. It discards the caller's pixels/geometry before inference, then frees
-the model/request before reading all results. The first real Vulkan call returns
-all 19 fields byte-identical to the accepted GGUF-only native capture, whose
+the model/request before reading all results. The original real Vulkan validation returned
+all 19 then-existing fields byte-identical to the accepted GGUF-only native capture, whose
 646 trained upstream comparisons pass. Topology matches the verified original
 safe state. See `scripts/run_body_api.py`, `scripts/check_body_api.py` and
 [trained branch evidence](../reference/TRAINED_BODY_BRANCH.md).
