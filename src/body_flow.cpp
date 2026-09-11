@@ -1,3 +1,5 @@
+// Optional prediction scheduling follows Fast SAM 3D Body (Yang et al.).
+// Copyright (c) 2026 Fast SAM 3D Body Authors; see NOTICE and LICENSES/Fast-SAM-3D-Body-MIT.txt.
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 // SAM3DBody.forward_decoder / PromptableDecoder adaptation. SAM license and
 // attribution: NOTICE. Composition has no reference injection.
@@ -115,6 +117,7 @@ named_floats body_forward_decoder(neural_session &session,tensor_archive &archiv
     auto camera_weights=weights(camera_head_parameter_sizes(cs),"head_camera.");
     auto feedback_weights=weights(feedback_parameter_sizes(update_shape(s,0)));
     std::vector<int32_t> indices(70);std::iota(indices.begin(),indices.end(),0);
+    named_floats pose,camera; // Latest prediction belongs only to this invocation.
     for(uint32_t i=0;i<s.depth;++i){
         const auto prefix="layer."+std::to_string(i)+".";auto ls=layer_shape(s,i);
         auto layer=body_decoder_layer(session,ls,tokens,resident_image?std::span<const float>{}:std::span<const float>(context),augment,
@@ -125,18 +128,21 @@ named_floats body_forward_decoder(neural_session &session,tensor_archive &archiv
         // host value instead of downloading the same tensor after every layer.
         if(s.twoway)context=std::move(layer.at("91.context"));
         if(s.capture_boundaries){result[prefix+"00.tokens"]=tokens;result[prefix+"01.context"]=context;}
-        auto normalized=body_decoder_norm(session,c.batch,uint32_t(n),c.token_dim,tokens,get("decoder.norm_final.weight"),get("decoder.norm_final.bias"));
-        if(s.capture_boundaries)result[prefix+"02.normalized"]=normalized;std::vector<float> token(b*d);
-        for(uint32_t z=0;z<b;++z)std::copy_n(normalized.begin()+z*n*d,d,token.begin()+z*d);
-        // Original callback ignores prev_pose_output for both residuals.
-        auto pose=body_pose_geometry(session,archive,ps,token,initial_pose,hand_indices,pose_weights,get("head_pose.keypoint_mapping"),arithmetic,s.hand_branch?&hand:nullptr);
-        // Head operation taps have their own full capture. The flow contract
-        // uses the same 23 boundary fields for body and hand heads.
-        if(s.hand_branch)std::erase_if(pose,[](const auto &entry){const auto &key=entry.first;
-            return key.starts_with("pose.") && key!="pose.10.pred" && key!="pose.24.shape" && key!="pose.25.scale" && key!="pose.26.hand" && key!="pose.27.face" && key!="pose.90.model_params";});
-        const auto &world=pose.at("map.92.keypoints");
-        auto camera=body_camera_head(session,cs,token,initial_camera,world,box_center,box_size,image_size,intrinsics,camera_weights);
-        if(s.capture_boundaries || i+1==s.depth){
+        const bool predict=i+1==s.depth || (s.intermediate_mask & (1u<<i));
+        std::vector<float> normalized;
+        if(predict){
+            normalized=body_decoder_norm(session,c.batch,uint32_t(n),c.token_dim,tokens,get("decoder.norm_final.weight"),get("decoder.norm_final.bias"));
+            if(s.capture_boundaries)result[prefix+"02.normalized"]=normalized;
+            std::vector<float> token(b*d);
+            for(uint32_t z=0;z<b;++z)std::copy_n(normalized.begin()+z*n*d,d,token.begin()+z*d);
+            // Original callback uses the initial estimate, not the previous prediction.
+            const bool slim=s.slim_intermediates && !s.capture_boundaries && i+1<s.depth;
+            pose=body_pose_geometry(session,archive,ps,token,initial_pose,hand_indices,pose_weights,get("head_pose.keypoint_mapping"),arithmetic,s.hand_branch?&hand:nullptr,s.correctives,slim);
+            if(s.hand_branch)std::erase_if(pose,[](const auto &entry){const auto &key=entry.first;
+                return key.starts_with("pose.") && key!="pose.10.pred" && key!="pose.24.shape" && key!="pose.25.scale" && key!="pose.26.hand" && key!="pose.27.face" && key!="pose.90.model_params";});
+            camera=body_camera_head(session,cs,token,initial_camera,pose.at("map.92.keypoints"),box_center,box_size,image_size,intrinsics,camera_weights);
+        }
+        if(predict && (s.capture_boundaries || i+1==s.depth)){
             auto vs=cs;vs.points=18439;
             auto vertices=body_camera_project(session,vs,camera.at("10.pred_cam"),pose.at("map.90.vertices"),box_center,box_size,image_size,intrinsics);
             for(auto &[name,v]:pose)result[prefix+"pose."+name]=v;
@@ -144,7 +150,10 @@ named_floats body_forward_decoder(neural_session &session,tensor_archive &archiv
             result[prefix+"03.vertex_pixels"]=std::move(vertices.at("20.pixels"));
         }
         if(i+1<s.depth){
-            auto feedback=body_feedback(session,update_shape(s,i),s.twoway?feedback_context:context,tokens,augment,camera.at("20.pixels"),camera.at("17.depth"),world,affine,crop_size,indices,indices,feedback_weights,false,true);
+            // Fast-SAM updates feedback every layer from the most recent pose;
+            // before the first selected prediction, leave the tokens untouched.
+            if(pose.empty())continue;
+            auto feedback=body_feedback(session,update_shape(s,i),s.twoway?feedback_context:context,tokens,augment,camera.at("20.pixels"),camera.at("17.depth"),pose.at("map.92.keypoints"),affine,crop_size,indices,indices,feedback_weights,false,true);
             if(s.capture_boundaries)result[prefix+"04.crop_points"]=feedback.at("02.crop_points");
             tokens=std::move(feedback.at("90.tokens"));augment=std::move(feedback.at("91.augment"));
             if(s.capture_boundaries){result[prefix+"05.feedback_tokens"]=tokens;result[prefix+"06.feedback_augment"]=augment;}

@@ -69,6 +69,7 @@ type job struct {
 	Preparation string            `json:"preparation_note,omitempty"`
 }
 type config struct {
+	bodyMode                                                                           string
 	precision                                                                          string
 	ffmpeg                                                                             string
 	addr, data, runner, module, backend, description, backbone, branch, mhr, reference string
@@ -304,7 +305,7 @@ func (a *app) submit(w http.ResponseWriter, r *http.Request) {
 func (a *app) routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/config", func(w http.ResponseWriter, r *http.Request) {
-		send(w, 200, map[string]any{"model": "SAM 3D Body · DINOv3 · " + a.cfg.precisionLabel(), "precision": a.cfg.precisionName(), "backend": a.cfg.backend, "scope": "Body pose branch — single-person video uses independent frame estimates, not a temporal model or automatic detector", "reference": a.cfg.reference != "", "max_upload_bytes": maxUpload})
+		send(w, 200, map[string]any{"model": "SAM 3D Body · DINOv3 · " + a.cfg.inferenceLabel(), "body_inference": a.cfg.bodyModeName(), "precision": a.cfg.precisionName(), "backend": a.cfg.backend, "scope": "Body pose branch — single-person video uses independent frame estimates, not a temporal model or automatic detector", "reference": a.cfg.reference != "", "max_upload_bytes": maxUpload})
 	})
 	a.trackRoutes(mux)
 	mux.HandleFunc("POST /api/jobs", a.submit)
@@ -486,6 +487,7 @@ func (a *app) runOnce(ctx context.Context, id string) error {
 	dir := a.dir(id)
 	out := filepath.Join(dir, "result.bin")
 	args := c.precisionArgs([]string{c.module, c.backend, strconv.Itoa(c.device), c.description, c.backbone, c.branch, c.mhr, filepath.Join(dir, "image.input"), out, strconv.Itoa(c.threads)})
+	args = c.bodyInferenceArgs(args)
 	executable := c.runner
 	unit := "sam3d-demo-job-" + id
 	if c.memory > 0 {
@@ -640,6 +642,7 @@ func loadApp(c config) (*app, error) {
 }
 func main() {
 	c := config{}
+	flag.StringVar(&c.bodyMode, "body-inference", "standard", "standard, no-correctives, fast512, fast448 or fast384; fast modes change estimates")
 	flag.StringVar(&c.ffmpeg, "ffmpeg", "ffmpeg", "optional FFmpeg executable for photo conversion (requires fd: protocol)")
 	flag.StringVar(&c.addr, "listen", "127.0.0.1:8097", "HTTP bind address; no authentication, expose only to a trusted network")
 	flag.StringVar(&c.data, "data", "generated/demo", "private persistent input/output directory")
@@ -662,6 +665,9 @@ func main() {
 	flag.Int64Var(&c.storage, "storage-bytes", 2<<30, "maximum data budget, including space reserved for pending jobs")
 	flag.DurationVar(&c.timeout, "timeout", 10*time.Minute, "maximum job runtime")
 	flag.Parse()
+	if e := c.validateBodyMode(); e != nil {
+		log.Fatal(e)
+	}
 	if (c.backend != "CPU" && c.backend != "Vulkan") || c.threads < 1 || c.threads > 256 || c.device < 0 || c.maxJobs < 1 || c.storage < 320<<20 || c.timeout < time.Second || c.memory < 0 || (c.memory > 0 && c.memory < 64) || c.reserve < 64 || c.workerIdle < time.Second {
 		log.Fatal("invalid runtime limits or backend")
 	}
@@ -695,6 +701,7 @@ func main() {
 	}
 	a.provenance["precision"] = c.precisionName()
 	a.provenance["precision_scope"] = c.precisionLabel()
+	a.provenance["body_inference"] = c.bodyModeName()
 	if c.memory > 0 {
 		if _, e = exec.LookPath("systemd-run"); e != nil {
 			log.Fatal("systemd-run required for memory cap; use an external cap and explicitly set --memory-mib 0 otherwise")

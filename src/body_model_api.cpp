@@ -4,7 +4,7 @@
 #include <array>
 #include <cmath>
 #include <cstring>
-struct s3d_runtime_options {std::array<std::string,3> files;std::string module,description;uint32_t backend=0,device=0,threads=1,precision=S3D_BACKBONE_F32;};
+struct s3d_runtime_options {sam3d::body_inference_options inference;std::array<std::string,3> files;std::string module,description;uint32_t backend=0,device=0,threads=1,precision=S3D_BACKBONE_F32;};
 struct s3d_body_request {std::vector<uint8_t> rgb;uint32_t width=0,height=0;std::array<float,4> box{},intrinsics{};bool geometry=false;};
 struct s3d_body_model {std::unique_ptr<sam3d::body_model> model;};
 namespace {
@@ -16,6 +16,28 @@ std::string copied_string(const char *p,uint64_t n,bool empty=false){
 }
 s3d_status s3d_runtime_options_create(s3d_runtime_options **out,char *e,uint64_t n){if(out)*out=nullptr;return boundary(e,n,[&]{require(out,"output required");*out=new s3d_runtime_options;});}
 void s3d_runtime_options_free(s3d_runtime_options *o){delete o;}
+s3d_status s3d_runtime_options_set_body_inference(s3d_runtime_options *o,uint32_t crop,uint32_t mask,uint32_t correctives,uint32_t slim,char *e,uint64_t n){
+    return boundary(e,n,[&]{require(o && correctives<=1 && slim<=1,"valid options and boolean flags required");
+        sam3d::body_inference_options v{crop,mask,bool(correctives),bool(slim)};
+        sam3d::validate_body_inference_options(v);o->inference=v;});
+}
+namespace {
+s3d_status get_inference(const sam3d::body_inference_options *o,uint32_t *crop,uint32_t *mask,uint32_t *correctives,uint32_t *slim,char *e,uint64_t n){
+    if(crop)*crop=0;
+    if(mask)*mask=0;
+    if(correctives)*correctives=0;
+    if(slim)*slim=0;
+    return boundary(e,n,[&]{require(o && crop && mask && correctives && slim,"options/model and all outputs required");
+        *crop=o->crop_size;*mask=o->intermediate_mask;*correctives=o->correctives;*slim=o->slim_intermediates;});
+}
+}
+s3d_status s3d_runtime_options_get_body_inference(const s3d_runtime_options *o,uint32_t *crop,uint32_t *mask,uint32_t *correctives,uint32_t *slim,char *e,uint64_t n){
+    return get_inference(o?&o->inference:nullptr,crop,mask,correctives,slim,e,n);
+}
+s3d_status s3d_body_model_get_body_inference(const s3d_body_model *m,uint32_t *crop,uint32_t *mask,uint32_t *correctives,uint32_t *slim,char *e,uint64_t n){
+    auto o=m?m->model->inference_options():sam3d::body_inference_options{};
+    return get_inference(m?&o:nullptr,crop,mask,correctives,slim,e,n);
+}
 s3d_status s3d_runtime_options_set_backbone_precision(s3d_runtime_options *o,uint32_t precision,char *e,uint64_t n){
     return boundary(e,n,[&]{require(o && (precision==S3D_BACKBONE_F32 || precision==S3D_BACKBONE_BF16),"valid options and backbone precision required");o->precision=precision;});
 }
@@ -43,7 +65,7 @@ s3d_status s3d_runtime_options_get_body_file(const s3d_runtime_options *o,uint32
 s3d_status s3d_body_model_load(const s3d_runtime_options *o,s3d_body_model **out,char *e,uint64_t n){
     if(out)*out=nullptr;
     return boundary(e,n,[&]{require(o && out && o->backend && !o->module.empty() && std::all_of(o->files.begin(),o->files.end(),[](auto &p){return !p.empty();}),"set backend and all three Body files first");
-        auto result=std::make_unique<s3d_body_model>();result->model=std::make_unique<sam3d::body_model>(o->files[0],o->files[1],o->files[2],o->module,o->backend==S3D_BACKEND_CPU?"CPU":"Vulkan",o->device,o->threads,o->description,o->precision==S3D_BACKBONE_BF16);*out=result.release();});
+        auto result=std::make_unique<s3d_body_model>();result->model=std::make_unique<sam3d::body_model>(o->files[0],o->files[1],o->files[2],o->module,o->backend==S3D_BACKEND_CPU?"CPU":"Vulkan",o->device,o->threads,o->description,o->precision==S3D_BACKBONE_BF16,o->inference);*out=result.release();});
 }
 void s3d_body_model_free(s3d_body_model *m){delete m;}
 s3d_status s3d_body_model_get_info(const s3d_body_model *m,const char **description,uint64_t *capabilities,char *e,uint64_t n){

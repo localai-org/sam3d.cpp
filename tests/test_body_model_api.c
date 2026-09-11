@@ -6,6 +6,19 @@
 int main(void){
     char e[16]="old";s3d_runtime_options *o=NULL;s3d_body_request *r=NULL;s3d_body_model *m=NULL;s3d_body_result *result=NULL;
     CHECK(s3d_runtime_options_create(&o,e,sizeof e)==S3D_OK && o && !e[0]);
+    uint32_t crop=0,mask=0,corr=0,slim=0;
+    CHECK(s3d_runtime_options_get_body_inference(o,&crop,&mask,&corr,&slim,e,sizeof e)==S3D_OK && crop==512 && mask==31 && corr==1 && slim==0);
+    CHECK(s3d_runtime_options_set_body_inference(o,448,7,0,1,e,sizeof e)==S3D_OK);
+    CHECK(s3d_runtime_options_set_body_inference(o,447,7,0,1,e,sizeof e)==S3D_INVALID_ARGUMENT);
+    CHECK(s3d_runtime_options_set_body_inference(o,384,32,0,1,e,sizeof e)==S3D_INVALID_ARGUMENT);
+    CHECK(s3d_runtime_options_set_body_inference(o,384,7,2,1,e,sizeof e)==S3D_INVALID_ARGUMENT);
+    CHECK(s3d_runtime_options_set_body_inference(o,384,7,0,2,e,sizeof e)==S3D_INVALID_ARGUMENT);
+    CHECK(s3d_runtime_options_set_body_inference(NULL,384,7,0,1,e,sizeof e)==S3D_INVALID_ARGUMENT);
+    CHECK(s3d_runtime_options_get_body_inference(o,&crop,&mask,&corr,&slim,e,sizeof e)==S3D_OK && crop==448 && mask==7 && corr==0 && slim==1);
+    CHECK(s3d_runtime_options_get_body_inference(NULL,&crop,&mask,&corr,&slim,e,sizeof e)==S3D_INVALID_ARGUMENT && !crop && !mask && !corr && !slim);
+    CHECK(s3d_body_model_get_body_inference(NULL,&crop,&mask,&corr,&slim,e,sizeof e)==S3D_INVALID_ARGUMENT && !crop);
+    CHECK(s3d_runtime_options_get_body_inference(o,NULL,&mask,&corr,&slim,e,sizeof e)==S3D_INVALID_ARGUMENT);
+    CHECK(s3d_runtime_options_set_body_inference(o,384,0,1,0,e,sizeof e)==S3D_OK);
     uint32_t precision=99;
     CHECK(s3d_runtime_options_get_backbone_precision(o,&precision,e,sizeof e)==S3D_OK && precision==S3D_BACKBONE_F32);
     CHECK(s3d_runtime_options_set_backbone_precision(o,S3D_BACKBONE_BF16,e,sizeof e)==S3D_OK);

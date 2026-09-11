@@ -87,6 +87,29 @@ not share their buffers. Decoder/geometry activation transfer and host-work opti
 is still incomplete. The demo's process-level cancellation and idle unloading
 are wrappers, not new cancellation or eviction functions in the C API.
 
+## Body inference scheduling and crop size
+
+Configure inference before loading the model with
+`s3d_runtime_options_set_body_inference(options, crop_size, intermediate_mask,
+correctives, slim, error, capacity)`. Defaults are `(512, 31, 1, 0)`.
+Crop size accepts 384, 448 or 512; mask bits 0–4 select intermediate body
+predictions. Every transformer layer and the final prediction still execute.
+Mask `7` selects predictions after layers 0, 1 and 2, with later feedback reusing
+the latest prediction. Mask `0` skips all intermediate predictions and feedback.
+The boolean flags control MHR pose correctives and omission of unused intermediate
+outputs. The final result retains all 20 fields, including skeleton transforms.
+
+The options and loaded-model getters expose the same four values. Invalid setters
+leave the previous configuration intact. Changing options cannot mutate a loaded
+model. These modes use the existing GGUFs and combine with either precision mode.
+
+The CLI and persistent worker accept trailing `--body-crop-size=448`,
+`--body-intermediates=0,1,2` (or `none`), `--no-body-correctives` and
+`--slim-body-intermediates`. Intermediate indices must be unique and within 0–4.
+Slim preserves the computed feedback; the other controls change estimates.
+See [measured native differences](../reference/BODY_FAST_INFERENCE.md) before
+choosing an approximate mode.
+
 ## Vulkan precision
 
 F32 acceptance currently requires these process-wide GGML initialization flags:

@@ -34,6 +34,18 @@ typedef struct s3d_body_result s3d_body_result;
  */
 S3D_API s3d_status s3d_runtime_options_create(s3d_runtime_options **out,char *error,uint64_t capacity);
 S3D_API void s3d_runtime_options_free(s3d_runtime_options *options);
+/* Optional Body inference approximations, fixed when loading a model.
+ * Defaults: crop_size=512, intermediate_mask=31, correctives=1, slim=0.
+ * Crop size: 384/448/512. Mask bits 0..4 select intermediate predictions;
+ * all six transformer layers and the final prediction always execute.
+ * correctives/slim must be 0 or 1. Slim only omits unused intermediate outputs.
+ * Nondefault crop/mask/correctives change estimates; no accuracy guarantee. */
+S3D_API s3d_status s3d_runtime_options_set_body_inference(s3d_runtime_options *options,
+    uint32_t crop_size,uint32_t intermediate_mask,uint32_t correctives,uint32_t slim,char *error,uint64_t capacity);
+S3D_API s3d_status s3d_runtime_options_get_body_inference(const s3d_runtime_options *options,
+    uint32_t *crop_size,uint32_t *intermediate_mask,uint32_t *correctives,uint32_t *slim,char *error,uint64_t capacity);
+S3D_API s3d_status s3d_body_model_get_body_inference(const s3d_body_model *model,
+    uint32_t *crop_size,uint32_t *intermediate_mask,uint32_t *correctives,uint32_t *slim,char *error,uint64_t capacity);
 /* Default F32. BF16 rounds only the image encoder, matching upstream's scope;
  * decoder, MHR and public result buffers remain F32. Uses the same F32 GGUFs.
  * Consult docs/ROADMAP.md for the current numerical acceptance limits. */

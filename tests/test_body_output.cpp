@@ -15,6 +15,11 @@ int main(int argc,char **argv){try{
     double worst=0;for(auto &[name,v]:result){auto &r=expected.at(name);if(v.size()!=r.size())throw std::runtime_error("tap shape mismatch");double maximum=0,error=0,norm=0;
         for(size_t i=0;i<v.size();++i){if(!std::isfinite(v[i]))throw std::runtime_error("nonfinite result");maximum=std::max(maximum,std::abs(double(v[i])-r[i]));error=std::hypot(error,double(v[i])-r[i]);norm=std::hypot(norm,double(r[i]));}
         worst=std::max(worst,maximum);if(maximum>1e-4 || error/std::max(norm,1e-12)>2e-5)throw std::runtime_error("Body output divergence at "+name);}
+    for(bool is_hand:{false,true}){
+        auto full=sam3d::body_map_geometry(session,batch,vertices,input.at("vertices_cm"),input.at("skeleton"),input.at("mapping"),arithmetic,is_hand);
+        auto slim=sam3d::body_map_geometry(session,batch,vertices,input.at("vertices_cm"),input.at("skeleton"),input.at("mapping"),arithmetic,is_hand,true);
+        if(slim.size()!=1 || slim.at("92.keypoints")!=full.at("92.keypoints"))throw std::runtime_error("slim feedback changed keypoints");
+    }
     // Catch normalizing quaternions or replacing RoMa's diagonal formula with
     // the unit-only shortcut. The original map is homogeneous of degree two.
     auto original=input["skeleton"];for(size_t i=0;i<batch*127;++i)for(size_t k=3;k<7;++k)input["skeleton"][i*8+k]*=2.f;auto doubled=run();

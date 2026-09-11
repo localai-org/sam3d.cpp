@@ -40,6 +40,7 @@ func (a *app) startResident() error {
 	}
 	c := a.cfg
 	args := c.precisionArgs([]string{"--worker", c.module, c.backend, strconv.Itoa(c.device), c.description, c.backbone, c.branch, c.mhr, strconv.Itoa(c.threads)})
+	args = c.bodyInferenceArgs(args)
 	executable := c.runner
 	w := &residentWorker{events: make(chan workerEvent, 64), done: make(chan struct{}), lastUsed: time.Now()}
 	if c.memory > 0 {

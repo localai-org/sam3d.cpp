@@ -3,6 +3,8 @@
 This directory contains pinned upstream capture/conversion procedures and
 numerical evidence. The supported Body pose branch has runnable original/native
 comparisons; this is not a claim of complete hand-refined or Objects parity.
+The [Fast-SAM-inspired inference report](BODY_FAST_INFERENCE.md) measures optional
+native scheduling, corrective and crop changes against our previous implementation.
 See [the roadmap](../docs/ROADMAP.md) for current scope, [the design](../docs/DESIGN.md)
 for the acceptance process and [the source audit](AUDIT.md) for reuse decisions.
 Historical component notes below describe their original, narrower milestones.

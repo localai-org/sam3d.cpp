@@ -10,13 +10,15 @@
 static double monotonic_ms(void){struct timespec t;clock_gettime(CLOCK_MONOTONIC,&t);return (double)t.tv_sec*1000.0+(double)t.tv_nsec/1000000.0;}
 static char error[512];
 static uint32_t backbone_precision=S3D_BACKBONE_F32;
+static uint32_t body_crop=512,body_mask=31,body_correctives=1,body_slim=0;
+#define INFERENCE_USAGE "[--bf16] [--body-crop-size=384|448|512] [--body-intermediates=0,1,2|none] [--no-body-correctives] [--slim-body-intermediates]"
 static int number(const char *s,uint32_t *out){char *end;errno=0;unsigned long v=strtoul(s,&end,10);if(errno || !*s || *end || *s=='-' || v>UINT32_MAX)return 0;*out=(uint32_t)v;return 1;}
 #define CHECK(x) do{if(!(x)){fprintf(stderr,"line %d: %s: %s\n",__LINE__,#x,error);goto done;}}while(0)
 #define API(x) CHECK((x)==S3D_OK)
 static int infer_main(int argc,char **argv,s3d_body_model **reused){
     int result=1;FILE *in=NULL,*out=NULL;uint8_t *rgb=NULL;
     s3d_runtime_options *options=NULL;s3d_body_request *request=NULL;s3d_body_model *model=reused?*reused:NULL;s3d_body_result *motion=NULL;
-    if(argc!=11){fprintf(stderr,"Usage: %s MODULE CPU|Vulkan DEVICE DESCRIPTION|- BACKBONE.gguf BRANCH.gguf MHR.gguf IMAGE.input RESULT.bin THREADS [--bf16]\n",argv[0]);return 2;}uint32_t device,threads;
+    if(argc!=11){fprintf(stderr,"Usage: %s MODULE CPU|Vulkan DEVICE DESCRIPTION|- BACKBONE.gguf BRANCH.gguf MHR.gguf IMAGE.input RESULT.bin THREADS " INFERENCE_USAGE "\n",argv[0]);return 2;}uint32_t device,threads;
     CHECK(number(argv[3],&device) && number(argv[10],&threads));
     CHECK(!strcmp(argv[2],"CPU") || !strcmp(argv[2],"Vulkan"));
     in=fopen(argv[8],"rb");CHECK(in);char magic[8];uint32_t dims[3];float box[4],camera[4];
@@ -26,6 +28,7 @@ static int infer_main(int argc,char **argv,s3d_body_model **reused){
     const size_t bytes=(size_t)dims[2]*dims[1];rgb=malloc(bytes);CHECK(rgb && fread(rgb,1,bytes,in)==bytes && fgetc(in)==EOF);fclose(in);in=NULL;
     API(s3d_runtime_options_create(&options,error,sizeof error));
     API(s3d_runtime_options_set_backbone_precision(options,backbone_precision,error,sizeof error));
+    API(s3d_runtime_options_set_body_inference(options,body_crop,body_mask,body_correctives,body_slim,error,sizeof error));
     const char *description=strcmp(argv[4],"-")?argv[4]:"";
     API(s3d_runtime_options_set_backend(options,!strcmp(argv[2],"CPU")?S3D_BACKEND_CPU:S3D_BACKEND_VULKAN,argv[1],strlen(argv[1]),device,threads,description,strlen(description),error,sizeof error));
     for(uint32_t i=0;i<3;++i)API(s3d_runtime_options_set_body_file(options,i,argv[5+i],strlen(argv[5+i]),error,sizeof error));
@@ -80,9 +83,26 @@ static int read_path(char path[4097],int boundary){
 }
 int main(int argc,char **argv){
     /* Precision is fixed for the entire persistent worker lifetime. */
-    if(argc>1 && !strcmp(argv[argc-1],"--bf16")){backbone_precision=S3D_BACKBONE_BF16;--argc;}
+    while(argc>1 && !strncmp(argv[argc-1],"--",2)){
+        const char *arg=argv[argc-1];
+        if(!strcmp(arg,"--bf16"))backbone_precision=S3D_BACKBONE_BF16;
+        else if(!strcmp(arg,"--no-body-correctives"))body_correctives=0;
+        else if(!strcmp(arg,"--slim-body-intermediates"))body_slim=1;
+        else if(!strncmp(arg,"--body-crop-size=",17)){
+            if(!number(arg+17,&body_crop) || (body_crop!=384 && body_crop!=448 && body_crop!=512))return 2;
+        }else if(!strncmp(arg,"--body-intermediates=",21)){
+            const char *v=arg+21;body_mask=0;
+            if(strcmp(v,"none")){
+                if(!*v)return 2;
+                for(;;){if(*v<'0' || *v>'4')return 2;uint32_t bit=1u<<(*v++-'0');if(body_mask&bit)return 2;body_mask|=bit;
+                    if(!*v)break;if(*v++!=',' || !*v)return 2;}
+            }
+        }else{fprintf(stderr,"unknown option: %s\n",arg);return 2;}
+        --argc;
+    }
+    fprintf(stderr,"Body inference: crop=%u intermediate_mask=%u correctives=%u slim=%u\n",body_crop,body_mask,body_correctives,body_slim);
     if(argc<2 || strcmp(argv[1],"--worker"))return infer_main(argc,argv,NULL);
-    if(argc!=10){fprintf(stderr,"Usage: %s --worker MODULE CPU|Vulkan DEVICE DESCRIPTION|- BACKBONE.gguf BRANCH.gguf MHR.gguf THREADS [--bf16]\n",argv[0]);return 2;}
+    if(argc!=10){fprintf(stderr,"Usage: %s --worker MODULE CPU|Vulkan DEVICE DESCRIPTION|- BACKBONE.gguf BRANCH.gguf MHR.gguf THREADS " INFERENCE_USAGE "\n",argv[0]);return 2;}
     uint32_t device,threads;
     if(!number(argv[4],&device) || !number(argv[9],&threads) || !threads || threads>256 ||
        (strcmp(argv[3],"CPU") && strcmp(argv[3],"Vulkan")))return 2;

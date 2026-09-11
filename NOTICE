@@ -540,3 +540,18 @@ general rotation/pose engine in the native library. The reference loader execute
 unchanged selected original ASTs, with postponed type annotations to avoid unused
 pose/rotation imports. The original transform methods, not a replacement scalar
 normalizer, produce the oracle. See [OBJECTS_SSI.md](reference/OBJECTS_SSI.md).
+
+## Fast SAM 3D Body inference optimizations
+
+The optional intermediate-prediction schedule, slim intermediate outputs,
+corrective disabling and reduced body crop experiments follow the work of
+Timing Yang, Sicheng He, Hongyi Jing, Jiawei Yang, Zhijian Liu, Chuhang Zou and
+Yue Wang, *Fast SAM 3D Body: Accelerating SAM 3D Body for Real-Time Full-Body
+Human Mesh Recovery*, https://arxiv.org/abs/2603.15603.
+Source reviewed: https://github.com/yangtiming/Fast-SAM-3D-Body at
+808b53c7d9c26a7e511d31144f1e5efb058e15c9, notably the prediction and feedback
+scheduling in sam_3d_body/models/decoders/promptable_decoder.py.
+Copyright (c) 2026 Fast SAM 3D Body Authors. Their MIT license is retained in
+LICENSES/Fast-SAM-3D-Body-MIT.txt. Changes here: native C++/GGML implementation,
+explicit model options, unchanged final result contract, and direct comparisons
+against our existing implementation. See reference/BODY_FAST_INFERENCE.md.

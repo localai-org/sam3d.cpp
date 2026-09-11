@@ -93,6 +93,11 @@ The live pipeline measured **8.1 Hz** and **176 ms** median first render
 submission; that is not physical camera-to-display latency. These are measured
 workloads, not general hardware or full hand-refined performance guarantees.
 
+Optional [inference scheduling/crop optimizations](reference/BODY_FAST_INFERENCE.md)
+follow **Timing Yang and the Fast SAM 3D Body researchers**. We credit their
+contribution in [NOTICE](NOTICE); our native implementation and measurements
+have their own numerical and performance limits.
+
 See [precision evidence](reference/BODY_PRECISION.md),
 [live profiling](reference/BODY_LIVE_PERFORMANCE.md) and the
 [current roadmap](docs/ROADMAP.md). Detailed historical results are retained

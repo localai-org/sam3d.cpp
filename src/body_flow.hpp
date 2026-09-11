@@ -11,6 +11,9 @@ struct body_flow_shape {
     bool capture_decoder_operations=false;
     bool hand_branch=false;
     bool capture_boundaries=true;
+    uint32_t intermediate_mask=UINT32_MAX;
+    bool correctives=true;
+    bool slim_intermediates=false;
 };
 void validate_body_flow_shape(body_flow_shape);
 std::vector<std::pair<std::string,uint64_t>> body_flow_parameter_sizes(body_flow_shape);

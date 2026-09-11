@@ -191,6 +191,28 @@ deployment option. **There is no authentication**: do not expose this directly t
 the public Internet. Uploaded photographs and derived bodies are private data;
 protect the data directory and any reverse proxy. No images are sent to Meta.
 
+### Optional faster body inference
+
+`--body-inference` selects a fixed mode for both persistent and one-shot workers:
+
+| Mode | Crop | Intermediate predictions | MHR correctives |
+| --- | --- | --- | --- |
+| `standard` (default) | 512 | 0,1,2,3,4 | on |
+| `no-correctives` | 512 | 0,1,2,3,4 | off |
+| `fast512` | 512 | 0,1,2 | off |
+| `fast448` | 448 | 0,1,2 | off |
+| `fast384` | 384 | 0,1,2 | off |
+
+The fast presets also omit unused intermediate outputs. All six transformer
+layers and the final full body/skeleton prediction still run. The setting combines
+with `--precision f32` or `bf16` and requires no new weights. Restart the server
+to change it. The UI model label and saved-job provenance identify approximate
+modes; image, video and live jobs use the same setting.
+
+These modes change the predicted pose. On two test images, BF16 `fast384` reduced
+warm inference from 85.46 to 54.90 ms, but joint differences reached 201 mm.
+See [the complete measurements and reproduction commands](../reference/BODY_FAST_INFERENCE.md).
+
 ## Worker, limits and progress
 
 One native subprocess runs at a time, with a queue of two waiting jobs. The
