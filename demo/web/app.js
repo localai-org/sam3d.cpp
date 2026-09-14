@@ -8,7 +8,8 @@ const objectMask=document.createElement('canvas'),objectMaskContext=objectMask.g
 window.sam3dQA={state,rendered:false};
 window.addEventListener('error',e=>state.errors.push(e.message));
 window.addEventListener('unhandledrejection',e=>{state.errors.push(String(e.reason));status(String(e.reason),true)});
-function status(s,error=false){$('status').textContent=s;$('status').className=error?'error':state.job&&['queued','running'].includes(state.job.state)?'busy':''}
+function status(s,error=false){const node=$('status'),className=error?'error':state.job&&['queued','running'].includes(state.job.state)?'busy':'';if(node.textContent!==s)node.textContent=s;if(node.className!==className)node.className=className;$('copy-status').hidden=!error}
+$('copy-status').onclick=async()=>{const button=$('copy-status');try{await navigator.clipboard.writeText($('status').textContent);button.textContent='Copied';setTimeout(()=>button.textContent='Copy error',1500)}catch{button.textContent='Select the error and press Ctrl+C'}};
 async function api(path,options){const r=await fetch(path,options);if(!r.ok){let e;try{e=(await r.json()).error}catch{e=r.statusText}throw new Error(e||`HTTP ${r.status}`)}return r.json()}
 function settings(){return {box:boxIDs.map(id=>Number($(id).value)),camera:camIDs.map(id=>Number($(id).value))}}
 function setSettings(s){boxIDs.forEach((id,i)=>$(id).value=s.box[i]);camIDs.forEach((id,i)=>$(id).value=s.camera[i])}

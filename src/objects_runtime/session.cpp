@@ -31,6 +31,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <memory>
 #include <numeric>
@@ -1903,10 +1904,14 @@ RunResult run_pipeline(const CliOptions& opts) {
         return r;
     }
     const std::string& output_path = opts.out_glb.empty() ? opts.out_ply : opts.out_glb;
-    const int rc = cmd_e2e(opts, opts.condition_dir, "", output_path,
-                           opts.dump_dir, static_cast<unsigned>(opts.seed));
-    r.ok = rc == 0;
-    if (!r.ok) r.error = "end-to-end graph session failed; see log output";
+    try {
+        const int rc = cmd_e2e(opts, opts.condition_dir, "", output_path,
+                               opts.dump_dir, static_cast<unsigned>(opts.seed));
+        r.ok = rc == 0;
+        if (!r.ok) r.error = "end-to-end graph session failed; see log output";
+    } catch (const std::exception& e) {
+        r.error = std::string("end-to-end graph session failed: ") + e.what();
+    }
     return r;
 }
 

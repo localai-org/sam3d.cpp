@@ -132,7 +132,8 @@ objects_image_taps objects_prepare_rgba(std::span<const uint8_t> rgba,uint32_t w
 objects_joint_result objects_prepare_pointmap_joint(std::span<const uint8_t> rgba,
     uint32_t width,uint32_t height,uint64_t stride,std::span<const float> xyz,
     uint32_t ph,uint32_t pw,double factor,double padding,bool observe){
-    require(width>=1 && height>=1 && width<=4096 && height<=4096 && uint64_t(width)*height<=max_pixels && ph>=1 && pw>=1 && ph<=2048 && pw<=2048,"invalid joint image/pointmap dimensions");
+    require(width>=1 && height>=1 && width<=4096 && height<=4096 && uint64_t(width)*height<=max_pixels &&
+        ph>=1 && pw>=1 && ph<=4096 && pw<=4096 && uint64_t(ph)*pw<=max_pixels,"invalid joint image/pointmap dimensions");
     require(stride>=uint64_t(width)*4 && stride<=uint64_t(width)*4+4096 && rgba.size()>=uint64_t(height-1)*stride+width*4 && xyz.size()==uint64_t(3)*ph*pw,"invalid joint image/pointmap extents");
     validate_objects_image_options({1,factor,padding});objects_joint_result result{};
     auto keep=[&](const std::string &key,std::span<const float> v){if(observe)result.taps.emplace(key,std::vector<float>(v.begin(),v.end()));};

@@ -52,7 +52,7 @@ int main(int argc,char **argv){try{
     auto run=[&]{sam3d::objects_preprocess_pointmap(rgba,w,h,stride,xyz,ph,pw,o);};run();
     auto reject=[&]{bool caught=false;try{run();}catch(const std::invalid_argument &){caught=true;}if(!caught)throw std::runtime_error("invalid preprocessing input accepted");};
     for(uint32_t v:{0u,4097u,UINT32_MAX}){w=v;reject();}w=9;
-    ph=0;reject();ph=2049;reject();ph=5;stride=35;reject();stride=UINT64_MAX;reject();stride=36;
+    ph=0;reject();ph=4097;reject();ph=5;stride=35;reject();stride=UINT64_MAX;reject();stride=36;
     rgba.pop_back();reject();rgba.push_back(255);xyz.pop_back();reject();xyz.push_back(1);
     o.point_side=0;reject();o.point_side=1025;reject();o.point_side=8;
     o.image_side=0;reject();o.image_side=1025;reject();o.image_side=16;

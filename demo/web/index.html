@@ -36,7 +36,7 @@
  </div>
  <div id="object-selection" hidden><div class="row"><strong>Object mask</strong><button id="mask-clear" class="quiet">Clear</button></div><div class="fields"><label>Brush size<input id="mask-brush" type="range" min="4" max="160" value="40"></label><label class="check"><input id="mask-erase" type="checkbox"> Erase</label></div><p class="small">Paint over one object. The cyan overlay is the exact binary mask sent to native inference.</p></div>
  <button id="generate" class="primary" disabled>Estimate 3D body</button><button id="cancel" hidden>Cancel generation</button>
- <div id="status" role="status" aria-live="polite">Choose an image to begin.</div><p id="elapsed" class="small"></p>
+ <div id="status" role="status" aria-live="polite">Choose an image to begin.</div><button id="copy-status" class="quiet" hidden>Copy error</button><p id="elapsed" class="small"></p>
  <p class="notice" id="mode-notice">Body pose only. Detailed hand refinement is not yet enabled. Export a posed skeleton from a photo, or a skeleton animation from video and recorded live takes.</p>
  </section>
  <section><h2>View & download</h2>

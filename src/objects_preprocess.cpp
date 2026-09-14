@@ -11,8 +11,10 @@ void validate_objects_preprocess_options(objects_preprocess_options o){
 objects_image_taps objects_preprocess_pointmap(std::span<const uint8_t> rgba,uint32_t w,uint32_t h,uint64_t stride,
     std::span<const float> xyz,uint32_t ph,uint32_t pw,objects_preprocess_options o,const objects_tensor_observer &observe){
     validate_objects_preprocess_options(o);
-    if(!w || !h || w>4096 || h>4096 || stride<uint64_t(w)*4 || stride>uint64_t(w)*4+4096 ||
-       rgba.size()<uint64_t(h-1)*stride+w*4 || !ph || !pw || ph>2048 || pw>2048 || xyz.size()!=uint64_t(3)*ph*pw)
+    if(!w || !h || w>4096 || h>4096 || uint64_t(w)*h>16*1024*1024 ||
+       stride<uint64_t(w)*4 || stride>uint64_t(w)*4+4096 ||
+       rgba.size()<uint64_t(h-1)*stride+w*4 || !ph || !pw || ph>4096 || pw>4096 ||
+       uint64_t(ph)*pw>16*1024*1024 || xyz.size()!=uint64_t(3)*ph*pw)
         throw std::invalid_argument("invalid pointmap preprocessing input");
     auto emit=[&](const std::string &key,std::span<const float> v){if(observe)observe(key,v);};
     std::vector<float> rgb(uint64_t(3)*h*w),mask(uint64_t(h)*w);

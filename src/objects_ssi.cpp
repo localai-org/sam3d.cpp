@@ -41,8 +41,10 @@ std::vector<float> transformed(std::span<const float> xyz,std::span<const float>
 }
 }
 void validate_objects_ssi(objects_ssi_shape s,objects_ssi_options o){
-    require(s.height>=1 && s.height<=2048 && s.width>=1 && s.width<=2048 &&
-        s.mask_height>=1 && s.mask_height<=4096 && s.mask_width>=1 && s.mask_width<=4096,"invalid SSI shape");
+    require(s.height>=1 && s.height<=4096 && s.width>=1 && s.width<=4096 &&
+        uint64_t(s.height)*s.width<=16*1024*1024 &&
+        s.mask_height>=1 && s.mask_height<=4096 && s.mask_width>=1 && s.mask_width<=4096 &&
+        uint64_t(s.mask_height)*s.mask_width<=16*1024*1024,"invalid SSI shape");
     require(uint32_t(o.mode)<=7,"invalid SSI normalizer");
     require(std::isfinite(o.quantile_drop) && o.quantile_drop>=0 && o.quantile_drop<.5,"invalid SSI quantile range");
     require(std::isfinite(o.clip) && o.clip>=0 && o.clip<=1e6 &&

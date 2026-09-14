@@ -40,8 +40,9 @@ int main(int argc,char **argv){try{
     in>>std::ws;if(!in.eof())throw std::runtime_error("trailing SSI fixture values");
     auto reject=[](auto run){bool caught=false;try{run();}catch(const std::invalid_argument &){caught=true;}if(!caught)throw std::runtime_error("invalid SSI input accepted");};
     sam3d::objects_ssi_shape s{5,7,5,7};sam3d::objects_ssi_options o;std::vector<float> xyz(3*35,1),mask(35,1);std::array<float,3> scale{1,1,1},shift{0,0,0};
+    sam3d::validate_objects_ssi({3000,4000,518,518},o);
     auto run=[&]{sam3d::objects_normalize_pointmap(s,o,xyz,mask,scale,shift);};run();
-    s.height=0;reject(run);s.height=2049;reject(run);s.height=5;xyz.pop_back();reject(run);xyz.push_back(1);
+    s.height=0;reject(run);s.height=4097;reject(run);s.height=5;xyz.pop_back();reject(run);xyz.push_back(1);
     mask.pop_back();reject(run);mask.push_back(1);mask[0]=std::numeric_limits<float>::quiet_NaN();reject(run);mask[0]=1.1f;reject(run);mask[0]=1;
     o.mode=sam3d::objects_ssi_mode(8);reject(run);o.mode=sam3d::objects_ssi_mode::basic;
     o.quantile_drop=.5;reject(run);o.quantile_drop=-.1;reject(run);o.quantile_drop=.1;

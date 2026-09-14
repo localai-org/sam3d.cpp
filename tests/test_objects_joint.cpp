@@ -40,7 +40,7 @@ int main(int argc,char **argv){try{
     auto reject=[](auto fn){bool caught=false;try{fn();}catch(const std::invalid_argument &){caught=true;}if(!caught)throw std::runtime_error("invalid joint input accepted");};
     uint32_t w=9,h=7,ph=5,pw=3;uint64_t stride=36;double factor=1,pad=.1;std::vector<uint8_t> rgba(h*stride,255);std::vector<float> xyz(3*ph*pw,1);
     auto run=[&]{sam3d::objects_prepare_pointmap_joint(rgba,w,h,stride,xyz,ph,pw,factor,pad);};run();
-    w=0;reject(run);w=4097;reject(run);w=9;ph=0;reject(run);ph=2049;reject(run);ph=5;
+    w=0;reject(run);w=4097;reject(run);w=9;ph=0;reject(run);ph=4097;reject(run);ph=5;
     xyz.pop_back();reject(run);xyz.push_back(1);rgba.pop_back();reject(run);rgba.push_back(255);
     stride=35;reject(run);stride=UINT64_MAX;reject(run);stride=36;
     for(double v:{0.,.1,4.1,std::numeric_limits<double>::quiet_NaN()}){factor=v;reject(run);}factor=1;
