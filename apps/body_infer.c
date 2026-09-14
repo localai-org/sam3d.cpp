@@ -11,7 +11,8 @@ static double monotonic_ms(void){struct timespec t;clock_gettime(CLOCK_MONOTONIC
 static char error[512];
 static uint32_t backbone_precision=S3D_BACKBONE_F32;
 static uint32_t body_crop=512,body_mask=31,body_correctives=1,body_slim=0;
-#define INFERENCE_USAGE "[--bf16] [--body-crop-size=384|448|512] [--body-intermediates=0,1,2|none] [--no-body-correctives] [--slim-body-intermediates]"
+static uint32_t body_gem_features=0;
+#define INFERENCE_USAGE "[--bf16] [--gem-features] [--body-crop-size=384|448|512] [--body-intermediates=0,1,2|none] [--no-body-correctives] [--slim-body-intermediates]"
 static int number(const char *s,uint32_t *out){char *end;errno=0;unsigned long v=strtoul(s,&end,10);if(errno || !*s || *end || *s=='-' || v>UINT32_MAX)return 0;*out=(uint32_t)v;return 1;}
 #define CHECK(x) do{if(!(x)){fprintf(stderr,"line %d: %s: %s\n",__LINE__,#x,error);goto done;}}while(0)
 #define API(x) CHECK((x)==S3D_OK)
@@ -29,6 +30,7 @@ static int infer_main(int argc,char **argv,s3d_body_model **reused){
     API(s3d_runtime_options_create(&options,error,sizeof error));
     API(s3d_runtime_options_set_backbone_precision(options,backbone_precision,error,sizeof error));
     API(s3d_runtime_options_set_body_inference(options,body_crop,body_mask,body_correctives,body_slim,error,sizeof error));
+    API(s3d_runtime_options_set_body_feature_mode(options,body_gem_features?S3D_BODY_FEATURES_GEM_X:S3D_BODY_FEATURES_STANDARD,error,sizeof error));
     const char *description=strcmp(argv[4],"-")?argv[4]:"";
     API(s3d_runtime_options_set_backend(options,!strcmp(argv[2],"CPU")?S3D_BACKEND_CPU:S3D_BACKEND_VULKAN,argv[1],strlen(argv[1]),device,threads,description,strlen(description),error,sizeof error));
     for(uint32_t i=0;i<3;++i)API(s3d_runtime_options_set_body_file(options,i,argv[5+i],strlen(argv[5+i]),error,sizeof error));
@@ -86,6 +88,7 @@ int main(int argc,char **argv){
     while(argc>1 && !strncmp(argv[argc-1],"--",2)){
         const char *arg=argv[argc-1];
         if(!strcmp(arg,"--bf16"))backbone_precision=S3D_BACKBONE_BF16;
+        else if(!strcmp(arg,"--gem-features"))body_gem_features=1;
         else if(!strcmp(arg,"--no-body-correctives"))body_correctives=0;
         else if(!strcmp(arg,"--slim-body-intermediates"))body_slim=1;
         else if(!strncmp(arg,"--body-crop-size=",17)){
@@ -100,7 +103,7 @@ int main(int argc,char **argv){
         }else{fprintf(stderr,"unknown option: %s\n",arg);return 2;}
         --argc;
     }
-    fprintf(stderr,"Body inference: crop=%u intermediate_mask=%u correctives=%u slim=%u\n",body_crop,body_mask,body_correctives,body_slim);
+    fprintf(stderr,"Body inference: crop=%u intermediate_mask=%u correctives=%u slim=%u gem_features=%u\n",body_crop,body_mask,body_correctives,body_slim,body_gem_features);
     if(argc<2 || strcmp(argv[1],"--worker"))return infer_main(argc,argv,NULL);
     if(argc!=10){fprintf(stderr,"Usage: %s --worker MODULE CPU|Vulkan DEVICE DESCRIPTION|- BACKBONE.gguf BRANCH.gguf MHR.gguf THREADS " INFERENCE_USAGE "\n",argv[0]);return 2;}
     uint32_t device,threads;

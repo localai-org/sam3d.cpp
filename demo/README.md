@@ -30,6 +30,24 @@ own padded crop, so the selection rectangle is not a hard pixel mask.
 
 ## Offline video and live webcam
 
+The tracking path can optionally run native GEM-X temporal SOMA-77 inference.
+Set all three options together:
+
+```sh
+--gemx-runner /path/to/gem-x.cpp/build/vulkan/gemx-pipeline \
+--gemx-denoiser /path/to/gem-x-f32.gguf \
+--gemx-vitpose /path/to/vitpose-f32.gguf
+```
+
+With these options, the Body worker automatically selects its GEM-compatible
+1024-value pose token. The persistent GEM-X worker evaluates ViTPose while the
+Body worker runs, joins the observations at the temporal denoiser, and returns
+the newest SOMA-77 skeleton for video/live display. Offline runs and recorded
+live takes retain `.gpose` samples and export a named SOMA skeleton animation.
+The current demo supplies zero camera angular velocity, matching GEM-X's static
+camera mode, so GEM-X exports are in-place. Switching between concurrent
+tracking sessions resets the shared temporal context.
+
 Select **Offline video**, choose a browser-decodable video (typically MP4/WebM),
 select one person in the preview, set the source start time, sampling rate and duration, and start.
 Frames are processed sequentially; offline processing does not discard samples

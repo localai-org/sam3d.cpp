@@ -9,6 +9,9 @@ func (c config) bodyModeName() string {
 	return c.bodyMode
 }
 func (c config) bodyInferenceArgs(args []string) []string {
+	if c.gemxEnabled() {
+		args = append(args, "--gem-features")
+	}
 	switch c.bodyModeName() {
 	case "standard":
 		return args

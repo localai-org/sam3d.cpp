@@ -44,6 +44,7 @@ type track struct {
 	Samples    []trackSample     `json:"samples"`
 	Count      int               `json:"count"`
 	Skeleton   bool              `json:"skeleton"`
+	GEMX       bool              `json:"gemx,omitempty"`
 	Start      float64           `json:"start,omitempty"`
 	Recording  *track            `json:"recording,omitempty"`
 	busy       bool
@@ -260,7 +261,7 @@ func (a *app) createTrack(w http.ResponseWriter, r *http.Request) {
 	if len(in.Name) > 160 {
 		in.Name = in.Name[:160]
 	}
-	t := &track{ID: hex.EncodeToString(nonce[:]), Name: in.Name, Mode: in.Mode, Hz: in.Hz, Width: in.Width, Height: in.Height, Created: time.Now().UTC(), State: "recording", Skeleton: true, Precision: a.cfg.precisionName(), Provenance: a.provenance, Samples: []trackSample{}, last: time.Now()}
+	t := &track{ID: hex.EncodeToString(nonce[:]), Name: in.Name, Mode: in.Mode, Hz: in.Hz, Width: in.Width, Height: in.Height, Created: time.Now().UTC(), State: "recording", Skeleton: true, GEMX: a.cfg.gemxEnabled(), Precision: a.cfg.precisionName(), Provenance: a.provenance, Samples: []trackSample{}, last: time.Now()}
 	if t.Mode == "offline" {
 		if e = os.Mkdir(a.trackDir(t.ID), 0700); e != nil {
 			fail(w, 500, e)
@@ -448,6 +449,11 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 	defer os.RemoveAll(dir)
 	if e = os.WriteFile(filepath.Join(dir, "image.input"), r.packed, 0600); e == nil {
 		r.timings["input_file"] = elapsedMS(inputStarted)
+		var gemxDone chan error
+		if a.cfg.gemxEnabled() {
+			gemxDone = make(chan error, 1)
+			go func() { gemxDone <- a.runGemxFrame(ctx, r.t.ID, dir) }()
+		}
 		workerStarted := time.Now()
 		e = a.runResidentPaths(ctx, dir, func(string) {}, func(line string) {
 			var value float64
@@ -456,6 +462,17 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 			}
 		})
 		r.timings["worker"] = elapsedMS(workerStarted)
+		if e != nil {
+			cancel()
+		}
+		if gemxDone != nil {
+			gemxStarted := time.Now()
+			gemxError := <-gemxDone
+			r.timings["gemx_wait"] = elapsedMS(gemxStarted)
+			if e == nil {
+				e = gemxError
+			}
+		}
 	}
 	if !a.cfg.persistent {
 		defer a.stopResident()
@@ -475,6 +492,18 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 	if e != nil {
 		reply.err = e
 		return
+	}
+	var gemxPose *gemxPose
+	if a.cfg.gemxEnabled() {
+		f, e = os.Open(filepath.Join(dir, "gemx.pose"))
+		if e == nil {
+			gemxPose, e = parseGemxPose(f)
+			f.Close()
+		}
+		if e != nil {
+			reply.err = e
+			return
+		}
 	}
 	// Reject extreme geometry rather than interpolating catastrophic estimates.
 	for _, key := range []string{"vertices", "joints", "camera_translation"} {
@@ -512,8 +541,15 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 		if e == nil {
 			e = saveSkeletonFrame(destination, t.Count, b, r.stamp)
 		}
+		if e == nil && gemxPose != nil {
+			e = copyFile(filepath.Join(dir, "gemx.pose"), filepath.Join(destination, fmt.Sprintf("%06d.gpose", t.Count)))
+		}
 		if e == nil {
-			e = os.WriteFile(filepath.Join(destination, fmt.Sprintf("%06d.bin", t.Count)), compactFrame(b, r.stamp, false), 0600)
+			frameData := compactFrame(b, r.stamp, false)
+			if gemxPose != nil {
+				frameData = compactGemxFrame(gemxPose, r.stamp)
+			}
+			e = os.WriteFile(filepath.Join(destination, fmt.Sprintf("%06d.bin", t.Count)), frameData, 0600)
 		}
 		if e != nil {
 			reply.err = e
@@ -526,6 +562,17 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 			reply.err = e
 			return
 		}
+		if gemxPose != nil {
+			index := r.take.Count - 1
+			e = copyFile(filepath.Join(dir, "gemx.pose"), filepath.Join(a.trackDir(r.take.ID), fmt.Sprintf("%06d.gpose", index)))
+			if e == nil {
+				e = os.WriteFile(filepath.Join(a.trackDir(r.take.ID), fmt.Sprintf("%06d.pose", index)), compactGemxFrame(gemxPose, r.stamp-r.take.Start), 0600)
+			}
+			if e != nil {
+				reply.err = e
+				return
+			}
+		}
 	}
 	t.Count++
 	t.lastTime = r.stamp
@@ -535,6 +582,10 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 	}
 	r.timings["persist"] = elapsedMS(persistStarted)
 	encodeStarted := time.Now()
-	reply.data = compactFrame(b, r.stamp, first)
+	if gemxPose != nil {
+		reply.data = compactGemxFrame(gemxPose, r.stamp)
+	} else {
+		reply.data = compactFrame(b, r.stamp, first)
+	}
 	r.timings["encode"] = elapsedMS(encodeStarted)
 }

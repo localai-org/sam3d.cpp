@@ -117,7 +117,7 @@ named_floats body_from_rgb(neural_session &session,tensor_archive &mhr,body_pipe
     weight_map flow_weights;for(auto &[name,n]:body_flow_parameter_sizes(shape.decoder))flow_weights[name]=decoder_weights.at(name);
     auto result=body_forward_decoder(session,mhr,shape.decoder,features,p.at("rays"),p.at("cliff"),prompts,previous,
         p.at("box_center"),p.at("box_size"),p.at("image_size"),p.at("intrinsics"),p.at("affine"),p.at("crop_size"),hand_indices,flow_weights,arithmetic,nonhand_indices);
-    if(shape.trained_branch){
+    if(shape.trained_branch && !shape.gem_features){
         weight_map head;for(auto &[name,v]:decoder_weights)if(name.starts_with("bbox_embed.") || name.starts_with("hand_cls_embed."))head[name]=v;
         auto detected=body_hand_detection(session,shape.decoder.condition.token_dim,result.at("90.output_tokens"),head);
         for(auto &[name,v]:detected)result["branch."+name]=std::move(v);

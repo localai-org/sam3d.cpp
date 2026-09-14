@@ -1,7 +1,7 @@
 import {mixBodies} from './tracking-math.js';
 
 function copyBody(source,dest){
- dest.faces=source.faces;
+ dest.schema=source.schema;dest.faces=source.faces;dest.parents=source.parents;
  for(const key of ['vertices','joints','camera_translation']){
   const values=source.tensors[key];
   if(dest.tensors[key]?.length!==values.length)dest.tensors[key]=new Float32Array(values.length);

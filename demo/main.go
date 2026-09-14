@@ -75,6 +75,7 @@ type config struct {
 	ffmpeg                                                                             string
 	addr, data, runner, module, backend, description, backbone, branch, mhr, reference string
 	objectRunner, objectModels                                                         string
+	gemxRunner, gemxDenoiser, gemxVitpose                                              string
 	device, threads, memory, reserve, maxJobs                                          int
 	storage                                                                            int64
 	timeout                                                                            time.Duration
@@ -91,6 +92,7 @@ type app struct {
 	cancel     context.CancelFunc
 	provenance map[string]string
 	native     *residentWorker // owned exclusively by the single queue consumer
+	gemx       *gemxWorker
 	tracks     map[string]*track
 	frames     chan *frameRequest
 	workerLive bool
@@ -308,7 +310,11 @@ func (a *app) submit(w http.ResponseWriter, r *http.Request) {
 func (a *app) routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/config", func(w http.ResponseWriter, r *http.Request) {
-		send(w, 200, map[string]any{"model": "SAM 3D Body · DINOv3 · " + a.cfg.inferenceLabel(), "object_model": "SAM 3D Objects · native F16 weights/F32 compute", "body_inference": a.cfg.bodyModeName(), "precision": a.cfg.precisionName(), "backend": a.cfg.backend, "scope": "Body pose branch plus masked-object FlexiCubes geometry reconstruction", "reference": a.cfg.reference != "", "max_upload_bytes": maxUpload})
+		model := "SAM 3D Body · DINOv3 · " + a.cfg.inferenceLabel()
+		if a.cfg.gemxEnabled() {
+			model += " · GEM-X temporal SOMA-77"
+		}
+		send(w, 200, map[string]any{"model": model, "object_model": "SAM 3D Objects · native F16 weights/F32 compute", "body_inference": a.cfg.bodyModeName(), "gemx": a.cfg.gemxEnabled(), "precision": a.cfg.precisionName(), "backend": a.cfg.backend, "scope": "Body pose branch, optional GEM-X tracking, and masked-object FlexiCubes geometry reconstruction", "reference": a.cfg.reference != "", "max_upload_bytes": maxUpload})
 	})
 	a.trackRoutes(mux)
 	mux.HandleFunc("POST /api/jobs", a.submit)
@@ -410,6 +416,7 @@ func (a *app) worker(ctx context.Context) {
 		a.mu.Unlock()
 	}()
 	defer a.stopResident()
+	defer a.stopGemxWorker()
 	interval := a.cfg.workerIdle
 	if interval <= 0 {
 		interval = 2 * time.Minute
@@ -670,6 +677,9 @@ func main() {
 	flag.StringVar(&c.runner, "runner", "build/vulkan-optimized/bin/sam3d-body-infer", "native public C API executable")
 	flag.StringVar(&c.objectRunner, "object-runner", "build/vulkan-optimized/bin/sam3d-object-infer", "native SAM 3D Objects executable")
 	flag.StringVar(&c.objectModels, "object-models", "generated/models/objects-gguf", "SAM 3D Objects GGUF directory")
+	flag.StringVar(&c.gemxRunner, "gemx-runner", "", "optional persistent GEM-X pipeline executable")
+	flag.StringVar(&c.gemxDenoiser, "gemx-denoiser", "", "GEM-X denoiser/identity GGUF")
+	flag.StringVar(&c.gemxVitpose, "gemx-vitpose", "", "GEM-X ViTPose GGUF")
 	flag.BoolVar(&c.persistent, "persistent-worker", true, "reuse the bounded native model session across images")
 	flag.DurationVar(&c.workerIdle, "worker-idle", 2*time.Minute, "release resident RAM/VRAM after this idle period (within one timer interval)")
 	flag.StringVar(&c.module, "module", "", "explicit GGML backend module")
@@ -694,6 +704,9 @@ func main() {
 	if (c.backend != "CPU" && c.backend != "Vulkan") || c.threads < 1 || c.threads > 256 || c.device < 0 || c.maxJobs < 1 || c.storage < 320<<20 || c.timeout < time.Second || c.memory < 0 || (c.memory > 0 && c.memory < 64) || c.reserve < 64 || c.workerIdle < time.Second {
 		log.Fatal("invalid runtime limits or backend")
 	}
+	if (c.gemxRunner == "") != (c.gemxDenoiser == "") || (c.gemxRunner == "") != (c.gemxVitpose == "") {
+		log.Fatal("--gemx-runner, --gemx-denoiser and --gemx-vitpose must be set together")
+	}
 	for _, p := range []*string{&c.data, &c.runner, &c.module, &c.backbone, &c.branch, &c.mhr, &c.objectRunner, &c.objectModels} {
 		if *p == "" {
 			log.Fatal("--module, --backbone, --branch and --mhr are required")
@@ -711,6 +724,15 @@ func main() {
 			log.Fatal(e)
 		}
 	}
+	if c.gemxEnabled() {
+		for _, p := range []*string{&c.gemxRunner, &c.gemxDenoiser, &c.gemxVitpose} {
+			v, err := filepath.Abs(*p)
+			if err != nil {
+				log.Fatal(err)
+			}
+			*p = v
+		}
+	}
 	a, e := loadApp(c)
 	if e != nil {
 		log.Fatal(e)
@@ -721,6 +743,15 @@ func main() {
 			log.Fatal(e)
 		}
 		a.provenance[label+"_sha256"] = sha
+	}
+	if c.gemxEnabled() {
+		for label, path := range map[string]string{"gemx_runner": c.gemxRunner, "gemx_denoiser": c.gemxDenoiser, "gemx_vitpose": c.gemxVitpose} {
+			sha, err := digest(path)
+			if err != nil {
+				log.Fatal(err)
+			}
+			a.provenance[label+"_sha256"] = sha
+		}
 	}
 	if sha, err := digest(c.objectRunner); err == nil {
 		a.provenance["object_runner_sha256"] = sha

@@ -10,11 +10,30 @@ import (
 	"os"
 )
 
+func copyFile(source, destination string) error {
+	in, e := os.Open(source)
+	if e != nil {
+		return e
+	}
+	defer in.Close()
+	out, e := os.OpenFile(destination, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	if e != nil {
+		return e
+	}
+	_, copyError := io.Copy(out, in)
+	closeError := out.Close()
+	if copyError != nil {
+		return copyError
+	}
+	return closeError
+}
+
 // Strictly consume the public C API's complete schema, not a convenient subset.
 var shapes = map[string][]uint64{
 	"vertices": {1, 18439, 3}, "joints": {1, 127, 3}, "joint_rotations": {1, 127, 3, 3},
 	"keypoints": {1, 70, 3}, "keypoints_pixels": {1, 70, 2}, "vertices_pixels": {1, 18439, 2},
 	"camera_translation": {1, 3}, "camera_parameters": {1, 3}, "pose_raw": {1, 266},
+	"pose_token":      {1, 1024},
 	"global_rotation": {1, 3}, "body_pose": {1, 133}, "shape": {1, 45}, "scale": {1, 28},
 	"hand": {1, 108}, "face": {1, 72}, "mhr_model_parameters": {1, 204},
 	"joint_transforms": {1, 127, 8},
