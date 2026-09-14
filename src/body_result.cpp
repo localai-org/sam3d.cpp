@@ -17,6 +17,7 @@ const std::vector<body_output_field> &body_output_fields(){
         {"vertices_pixels","layer.5.03.vertex_pixels",{1,18439,2}},
         {"camera_translation","layer.5.camera.15.translation",{1,3}},
         {"camera_parameters","layer.5.camera.10.pred_cam",{1,3}},
+        {"pose_token","91.pose_token",{1,1024}},
         {"pose_raw","layer.5.pose.pred_pose_raw",{1,266}},
         {"global_rotation","layer.5.pose.global_rot",{1,3}},
         {"body_pose","layer.5.pose.body_pose",{1,133}},

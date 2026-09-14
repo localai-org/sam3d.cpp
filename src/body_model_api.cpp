@@ -38,6 +38,19 @@ s3d_status s3d_body_model_get_body_inference(const s3d_body_model *m,uint32_t *c
     auto o=m?m->model->inference_options():sam3d::body_inference_options{};
     return get_inference(m?&o:nullptr,crop,mask,correctives,slim,e,n);
 }
+s3d_status s3d_runtime_options_set_body_feature_mode(s3d_runtime_options *o,uint32_t mode,char *e,uint64_t n){
+    return boundary(e,n,[&]{require(o && (mode==S3D_BODY_FEATURES_STANDARD || mode==S3D_BODY_FEATURES_GEM_X),"valid options and Body feature mode required");o->inference.gem_features=mode==S3D_BODY_FEATURES_GEM_X;});
+}
+namespace {
+s3d_status get_feature_mode(const sam3d::body_inference_options *o,uint32_t *mode,char *e,uint64_t n){
+    if(mode)*mode=0;
+    return boundary(e,n,[&]{require(o && mode,"options/model and feature mode output required");*mode=o->gem_features?S3D_BODY_FEATURES_GEM_X:S3D_BODY_FEATURES_STANDARD;});
+}
+}
+s3d_status s3d_runtime_options_get_body_feature_mode(const s3d_runtime_options *o,uint32_t *mode,char *e,uint64_t n){return get_feature_mode(o?&o->inference:nullptr,mode,e,n);}
+s3d_status s3d_body_model_get_body_feature_mode(const s3d_body_model *m,uint32_t *mode,char *e,uint64_t n){
+    auto o=m?m->model->inference_options():sam3d::body_inference_options{};return get_feature_mode(m?&o:nullptr,mode,e,n);
+}
 s3d_status s3d_runtime_options_set_backbone_precision(s3d_runtime_options *o,uint32_t precision,char *e,uint64_t n){
     return boundary(e,n,[&]{require(o && (precision==S3D_BACKBONE_F32 || precision==S3D_BACKBONE_BF16),"valid options and backbone precision required");o->precision=precision;});
 }

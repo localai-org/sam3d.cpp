@@ -9,7 +9,7 @@ void validate_body_inference_options(body_inference_options o){
 body_pipeline_shape trained_body_pipeline_shape(bool operations,body_inference_options o){
     validate_body_inference_options(o);
     body_pipeline_shape shape={{1,o.crop_size,o.crop_size,16,1280,20,5120,32,4},
-            {{1,512,512,16,1280,1024,1,70,519,70,true,true},6,8,64,1024,1024,2,1024,2,1.f,true,false,true,operations,false,operations},true};
+            {{1,512,512,16,1280,1024,1,70,519,70,true,!o.gem_features},6,8,64,1024,1024,2,1024,2,1.f,true,false,true,operations,false,operations},true,o.gem_features};
     shape.decoder.condition.height=shape.decoder.condition.width=o.crop_size;
     shape.decoder.intermediate_mask=o.intermediate_mask;
     shape.decoder.correctives=o.correctives;

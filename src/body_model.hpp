@@ -4,7 +4,7 @@
 namespace sam3d {
 struct body_inference_options {
     uint32_t crop_size=512, intermediate_mask=31;
-    bool correctives=true, slim_intermediates=false;
+    bool correctives=true, slim_intermediates=false, gem_features=false;
 };
 void validate_body_inference_options(body_inference_options);
 // Checked GGUF-only pose-branch session. No reference/fixture directory, Python,

@@ -7,7 +7,7 @@ namespace sam3d {
 // DINO crop, explicit bbox and pinhole intrinsics; no detector/full refinement.
 // Hand mode takes an already mirrored image/box for a left hand. It is a hand
 // image branch, not body-derived crop selection, unmirroring or final merging.
-struct body_pipeline_shape {backbone_shape backbone;body_flow_shape decoder;bool trained_branch=false;};
+struct body_pipeline_shape {backbone_shape backbone;body_flow_shape decoder;bool trained_branch=false,gem_features=false;};
 void validate_body_pipeline_shape(body_pipeline_shape);
 std::vector<std::pair<std::string,uint64_t>> body_pipeline_parameter_sizes(body_pipeline_shape);
 named_floats body_hand_detection(neural_session &,uint32_t dim,std::span<const float> tokens,const weight_map &);

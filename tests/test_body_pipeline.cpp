@@ -21,6 +21,15 @@ int main(int argc,char **argv){try{
        !has("hand_pe_layer.positional_encoding_gaussian_matrix") || !has("head_pose_hand.local_to_world_wrist") || has("head_pose.proj.layers.0.0.weight"))
         throw std::runtime_error("incorrect hand image branch parameter namespace");
     s.decoder.condition.hand_tokens=false;reject([&]{sam3d::validate_body_pipeline_shape(s);});
+    s=shape;s.trained_branch=true;s.gem_features=true;
+    sam3d::validate_body_pipeline_shape(s);
+    const auto gem_sizes=sam3d::body_pipeline_parameter_sizes(s);
+    auto gem_has=[&](const std::string &name){return std::any_of(gem_sizes.begin(),gem_sizes.end(),[&](auto &entry){return entry.first==name;});};
+    if(!gem_has("prompt_encoder.no_mask_embed.weight") || !gem_has("head_pose.proj.layers.0.0.weight") ||
+       gem_has("bbox_embed.layers.2.weight") || gem_has("hand_cls_embed.weight") || gem_has("hand_box_embedding.weight"))
+        throw std::runtime_error("incorrect GEM-X Body feature parameter contract");
+    s.decoder.condition.hand_tokens=true;reject([&]{sam3d::validate_body_pipeline_shape(s);});
+    s=shape;s.gem_features=true;reject([&]{sam3d::validate_body_pipeline_shape(s);});
     std::ifstream file(argv[1]);std::string magic;uint32_t count;
     if(!(file>>magic>>count) || magic!="S3D_CAMERA_GEOMETRY_REGRESSION_V1" || count!=12)throw std::runtime_error("bad pipeline fixture");
     uint32_t cases=0;

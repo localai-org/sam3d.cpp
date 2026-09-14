@@ -17,6 +17,13 @@ int main(void){
     CHECK(s3d_runtime_options_get_body_inference(o,&crop,&mask,&corr,&slim,e,sizeof e)==S3D_OK && crop==448 && mask==7 && corr==0 && slim==1);
     CHECK(s3d_runtime_options_get_body_inference(NULL,&crop,&mask,&corr,&slim,e,sizeof e)==S3D_INVALID_ARGUMENT && !crop && !mask && !corr && !slim);
     CHECK(s3d_body_model_get_body_inference(NULL,&crop,&mask,&corr,&slim,e,sizeof e)==S3D_INVALID_ARGUMENT && !crop);
+    uint32_t feature_mode=99;
+    CHECK(s3d_runtime_options_get_body_feature_mode(o,&feature_mode,e,sizeof e)==S3D_OK && feature_mode==S3D_BODY_FEATURES_STANDARD);
+    CHECK(s3d_runtime_options_set_body_feature_mode(o,S3D_BODY_FEATURES_GEM_X,e,sizeof e)==S3D_OK);
+    CHECK(s3d_runtime_options_get_body_feature_mode(o,&feature_mode,e,sizeof e)==S3D_OK && feature_mode==S3D_BODY_FEATURES_GEM_X);
+    CHECK(s3d_runtime_options_set_body_feature_mode(o,99,e,sizeof e)==S3D_INVALID_ARGUMENT);
+    CHECK(s3d_runtime_options_get_body_feature_mode(NULL,&feature_mode,e,sizeof e)==S3D_INVALID_ARGUMENT && !feature_mode);
+    CHECK(s3d_body_model_get_body_feature_mode(NULL,&feature_mode,e,sizeof e)==S3D_INVALID_ARGUMENT && !feature_mode);
     CHECK(s3d_runtime_options_get_body_inference(o,NULL,&mask,&corr,&slim,e,sizeof e)==S3D_INVALID_ARGUMENT);
     CHECK(s3d_runtime_options_set_body_inference(o,384,0,1,0,e,sizeof e)==S3D_OK);
     uint32_t precision=99;

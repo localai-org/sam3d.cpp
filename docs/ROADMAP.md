@@ -62,7 +62,7 @@ the CUDA oracle in fixed front/side/oblique views. See the
 
 - Complete and validate both-hand image refinement and optional user prompts.
   Existing hand experiments do not establish final refined-image parity.
-- Expose a supported Body feature-only API for GEM-X integration; GEM temporal
+- Optimize the experimental GEM-X feature mode so it can skip unused Body geometry; GEM temporal
   inference, its separate ViTPose features and SOMA decoding belong to that track.
 - Library-level cancellation and configurable graph memory budgets. The demo's
   process cancellation is not a public-library cancellation API.

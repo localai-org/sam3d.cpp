@@ -9,8 +9,9 @@ CPU/Vulkan inference and an image/offline-video/live-webcam demo. An experimenta
 **SAM 3D Objects** Vulkan path accepts a scene and object mask and exports a
 vertex-coloured geometry GLB. Its raw mesh decoder and fixed-view real-exemplar
 parity gates pass; repair, UV and texture-baking parity remain separate. Video currently uses independent frame
-estimates, not GEM temporal inference. Detailed hand refinement and feature-only
-GEM integration are future work.
+estimates, not GEM temporal inference. The Body API now exposes an experimental
+GEM-compatible token layout; skipping its unused geometry and GEM temporal inference
+remain future work. Detailed hand refinement is also future work.
 BF16 tolerances account for upstream floating-point variation, with isolated
 hand metrics kept non-blocking for the supported Body branch. Full-model and
 matched-workload performance acceptance remain separate gates.

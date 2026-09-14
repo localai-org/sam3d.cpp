@@ -17,15 +17,19 @@ void validate_body_pipeline_shape(body_pipeline_shape s){
        b.height!=c.height || b.width!=c.width || b.patch!=c.patch || b.dim!=c.context_dim)
         throw std::invalid_argument("incompatible image/backbone/decoder composition");
     if(s.decoder.hand_branch && !s.trained_branch)throw std::invalid_argument("hand image composition requires the explicit trained branch contract");
-    if(s.trained_branch && !c.hand_tokens)throw std::invalid_argument("trained branch requires hand detection tokens");
+    if(s.gem_features && (!s.trained_branch || c.hand_tokens || s.decoder.hand_branch))
+        throw std::invalid_argument("GEM features require the trained body branch without hand tokens");
+    if(s.trained_branch && !c.hand_tokens && !s.gem_features)throw std::invalid_argument("trained branch requires hand detection tokens");
 }
 std::vector<std::pair<std::string,uint64_t>> body_pipeline_parameter_sizes(body_pipeline_shape s){
     validate_body_pipeline_shape(s);auto out=body_flow_parameter_sizes(s.decoder);const uint64_t d=s.decoder.condition.token_dim;
     if(s.trained_branch){
         out.emplace_back("prompt_encoder.no_mask_embed.weight",s.backbone.dim);
-        for(uint32_t i=0;i<3;++i){const uint64_t n=i==2?4:d;const auto p="bbox_embed.layers."+std::to_string(i);
-            out.emplace_back(p+".weight",d*n);out.emplace_back(p+".bias",n);}
-        out.emplace_back("hand_cls_embed.weight",d*2);out.emplace_back("hand_cls_embed.bias",2);
+        if(s.decoder.condition.hand_tokens){
+            for(uint32_t i=0;i<3;++i){const uint64_t n=i==2?4:d;const auto p="bbox_embed.layers."+std::to_string(i);
+                out.emplace_back(p+".weight",d*n);out.emplace_back(p+".bias",n);}
+            out.emplace_back("hand_cls_embed.weight",d*2);out.emplace_back("hand_cls_embed.bias",2);
+        }
     }return out;
 }
 named_floats body_hand_detection(neural_session &session,uint32_t d,std::span<const float> tokens,const weight_map &p){
@@ -117,6 +121,11 @@ named_floats body_from_rgb(neural_session &session,tensor_archive &mhr,body_pipe
         weight_map head;for(auto &[name,v]:decoder_weights)if(name.starts_with("bbox_embed.") || name.starts_with("hand_cls_embed."))head[name]=v;
         auto detected=body_hand_detection(session,shape.decoder.condition.token_dim,result.at("90.output_tokens"),head);
         for(auto &[name,v]:detected)result["branch."+name]=std::move(v);
+    }else if(shape.gem_features){
+        // Keep the stable Body result schema while the GEM-compatible decoder
+        // deliberately omits the two hand-detection tokens and their heads.
+        result["branch.hand_box"]=std::vector<float>(8);
+        result["branch.hand_logits"]=std::vector<float>(4);
     }
     if(shape.decoder.capture_boundaries){for(auto &[name,v]:p)result["prepare."+name]=std::move(v);result["backbone.features"]=std::move(features);}
     for(auto &[name,v]:backbone_taps)result[name]=std::move(v);

@@ -18,7 +18,7 @@ waived by exposing the model through an API.
 | Body crop/image/camera, `sam3d.h` | Box/RGB/intrinsics → crop geometry, normalized image, camera conditions | Implemented; no neural inference |
 | Objects image preparation, `sam3d.h` | RGBA/options → original image/mask tensors | Implemented; no 3D reconstruction |
 | Body model, `sam3d_model.h` | RGB + person box + intrinsics + three GGUFs → body mesh, joints, pose and camera | Implemented one-person, no-mask **body pose branch only** |
-| Body feature inference | Normalized crop/conditioning → GEM-compatible features without mesh decoding | Planned |
+| Body GEM-X feature mode | Image/box/intrinsics → compatible 1024-value pose token + camera translation | Experimental; still computes the normal Body result |
 | Objects component/pipeline inference | Conditions/noise or image/mask → geometry | Planned |
 | Demo/export | Single-image upload/history/visualization/static GLB or OBJ download | Optional Go server and native C-API CLI; see [demo guide](../demo/README.md) |
 
@@ -97,7 +97,7 @@ predictions. Every transformer layer and the final prediction still execute.
 Mask `7` selects predictions after layers 0, 1 and 2, with later feedback reusing
 the latest prediction. Mask `0` skips all intermediate predictions and feedback.
 The boolean flags control MHR pose correctives and omission of unused intermediate
-outputs. The final result retains all 20 fields, including skeleton transforms.
+outputs. The final result retains all 21 fields, including the GEM-X feature token and skeleton transforms.
 
 The options and loaded-model getters expose the same four values. Invalid setters
 leave the previous configuration intact. Changing options cannot mutate a loaded
@@ -194,7 +194,7 @@ Metadata keys also include `scope`, `geometry_units`, `coordinates` and
 All tensors are contiguous row-major with the logical dimensions below. Batch
 dimension is retained even for the sole supported sample. All are F32 except
 `faces`, which is signed I32. Existing shapes and names are stable for this schema. The additive
-`joint_transforms` field brings the current count to 20; enumerate by name rather
+The additive `pose_token` field brings the current count to 21; enumerate by name rather
 than assuming a fixed count or index. Rebuild strict CLI-format consumers with
 the updated runner.
 
@@ -206,10 +206,11 @@ the updated runner.
 | `joint_rotations` | `[1,127,3,3]` | Original MHR global matrices; **not** parent-local or axis-flipped |
 | `vertices_pixels`, `keypoints_pixels` | `[1,18439,2]`, `[1,70,2]` | Original-image projected pixel coordinates |
 | `camera_translation`, `camera_parameters` | `[1,3]` each | Metric translation; original raw head camera vector respectively |
+| `pose_token` | `[1,1024]` | Final normalized primary Body decoder token. Select `S3D_BODY_FEATURES_GEM_X` before model load for GEM-X-compatible token layout. |
 | `pose_raw`, `global_rotation`, `body_pose` | `[1,266]`, `[1,3]`, `[1,133]` | Original Body/MHR pose parameter conventions, not interchangeable rotation layouts |
 | `shape`, `scale`, `hand`, `face` | `[1,45]`, `[1,28]`, `[1,108]`, `[1,72]` | Original coefficients; face output is disabled/zero in this mode |
 | `mhr_model_parameters` | `[1,204]` | Original assembled MHR parameters |
-| `hand_boxes`, `hand_logits` | `[1,2,4]`, `[1,2,2]` | Normalized crop-relative CXCYWH boxes and class logits, not refined hand meshes |
+| `hand_boxes`, `hand_logits` | `[1,2,4]`, `[1,2,2]` | Normalized crop-relative CXCYWH boxes and class logits, not refined hand meshes. Both are zero in GEM-X feature mode because its compatible decoder omits the hand-detection tokens. |
 
 Body vertices/joints/keypoints are the original MHR geometry converted from
 centimetres to metres and multiplied by `diag(1,-1,-1)`, matching upstream.

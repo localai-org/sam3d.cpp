@@ -135,6 +135,7 @@ named_floats body_forward_decoder(neural_session &session,tensor_archive &archiv
             if(s.capture_boundaries)result[prefix+"02.normalized"]=normalized;
             std::vector<float> token(b*d);
             for(uint32_t z=0;z<b;++z)std::copy_n(normalized.begin()+z*n*d,d,token.begin()+z*d);
+            if(i+1==s.depth)result["91.pose_token"]=token;
             // Original callback uses the initial estimate, not the previous prediction.
             const bool slim=s.slim_intermediates && !s.capture_boundaries && i+1<s.depth;
             pose=body_pose_geometry(session,archive,ps,token,initial_pose,hand_indices,pose_weights,get("head_pose.keypoint_mapping"),arithmetic,s.hand_branch?&hand:nullptr,s.correctives,slim);

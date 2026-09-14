@@ -18,6 +18,8 @@ typedef struct s3d_body_result s3d_body_result;
 #define S3D_CAP_BODY_POSE_BRANCH UINT64_C(1)
 #define S3D_BACKBONE_F32 UINT32_C(0)
 #define S3D_BACKBONE_BF16 UINT32_C(1)
+#define S3D_BODY_FEATURES_STANDARD UINT32_C(0)
+#define S3D_BODY_FEATURES_GEM_X UINT32_C(1)
 
 /* Experimental, synchronous, one-person/no-mask Body pose branch; F32 default.
  * NOT hand-crop refinement, automatic detection or Objects inference.
@@ -46,6 +48,15 @@ S3D_API s3d_status s3d_runtime_options_get_body_inference(const s3d_runtime_opti
     uint32_t *crop_size,uint32_t *intermediate_mask,uint32_t *correctives,uint32_t *slim,char *error,uint64_t capacity);
 S3D_API s3d_status s3d_body_model_get_body_inference(const s3d_body_model *model,
     uint32_t *crop_size,uint32_t *intermediate_mask,uint32_t *correctives,uint32_t *slim,char *error,uint64_t capacity);
+/* GEM-X mode disables hand-detection tokens so pose_token matches NVIDIA's
+ * legacy SAM3D feature extractor. It still returns the normal Body tensors;
+ * hand_boxes/hand_logits are zero because that head is not executed. */
+S3D_API s3d_status s3d_runtime_options_set_body_feature_mode(s3d_runtime_options *options,
+    uint32_t mode,char *error,uint64_t capacity);
+S3D_API s3d_status s3d_runtime_options_get_body_feature_mode(const s3d_runtime_options *options,
+    uint32_t *mode,char *error,uint64_t capacity);
+S3D_API s3d_status s3d_body_model_get_body_feature_mode(const s3d_body_model *model,
+    uint32_t *mode,char *error,uint64_t capacity);
 /* Default F32. BF16 rounds only the image encoder, matching upstream's scope;
  * decoder, MHR and public result buffers remain F32. Uses the same F32 GGUFs.
  * Consult docs/ROADMAP.md for the current numerical acceptance limits. */
