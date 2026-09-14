@@ -1,0 +1,16 @@
+FROM pytorch/pytorch:2.7.0-cuda12.8-cudnn9-runtime
+
+# Keep this image deliberately smaller than the upstream application's full
+# environment.  It contains only the packages imported by the pinned SLat
+# mesh decoder and the parity capture harness.
+RUN python -m pip install --no-cache-dir \
+    spconv-cu121==2.3.8 \
+    safetensors==0.6.2 \
+    PyYAML==6.0.2 \
+    easydict==1.13 \
+    optree==0.17.0 \
+    loguru==0.7.2 \
+    einops==0.8.1 \
+    astor==0.8.1 \
+    plyfile==1.1.2
+

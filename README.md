@@ -1,16 +1,19 @@
 # sam3d.cpp
 
-A C++23/GGML port of Meta's SAM 3D Body: recover human pose and body geometry
-from photographs. Native inference runs on CPU or Vulkan without Python,
-PyTorch, CUDA or llama.cpp.
+A C++23/GGML port of Meta's SAM 3D Body and an experimental SAM 3D Objects
+runtime. Native inference runs on CPU or Vulkan without Python, PyTorch, CUDA
+or llama.cpp.
 
 - One person's image and bounding box → MHR mesh, joints, pose and camera.
+- One scene image and painted object mask → vertex-coloured geometry GLB.
 - Opaque C API for inference and lower-level image/camera preparation.
 - Optional Go/WebGL demo with photo uploads, history, static GLB/OBJ export,
   offline video, live webcam recording and skeleton animation GLB export.
 
 Video uses independent frame estimates, not a learned temporal model. Detailed
-hand refinement and SAM 3D Objects are outside the current supported scope.
+hand refinement remains outside the current supported scope. Objects now has
+an accepted raw-geometry baseline; mesh repair and baked PBR textures remain
+outside its current scope.
 
 ## Build on Linux
 
@@ -60,6 +63,11 @@ The Body runtime needs three compatible local files:
 The same archives support the runtime BF16 encoder mode. These are F32/F32-I32
 format conversions, not low-bit quants. No weights are checked into this repository.
 
+Objects uses converted MoGe, SS generator/decoder, SLat generator and mesh
+decoder GGUFs under `generated/models/objects-gguf`. The demo accepts a scene
+image and exact painted mask, runs this native path, renders the indexed
+FlexiCubes mesh and preserves the same vertex-coloured GLB for download.
+
 The [model card and uploader](distribution/README.md) are prepared, but converted
 HF downloads have not been published yet. Until publication, see the
 [reference setup](reference/README.md) and [conversion guide](reference/GGUF.md)
@@ -92,6 +100,14 @@ versus **81.6–84.5 ms** for compiled/eager upstream CUDA at the compared scope
 The live pipeline measured **8.1 Hz** and **176 ms** median first render
 submission; that is not physical camera-to-display latency. These are measured
 workloads, not general hardware or full hand-refined performance guarantees.
+
+For Objects, the corrected Vulkan MoGe point map is within `1.16e-4` relative
+L2 of the pinned PyTorch result, and matched first-step SS shape velocity is
+within `1.25e-4`. The geometry decoder reproduces upstream FlexiCubes exactly
+when supplied the same raw tensor. On the complete kids-room exemplar, native
+and upstream meshes have better than 0.9999 silhouette IoU in three fixed views.
+See [Objects runtime evidence](reference/OBJECTS_RUNTIME.md) and the
+[geometry parity report](reference/OBJECTS_MESH_PARITY.md).
 
 Optional [inference scheduling/crop optimizations](reference/BODY_FAST_INFERENCE.md)
 follow **Timing Yang and the Fast SAM 3D Body researchers**. We credit their

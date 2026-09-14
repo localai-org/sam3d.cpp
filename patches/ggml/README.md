@@ -4,8 +4,9 @@ Upstream stays pinned and pristine at `ggml-org/ggml`
 `e91ded11bdcd78c42f9c8d3978ff6686eb4c1226` (0.23.0).
 `SAM3D_EXPERIMENTAL_GGML_PATCHES=ON` applies these reviewable patches to a
 content-addressed copy below the build directory. No submodule edits or private
-commits are required. Default builds use unmodified GGML. Configure requires Git
-and the initialized submodule; stale/inapplicable patches fail closed.
+commits are required. The `vulkan-optimized` presets use this patched copy by
+default; CPU presets use unmodified GGML. Configure requires Git and the
+initialized submodule; stale/inapplicable patches fail closed.
 
 `0001` adds ordinary scalar F32 matrix-multiplication pipelines alongside NVIDIA
 cooperative-matrix-2 BF16 pipelines. It avoids GGML's implicit F32-to-F16 operand
@@ -43,6 +44,24 @@ The model-free `sam3d-vulkan-precision-test` checks 12 strict F32 cases and
 eligible cases must show `BF16_ROUND`, while protected intermediates retain
 separate `CPY` operations. Full-model output and encoder-boundary regressions
 are also required; synthetic kernel agreement alone is not model parity.
+
+`0013` changes the Vulkan scalar convolution thread tile from eight output
+channels to four for the `32x256` and `64x128` block shapes. On NVIDIA Vulkan,
+the larger thread tile writes only channels 0–3 in every eight-channel group;
+the other four remain zero. MoGe exposes this first in its 64-channel final
+upsampler and both 32-channel output heads. The model-free Vulkan precision
+test covers complete K=32 and K=64 outputs before the upstream-exemplar test
+checks the trained MoGe head. The unaffected `128x128` block retains its
+eight-channel thread tile.
+
+Run that model-free regression independently of the older BF16 cases with:
+
+```sh
+SAM3D_VULKAN_CONV_ONLY=1 \
+GGML_VK_DISABLE_F16=1 GGML_VK_DISABLE_COOPMAT=1 GGML_VK_DISABLE_COOPMAT2=1 \
+build/vulkan-optimized/bin/sam3d-vulkan-precision-test \
+  build/vulkan-optimized/bin/libggml-vulkan.so "EXACT DEVICE DESCRIPTION"
+```
 
 `0003` preserves accumulator precision for the BF16 CM2 flash-attention
 softmax denominator. The original shader sums already-rounded BF16

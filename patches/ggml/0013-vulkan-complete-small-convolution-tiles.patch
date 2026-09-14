@@ -1,0 +1,13 @@
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+index a04a6b2..31b05c9 100644
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -6044,7 +6044,7 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+         // smaller WG for the small-tile fallback gives more concurrent WGs per SM
+         uint32_t conv2d_WG_SIZE  = (s == CONV_SHAPE_64x32) ? 128 : 256;
+         uint32_t use_collectives = 0;  // Enables subgroup ops for preventing the re-calculation of indices.
+-        uint32_t conv2d_TS_K     = (s == CONV_SHAPE_64x32) ? 4 : 8;
++        uint32_t conv2d_TS_K     = (s == CONV_SHAPE_128x128) ? 8 : 4;
+         uint32_t conv2d_SHMEM_PAD = 4;
+         vk_conv_block_size conv2d_BS = vk_conv_block_sizes[s];
+         bool conv2d_UNROLL = true;

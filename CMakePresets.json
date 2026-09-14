@@ -10,7 +10,7 @@
     {"name": "vulkan-ubsan", "inherits": "debug", "binaryDir": "${sourceDir}/build/vulkan-ubsan",
      "cacheVariables": {"SAM3D_VULKAN": "ON", "SAM3D_ADDRESS_SANITIZER": "OFF"}},
     {"name": "vulkan-optimized", "inherits": "optimized-sanitizers", "binaryDir": "${sourceDir}/build/vulkan-optimized",
-     "cacheVariables": {"SAM3D_VULKAN": "ON", "SAM3D_ADDRESS_SANITIZER": "OFF"}},
+     "cacheVariables": {"SAM3D_VULKAN": "ON", "SAM3D_ADDRESS_SANITIZER": "OFF", "SAM3D_EXPERIMENTAL_GGML_PATCHES": "ON"}},
     {"name": "vulkan-bf16-cm2", "inherits": "vulkan-optimized", "binaryDir": "${sourceDir}/build/vulkan-bf16-cm2",
      "cacheVariables": {"SAM3D_EXPERIMENTAL_GGML_PATCHES": "ON"}},
     {"name": "vulkan-bf16-production", "inherits": "vulkan-bf16-cm2", "binaryDir": "${sourceDir}/build/vulkan-bf16-performance",

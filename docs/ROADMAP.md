@@ -6,7 +6,7 @@ earlier experiments, including superseded results. Neither is a second backlog.
 
 ## Available now
 
-The supported scope is the **SAM 3D Body pose branch**: explicit image/person
+The supported scope includes the **SAM 3D Body pose branch**: explicit image/person
 box/camera input, native CPU/Vulkan inference, MHR mesh decoding and opaque C
 APIs. The optional demo supports photos, offline video and live webcams, with
 history, static posed-mesh export, live take recording and skeleton animation
@@ -22,6 +22,15 @@ in the design has passed.
 Licensing, the model card, explicit-file uploader and clean-checkout build
 verification are prepared. GGML uses a public submodule commit, with optional
 patches applied to build copies.
+
+An experimental **SAM 3D Objects** path now accepts an image and binary object
+mask, runs native MoGe, DINO/PointPatch conditioning, SS/SLat flow and mesh
+decoding, and writes a vertex-coloured geometry GLB. The demo supplies mask
+painting, history, an indexed mesh view and GLB download. The C++ FlexiCubes
+extractor is exact against upstream raw tensors. On the pinned kids-room latent,
+the native 488,564-vertex mesh reaches 0.99991–0.99997 silhouette IoU against
+the CUDA oracle in fixed front/side/oblique views. See the
+[geometry parity report](../reference/OBJECTS_MESH_PARITY.md).
 
 ## Remaining release steps
 
@@ -59,8 +68,9 @@ patches applied to build copies.
   process cancellation is not a public-library cancellation API.
 - Automatic person detection/calibration or multi-person tracking, with separate
   model contracts and acceptance if added.
-- SAM 3D Objects: finish its learned conditioning/generation pipeline and demo
-  under a new scope. Existing component tests are not end-to-end Objects inference.
+- Add optional official-equivalent mesh repair, UV parametrization and texture
+  baking. The accepted raw geometry and learned vertex colours do not establish
+  textured-PBR parity.
 
 For any implementation change, retain operation/layer comparisons and final
 output checks; for demo changes, repeat the real browser workflow. Performance

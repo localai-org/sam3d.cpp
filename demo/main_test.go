@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"image"
 	"image/color"
@@ -188,6 +190,60 @@ func TestUploadQueueAndOrigins(t *testing.T) {
 	}
 	if len(a.jobs) != 2 {
 		t.Fatal("invalid uploads persisted")
+	}
+}
+func objectUpload(t *testing.T, a *app, selected bool) *httptest.ResponseRecorder {
+	t.Helper()
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	imagePart, _ := writer.CreateFormFile("image", "scene.png")
+	scene := image.NewRGBA(image.Rect(0, 0, 8, 8))
+	scene.SetRGBA(3, 4, color.RGBA{R: 12, G: 34, B: 56, A: 255})
+	png.Encode(imagePart, scene)
+	maskPart, _ := writer.CreateFormFile("mask", "mask.png")
+	mask := image.NewRGBA(image.Rect(0, 0, 8, 8))
+	if selected {
+		for y := 2; y <= 4; y++ {
+			for x := 1; x <= 3; x++ {
+				mask.SetRGBA(x, y, color.RGBA{R: 255, G: 255, B: 255, A: 255})
+			}
+		}
+	}
+	png.Encode(maskPart, mask)
+	writer.Close()
+	req := httptest.NewRequest("POST", "http://localhost/api/object-jobs", &body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	out := httptest.NewRecorder()
+	a.routes().ServeHTTP(out, req)
+	return out
+}
+func TestObjectUploadPacksExactMask(t *testing.T) {
+	a := testApp(t)
+	if got := objectUpload(t, a, false).Code; got != 400 {
+		t.Fatalf("empty mask status = %d", got)
+	}
+	out := objectUpload(t, a, true)
+	if out.Code != 202 {
+		t.Fatalf("object upload: %d %s", out.Code, out.Body.String())
+	}
+	var j job
+	if err := json.Unmarshal(out.Body.Bytes(), &j); err != nil {
+		t.Fatal(err)
+	}
+	packed, err := os.ReadFile(filepath.Join(a.dir(j.ID), "object.input"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if j.Kind != "object" || !bytes.Equal(packed[:8], []byte("S3DOBJ01")) ||
+		binary.LittleEndian.Uint32(packed[8:12]) != 8 || binary.LittleEndian.Uint32(packed[12:16]) != 8 {
+		t.Fatal("invalid object job/container metadata")
+	}
+	inputHash := sha256.Sum256(packed)
+	if j.InputSHA != hex.EncodeToString(inputHash[:]) || len(j.SourceSHA) != 64 {
+		t.Fatal("invalid object source/input hashes")
+	}
+	if packed[16+4*(4*8+3)+3] != 255 || !bytes.Equal(packed[16+4*(4*8+3):16+4*(4*8+3)+3], []byte{12, 34, 56}) || packed[16+3] != 0 {
+		t.Fatal("object RGB/mask packing mismatch")
 	}
 }
 func TestPersistenceAndCancel(t *testing.T) {

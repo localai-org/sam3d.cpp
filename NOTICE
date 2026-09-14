@@ -44,9 +44,9 @@ optional preparation script retains source/capture hashes in local artifacts.
 
 `ggml/` is an unmodified public upstream submodule at
 `e91ded11bdcd78c42f9c8d3978ff6686eb4c1226` (GGML 0.23.0), under its
-[MIT license](ggml/LICENSE). Default builds require no private commits or patches.
-Experimental BF16 Vulkan builds optionally apply the reviewable patches in
-`patches/ggml/` to a build-directory copy, leaving the upstream submodule pristine.
+[MIT license](ggml/LICENSE). Vulkan optimized builds apply the reviewable patches
+in `patches/ggml/` to a build-directory copy, leaving the upstream submodule pristine;
+CPU builds use the unmodified source.
 These adapt the pinned GGML Vulkan pipelines and shaders: scalar F32 matrix
 products alongside BF16 cooperative-matrix-2 execution, and an exact BF16 cast
 roundtrip fusion based on `contig_copy.comp`, and an accumulator-precision
@@ -540,6 +540,39 @@ general rotation/pose engine in the native library. The reference loader execute
 unchanged selected original ASTs, with postponed type annotations to avoid unused
 pose/rotation imports. The original transform methods, not a replacement scalar
 normalizer, produce the oracle. See [OBJECTS_SSI.md](reference/OBJECTS_SSI.md).
+
+## SAM 3D Objects native inference
+
+`src/objects_runtime/`, `apps/object_infer.cpp` and the checkpoint conversion
+schema adapt the learned SAM 3D Objects image-to-Gaussian and image-to-mesh paths from Meta's
+pinned revision `f91db411c50efee93d8db7aeb323885650f6f722`, under the included
+SAM License. The stages cover the DINO/PointPatch fusers, sparse-structure flow
+and decoder, structured-latent flow, Gaussian and mesh decoders. Changes include
+bounded C++/GGML graphs, host Euler/CFG scheduling, sparse lookup tables,
+stage-wise model streaming, binary PLY and GLB output and Vulkan diagnostics. No model
+weights are distributed in this repository.
+
+The implementation was bootstrapped and checked against Asher-1's public
+`sam-3d-objects-ggml` work at revision
+`1c14b7c3c3e8d9109b943ddc83a0a39c73744246`. Its graph layouts, conversion
+schema and numerical replay tooling provided valuable prior art. The native
+code here was adapted to this repository's checked runtime and parity process;
+it does not depend on that checkout at build or run time.
+
+`src/objects_runtime/flexicubes_tables.hpp`, `mesh_extractor.cpp` and the table
+generator reproduce the inference portion of NVIDIA FlexiCubes as vendored by
+the pinned Meta source. Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES and
+Copyright (c) Meta Platforms, Inc. and affiliates; Apache-2.0. The generated
+header and source retain both notices. Changes are a bounded host C++ extraction,
+explicit parity taps and vertex-colour GLB export; training/QEF losses are not
+ported.
+
+The raw-image point-map stage adapts Microsoft's MoGe implementation and
+checkpoint at revision `74fbce054ebed49800de42d0ad0e83495065719a`, including
+its ViT-L feature projection and point/mask head. Copyright Microsoft and MoGe
+contributors; the upstream repository's Apache-2.0 terms apply. The checkpoint
+is a local conversion input and is not checked in. PyTorch reference replay is
+limited to development validation; production inference remains native.
 
 ## Fast SAM 3D Body inference optimizations
 

@@ -38,4 +38,10 @@ using objects_tensor_observer=std::function<void(const std::string &,std::span<c
 std::vector<float> objects_square_resize(std::span<const float>,uint32_t channels,
     uint32_t height,uint32_t width,uint32_t side,bool bicubic,bool nan_padding,
     const objects_tensor_observer &observer={});
+// Direct CHW resize used at the MoGe model boundary. This follows PyTorch's
+// antialiased bicubic or non-antialiased bilinear align_corners=false rules
+// without first padding the image to a square.
+std::vector<float> objects_resize_chw(std::span<const float>,uint32_t channels,
+    uint32_t height,uint32_t width,uint32_t output_height,uint32_t output_width,
+    bool bicubic_antialias);
 }

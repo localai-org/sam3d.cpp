@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SAM 3D Body · LocalAI</title><link rel="stylesheet" href="style.css"><link rel="icon" href="data:,"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SAM 3D · LocalAI</title><link rel="stylesheet" href="style.css"><link rel="icon" href="data:,"></head>
 <body>
 <aside>
- <header><span class="eyebrow">IMAGE / VIDEO → BODY</span><h1>SAM 3D Body</h1><p id="model">Connecting to the native inference worker…</p></header>
+ <header><span class="eyebrow">IMAGE → BODY / OBJECT</span><h1>SAM 3D</h1><p id="model">Connecting to the native inference worker…</p><label>Reconstruct <select id="reconstruction-kind"><option value="body">Body</option><option value="object">Object</option></select></label></header>
  <section id="tracking"><h2>Video tracking</h2>
  <label>Input mode <select id="input-mode"><option value="photo">Photo</option><option value="offline">Offline video</option><option value="live">Live webcam</option></select></label>
  <div id="video-options" hidden>
@@ -21,7 +21,7 @@
  <p class="small">Offline sequences are saved. Live tracking is temporary until you press Record; takes save skeleton poses and one preview image. Uploaded video stays in your browser; only sampled images go to this server. Source video is not saved in history.</p>
  <div id="track-history"></div>
  </section>
- <section><h2>Select a person</h2><p>Drag a box around one person in the preview. For video, select the person before starting tracking.</p>
+ <section><h2 id="selection-title">Select a person</h2><p id="selection-help">Drag a box around one person in the preview. For video, select the person before starting tracking.</p>
  <div id="photo-upload-options">
  <label class="upload">Upload photo<input id="upload" type="file" accept="image/*,.heic,.heif,.avif,.tif,.tiff,.exr,.jxl"></label>
  <p class="small">Photos up to 128 MiB. Oversized or unsupported images are sent to local FFmpeg for resizing/re-encoding. The prepared image must fit 16 MP / 20 MiB; codec support depends on FFmpeg. Transparent pixels use black.</p>
@@ -29,22 +29,24 @@
  <button id="example" hidden>Use official dancing example</button>
  </div>
  <p id="input-name">No image selected</p>
- <div class="row"><strong>Person box</strong><button id="whole" class="quiet" disabled>Whole image</button></div>
+ <div id="body-selection"><div class="row"><strong>Person box</strong><button id="whole" class="quiet" disabled>Whole image</button></div>
  <div class="fields"><label>Left<input id="x0" type="number" min="0" step="1"></label><label>Top<input id="y0" type="number" min="0" step="1"></label><label>Right<input id="x1" type="number" min="0" step="1"></label><label>Bottom<input id="y1" type="number" min="0" step="1"></label></div>
  <details><summary>Camera intrinsics (pixels)</summary><p class="small">Default focal length is the image diagonal, not an estimated calibration. Use known camera values when available.</p>
  <div class="fields"><label>fx<input id="fx" type="number" min="1" max="100000" step="any"></label><label>fy<input id="fy" type="number" min="1" max="100000" step="any"></label><label>cx<input id="cx" type="number" min="0" step="any"></label><label>cy<input id="cy" type="number" min="0" step="any"></label></div></details>
+ </div>
+ <div id="object-selection" hidden><div class="row"><strong>Object mask</strong><button id="mask-clear" class="quiet">Clear</button></div><div class="fields"><label>Brush size<input id="mask-brush" type="range" min="4" max="160" value="40"></label><label class="check"><input id="mask-erase" type="checkbox"> Erase</label></div><p class="small">Paint over one object. The cyan overlay is the exact binary mask sent to native inference.</p></div>
  <button id="generate" class="primary" disabled>Estimate 3D body</button><button id="cancel" hidden>Cancel generation</button>
  <div id="status" role="status" aria-live="polite">Choose an image to begin.</div><p id="elapsed" class="small"></p>
- <p class="notice">Body pose only. Detailed hand refinement is not yet enabled. Export a posed skeleton from a photo, or a skeleton animation from video and recorded live takes.</p>
+ <p class="notice" id="mode-notice">Body pose only. Detailed hand refinement is not yet enabled. Export a posed skeleton from a photo, or a skeleton animation from video and recorded live takes.</p>
  </section>
  <section><h2>View & download</h2>
  <label class="check"><input id="mesh" type="checkbox" checked> Body mesh</label><label class="check"><input id="skeleton" type="checkbox" checked> Skeleton (127 joints)</label>
  <label class="check"><input id="projection" type="checkbox" checked> Skeleton overlay on photo</label>
  <label class="check"><input id="reference" type="checkbox" disabled> Compare upstream (orange)</label><p id="comparison" class="small">Comparison is available for the official example with matching settings.</p>
  <div class="row"><button id="reset">Reset view</button><button id="front">Front</button><button id="side">Side</button></div>
- <label>Skeleton movement<select id="export-movement"><option value="in-place">In place</option><option value="camera">Estimated camera-relative movement</option></select></label>
- <div id="downloads" hidden><a id="skeleton-glb" download>Export skeleton GLB</a><a id="glb" download>Body mesh GLB</a><a id="obj" download>OBJ</a><a id="metadata" download>Settings JSON</a></div>
- <p class="small">Skeleton GLB: named joint hierarchy, metres, Y-up. Mesh GLB / OBJ: static body. Orbit: drag · zoom: wheel · pan: right-drag or Shift-drag.</p>
+ <label id="movement-controls">Skeleton movement<select id="export-movement"><option value="in-place">In place</option><option value="camera">Estimated camera-relative movement</option></select></label>
+ <div id="downloads" hidden><a id="skeleton-glb" download>Export skeleton GLB</a><a id="glb" download>Body mesh GLB</a><a id="obj" download>OBJ</a><a id="ply" download hidden>Gaussian PLY</a><a id="metadata" download>Settings JSON</a></div>
+ <p class="small" id="view-help">Skeleton GLB: named joint hierarchy, metres, Y-up. Mesh GLB / OBJ: static body. Orbit: drag · zoom: wheel · pan: right-drag or Shift-drag.</p>
  </section>
  <section><h2>Past reconstructions</h2><div id="history"><p class="small">No saved bodies yet.</p></div></section>
 </aside>

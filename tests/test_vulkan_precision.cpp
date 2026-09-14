@@ -15,11 +15,48 @@
 #include "vulkan_bf16_affine.hpp"
 #include "vulkan_bf16_norm_affine.hpp"
 
+static void test_scalar_convolution_tiles(sam3d::neural_session &session) {
+    constexpr int width=512,height=320,input_channels=3;
+    for(int output_channels:{32,64}){
+        std::unique_ptr<ggml_context,decltype(&ggml_free)> c(
+            ggml_init({ggml_tensor_overhead()*8+ggml_graph_overhead_custom(8,false),nullptr,true}),ggml_free);
+        if(!c)throw std::bad_alloc();
+        auto weight=ggml_new_tensor_4d(c.get(),GGML_TYPE_F32,1,1,input_channels,output_channels);
+        auto input=ggml_new_tensor_4d(c.get(),GGML_TYPE_F32,width,height,input_channels,1);
+        auto output=ggml_conv_2d_direct(c.get(),weight,input,1,1,0,0,1,1);
+        auto graph=ggml_new_graph_custom(c.get(),8,false);ggml_build_forward_expand(graph,output);
+        auto buffer=session.allocate(c.get());if(!buffer)throw std::bad_alloc();
+        std::vector<float> weights(input_channels*output_channels),values(width*height*input_channels);
+        std::vector<float> expected(width*height*output_channels),got(expected.size());
+        for(int oc=0;oc<output_channels;++oc)for(int ic=0;ic<input_channels;++ic)
+            weights[oc*input_channels+ic]=float((oc+1)*(ic+2)%17-8)/32.f;
+        for(int ic=0;ic<input_channels;++ic)for(int y=0;y<height;++y)for(int x=0;x<width;++x)
+            values[(ic*height+y)*width+x]=float((x+3*y+7*ic)%29-14)/16.f;
+        for(int oc=0;oc<output_channels;++oc)for(int y=0;y<height;++y)for(int x=0;x<width;++x){
+            float sum=0;for(int ic=0;ic<input_channels;++ic)
+                sum+=weights[oc*input_channels+ic]*values[(ic*height+y)*width+x];
+            expected[(oc*height+y)*width+x]=sum;
+        }
+        ggml_backend_tensor_set(weight,weights.data(),0,weights.size()*sizeof(float));
+        ggml_backend_tensor_set(input,values.data(),0,values.size()*sizeof(float));
+        if(ggml_backend_graph_compute(session.backend(),graph)!=GGML_STATUS_SUCCESS)
+            throw std::runtime_error("scalar convolution tile graph failed");
+        ggml_backend_tensor_get(output,got.data(),0,got.size()*sizeof(float));
+        for(size_t i=0;i<got.size();++i)if(!std::isfinite(got[i]) || std::abs(got[i]-expected[i])>1e-5f)
+            throw std::runtime_error("scalar convolution tile lost output channels: K="+
+                std::to_string(output_channels)+" index="+std::to_string(i)+
+                " expected="+std::to_string(expected[i])+" got="+std::to_string(got[i]));
+    }
+    std::cout<<"2 scalar convolution tile cases passed: complete K=32 and K=64 output tiles\n";
+}
+
 // Opt-in real-device test: no models. Large and sub-F16-resolution operands
 // expose an implicit half conversion even when accumulation remains F32.
 int main(int argc,char **argv){try{
     if(argc!=3)throw std::invalid_argument("expected Vulkan module and exact device description");
     sam3d::neural_session session(argv[1],"Vulkan",0,1,argv[2],true);
+    test_scalar_convolution_tiles(session);
+    if(std::getenv("SAM3D_VULKAN_CONV_ONLY"))return 0;
     for(int n:{1,13,37})for(bool strided:{false,true})for(bool large:{false,true}){
         const int k=64,m=33,batch=2,stride=k+(strided?3:0);
         std::unique_ptr<ggml_context,decltype(&ggml_free)> c(ggml_init({ggml_tensor_overhead()*32+ggml_graph_overhead_custom(32,false),nullptr,true}),ggml_free);

@@ -35,6 +35,13 @@ preprocessing, 114 boundary/full-output checks on an official example and edge
 cases, its opaque C API and sanitizer fuzzing. It does not establish pointmap,
 learned-conditioner or full Objects inference parity.
 
+The [Objects geometry parity report](OBJECTS_MESH_PARITY.md) records the pinned
+CUDA/spconv oracle, native mesh-decoder stage gates, exact FlexiCubes extraction
+check, end-to-end structural and topology comparison, and three-view rendered
+comparison on the official kids-room exemplar. The earlier
+[Objects runtime report](OBJECTS_RUNTIME.md) retains the separate Gaussian-path
+evidence and its still-open official Gaussian-render gate.
+
 ## Model access
 
 Development access to both official model repositories was confirmed on

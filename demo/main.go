@@ -49,6 +49,7 @@ type settings struct {
 }
 type job struct {
 	ID          string            `json:"id"`
+	Kind        string            `json:"kind,omitempty"`
 	Name        string            `json:"name"`
 	State       string            `json:"state"`
 	Stage       string            `json:"stage"`
@@ -73,6 +74,7 @@ type config struct {
 	precision                                                                          string
 	ffmpeg                                                                             string
 	addr, data, runner, module, backend, description, backbone, branch, mhr, reference string
+	objectRunner, objectModels                                                         string
 	device, threads, memory, reserve, maxJobs                                          int
 	storage                                                                            int64
 	timeout                                                                            time.Duration
@@ -306,10 +308,11 @@ func (a *app) submit(w http.ResponseWriter, r *http.Request) {
 func (a *app) routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/config", func(w http.ResponseWriter, r *http.Request) {
-		send(w, 200, map[string]any{"model": "SAM 3D Body · DINOv3 · " + a.cfg.inferenceLabel(), "body_inference": a.cfg.bodyModeName(), "precision": a.cfg.precisionName(), "backend": a.cfg.backend, "scope": "Body pose branch — single-person video uses independent frame estimates, not a temporal model or automatic detector", "reference": a.cfg.reference != "", "max_upload_bytes": maxUpload})
+		send(w, 200, map[string]any{"model": "SAM 3D Body · DINOv3 · " + a.cfg.inferenceLabel(), "object_model": "SAM 3D Objects · native F16 weights/F32 compute", "body_inference": a.cfg.bodyModeName(), "precision": a.cfg.precisionName(), "backend": a.cfg.backend, "scope": "Body pose branch plus masked-object FlexiCubes geometry reconstruction", "reference": a.cfg.reference != "", "max_upload_bytes": maxUpload})
 	})
 	a.trackRoutes(mux)
 	mux.HandleFunc("POST /api/jobs", a.submit)
+	mux.HandleFunc("POST /api/object-jobs", a.submitObject)
 	mux.HandleFunc("POST /api/prepare", a.preparePhoto)
 	mux.HandleFunc("GET /api/jobs", func(w http.ResponseWriter, r *http.Request) {
 		a.mu.Lock()
@@ -352,14 +355,14 @@ func (a *app) routes() http.Handler {
 		}
 		send(w, 200, j)
 	})
-	allowed := map[string]bool{"input.png": true, "result.json": true, "body.glb": true, "body.obj": true, "job.json": true}
+	allowed := map[string]bool{"input.png": true, "mask.png": true, "result.json": true, "body.glb": true, "body.obj": true, "object.glb": true, "object.ply": true, "job.json": true}
 	mux.HandleFunc("GET /files/{id}/{name}", func(w http.ResponseWriter, r *http.Request) {
 		id, name := r.PathValue("id"), r.PathValue("name")
 		if !validID.MatchString(id) || !allowed[name] {
 			http.NotFound(w, r)
 			return
 		}
-		if name == "body.glb" || name == "body.obj" || name == "job.json" {
+		if name == "body.glb" || name == "body.obj" || name == "object.glb" || name == "object.ply" || name == "job.json" {
 			w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s-%s"`, id, name))
 		}
 		http.ServeFile(w, r, filepath.Join(a.dir(id), name))
@@ -438,7 +441,12 @@ func (a *app) worker(ctx context.Context) {
 			j.Started = time.Now().UTC()
 			a.save(j)
 			a.mu.Unlock()
-			e := a.run(runctx, id)
+			var e error
+			if j.Kind == "object" {
+				e = a.runObject(runctx, id)
+			} else {
+				e = a.run(runctx, id)
+			}
 			cancel()
 			a.mu.Lock()
 			a.current = ""
@@ -454,7 +462,11 @@ func (a *app) worker(ctx context.Context) {
 				}
 			} else {
 				j.State = "complete"
-				j.Stage = "Body ready — static mesh and skeleton"
+				if j.Kind == "object" {
+					j.Stage = "Object ready — geometry GLB"
+				} else {
+					j.Stage = "Body ready — static mesh and skeleton"
+				}
 			}
 			if e = a.save(j); e != nil {
 				log.Printf("save completed job: %v", e)
@@ -656,6 +668,8 @@ func main() {
 	flag.StringVar(&c.addr, "listen", "127.0.0.1:8097", "HTTP bind address; no authentication, expose only to a trusted network")
 	flag.StringVar(&c.data, "data", "generated/demo", "private persistent input/output directory")
 	flag.StringVar(&c.runner, "runner", "build/vulkan-optimized/bin/sam3d-body-infer", "native public C API executable")
+	flag.StringVar(&c.objectRunner, "object-runner", "build/vulkan-optimized/bin/sam3d-object-infer", "native SAM 3D Objects executable")
+	flag.StringVar(&c.objectModels, "object-models", "generated/models/objects-gguf", "SAM 3D Objects GGUF directory")
 	flag.BoolVar(&c.persistent, "persistent-worker", true, "reuse the bounded native model session across images")
 	flag.DurationVar(&c.workerIdle, "worker-idle", 2*time.Minute, "release resident RAM/VRAM after this idle period (within one timer interval)")
 	flag.StringVar(&c.module, "module", "", "explicit GGML backend module")
@@ -680,7 +694,7 @@ func main() {
 	if (c.backend != "CPU" && c.backend != "Vulkan") || c.threads < 1 || c.threads > 256 || c.device < 0 || c.maxJobs < 1 || c.storage < 320<<20 || c.timeout < time.Second || c.memory < 0 || (c.memory > 0 && c.memory < 64) || c.reserve < 64 || c.workerIdle < time.Second {
 		log.Fatal("invalid runtime limits or backend")
 	}
-	for _, p := range []*string{&c.data, &c.runner, &c.module, &c.backbone, &c.branch, &c.mhr} {
+	for _, p := range []*string{&c.data, &c.runner, &c.module, &c.backbone, &c.branch, &c.mhr, &c.objectRunner, &c.objectModels} {
 		if *p == "" {
 			log.Fatal("--module, --backbone, --branch and --mhr are required")
 		}
@@ -708,6 +722,12 @@ func main() {
 		}
 		a.provenance[label+"_sha256"] = sha
 	}
+	if sha, err := digest(c.objectRunner); err == nil {
+		a.provenance["object_runner_sha256"] = sha
+	} else {
+		log.Fatal(err)
+	}
+	a.provenance["object_models"] = c.objectModels
 	a.provenance["precision"] = c.precisionName()
 	a.provenance["precision_scope"] = c.precisionLabel()
 	a.provenance["body_inference"] = c.bodyModeName()

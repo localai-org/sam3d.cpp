@@ -129,6 +129,41 @@ add_library(sam3d_objects_condition STATIC src/objects_point_condition.cpp)
 target_link_libraries(sam3d_objects_condition PUBLIC sam3d_graph sam3d_objects_image)
 set_target_properties(sam3d_objects_condition PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
+# Experimental learned SAM 3D Objects graph runtime. It remains a separate
+# component so loading Body never allocates Objects weights.
+add_library(sam3d_objects_runtime STATIC
+  src/objects_runtime/common.cpp
+  src/objects_runtime/gguf_loader.cpp
+  src/objects_runtime/backend.cpp
+  src/objects_runtime/graph_builder.cpp
+  src/objects_runtime/dino_graph.cpp
+  src/objects_runtime/moge_graph.cpp
+  src/objects_runtime/pointpatch_graph.cpp
+  src/objects_runtime/ss_flow_graph.cpp
+  src/objects_runtime/ss_decoder_graph.cpp
+  src/objects_runtime/sparse_ops.cpp
+  src/objects_runtime/slat_flow_graph.cpp
+  src/objects_runtime/gs_decoder_graph.cpp
+  src/objects_runtime/mesh_decoder_graph.cpp
+  src/objects_runtime/mesh_extractor.cpp
+  src/objects_runtime/mesh_io.cpp
+  src/objects_runtime/session.cpp)
+target_compile_features(sam3d_objects_runtime PUBLIC cxx_std_23)
+target_include_directories(sam3d_objects_runtime PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/objects_runtime)
+target_link_libraries(sam3d_objects_runtime PUBLIC ggml::ggml sam3d_objects_image)
+set_target_properties(sam3d_objects_runtime PROPERTIES POSITION_INDEPENDENT_CODE ON)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(sam3d_objects_runtime PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+add_executable(sam3d-object-infer apps/object_infer.cpp)
+target_link_libraries(sam3d-object-infer PRIVATE sam3d_objects_runtime)
+install(TARGETS sam3d-object-infer RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+if(SAM3D_SANITIZERS)
+  target_link_libraries(sam3d_objects_runtime PUBLIC sam3d_sanitizers)
+endif()
+
 add_executable(sam3d-body-infer apps/body_infer.c)
 target_link_libraries(sam3d-body-infer PRIVATE sam3d)
 if(SAM3D_SANITIZERS)
@@ -227,6 +262,14 @@ if(BUILD_TESTING)
     target_link_libraries(sam3d-objects-image-api-test PRIVATE sam3d_sanitizers)
   endif()
   add_test(NAME objects_image_c_api COMMAND sam3d-objects-image-api-test)
+  add_executable(sam3d-objects-runtime-format-test tests/test_objects_runtime_format.cpp)
+  target_link_libraries(sam3d-objects-runtime-format-test PRIVATE sam3d_objects_runtime)
+  add_test(NAME objects_runtime_tensor_format COMMAND sam3d-objects-runtime-format-test
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/objects_runtime/fixtures/ss_occ_f32.samt)
+  add_executable(sam3d-objects-ss-decoder-parity tests/test_objects_ss_decoder_parity.cpp)
+  target_link_libraries(sam3d-objects-ss-decoder-parity PRIVATE sam3d_objects_runtime)
+  add_executable(sam3d-objects-mesh-decoder-parity tests/test_objects_mesh_decoder_parity.cpp)
+  target_link_libraries(sam3d-objects-mesh-decoder-parity PRIVATE sam3d_objects_runtime)
   add_executable(sam3d-body-pipeline-test tests/test_body_pipeline.cpp)
   add_executable(sam3d-hand-crop-capture tests/hand_crop_capture.cpp)
   add_executable(sam3d-hand-frame-capture tests/hand_frame_capture.cpp)

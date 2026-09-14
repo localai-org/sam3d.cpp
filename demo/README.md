@@ -1,4 +1,18 @@
-# Body image and video demo
+# Body and object demo
+
+Choose **Object**, upload a scene photograph, and paint over one object. Paint
+and erase edit the exact binary mask submitted to the native SAM 3D Objects
+runtime. Completed jobs retain the scene, mask, provenance and vertex-coloured
+geometry GLB. The WebGL view renders the full indexed FlexiCubes mesh and the
+download is the same GLB.
+
+The experimental Objects path runs native MoGe, image and point-map condition
+embedders, SS/SLat flow sampling, the SLat mesh decoder and inference-mode
+FlexiCubes extraction. Model stages are streamed through one worker. A pinned
+Vulkan kids-room run produced 488,564 vertices and 977,232 faces. Against the
+CUDA oracle from the exact same latent, three fixed views reached better than
+0.9999 silhouette IoU. Mesh repair, UV parametrization and baked PBR textures
+are not implemented; see the [geometry parity report](../reference/OBJECTS_MESH_PARITY.md).
 
 Upload a photograph, drag a box around one person, then select **Estimate 3D
 body**. The photo/skeleton overlay and orbitable body mesh show the same native
@@ -143,6 +157,8 @@ cmake --build --preset vulkan-optimized --target sam3d-body-infer -j2
   --listen 127.0.0.1:8097 \
   --data generated/demo \
   --runner build/vulkan-optimized/bin/sam3d-body-infer \
+  --object-runner build/vulkan-optimized/bin/sam3d-object-infer \
+  --object-models generated/models/objects-gguf \
   --backend Vulkan --module /path/to/libggml-vulkan.so --device 0 \
   --backbone /path/to/body-dinov3-f32.gguf \
   --branch /path/to/body-pose-branch-f32.gguf \

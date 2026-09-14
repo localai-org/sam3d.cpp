@@ -50,15 +50,15 @@ std::vector<filter> filters(uint32_t input,uint32_t output,bool linear=false){
     }
     return out;
 }
-tensor bicubic(const tensor &in,uint32_t side){
-    if(in.h==side && in.w==side)return in;
-    auto fx=filters(in.w,side),fy=filters(in.h,side);tensor tmp(in.c,in.h,side),out(in.c,side,side);
-    for(uint32_t z=0;z<in.c;++z)for(uint32_t y=0;y<in.h;++y)for(uint32_t x=0;x<side;++x){
+tensor bicubic(const tensor &in,uint32_t height,uint32_t width){
+    if(in.h==height && in.w==width)return in;
+    auto fx=filters(in.w,width),fy=filters(in.h,height);tensor tmp(in.c,in.h,width),out(in.c,height,width);
+    for(uint32_t z=0;z<in.c;++z)for(uint32_t y=0;y<in.h;++y)for(uint32_t x=0;x<width;++x){
         const auto &f=fx[x];float v=in.at(z,y,f.first)*f.weights[0];
         for(uint32_t j=1;j<f.weights.size();++j)v+=in.at(z,y,f.first+j)*f.weights[j];
         tmp.at(z,y,x)=v;
     }
-    for(uint32_t z=0;z<in.c;++z)for(uint32_t y=0;y<side;++y)for(uint32_t x=0;x<side;++x){
+    for(uint32_t z=0;z<in.c;++z)for(uint32_t y=0;y<height;++y)for(uint32_t x=0;x<width;++x){
         const auto &f=fy[y];float v=tmp.at(z,f.first,x)*f.weights[0];
         for(uint32_t j=1;j<f.weights.size();++j)v+=tmp.at(z,f.first+j,x)*f.weights[j];
         out.at(z,y,x)=v;
@@ -125,8 +125,8 @@ objects_image_taps objects_prepare_rgba(std::span<const uint8_t> rgba,uint32_t w
     out["05.masked_rgb"]=cr.v;out["06.masked_mask"]=cm.v;
     auto pr=square(cr),pm=square(cm),fr=square(rgb),fm=square(mask);
     out["07.pad.0"]=pr.v;out["07.pad.1"]=pm.v;out["07.pad.2"]=fr.v;out["07.pad.3"]=fm.v;
-    out["08.image"]=bicubic(pr,s.output_side).v;out["08.mask"]=nearest(pm,s.output_side).v;
-    out["08.rgb_image"]=bicubic(fr,s.output_side).v;out["08.rgb_image_mask"]=nearest(fm,s.output_side).v;
+    out["08.image"]=bicubic(pr,s.output_side,s.output_side).v;out["08.mask"]=nearest(pm,s.output_side).v;
+    out["08.rgb_image"]=bicubic(fr,s.output_side,s.output_side).v;out["08.rgb_image_mask"]=nearest(fm,s.output_side).v;
     return out;
 }
 objects_joint_result objects_prepare_pointmap_joint(std::span<const uint8_t> rgba,
@@ -173,8 +173,19 @@ std::vector<float> objects_square_resize(std::span<const float> data,uint32_t ch
     tensor value(channels,height,width);value.v.assign(data.begin(),data.end());
     value=square(value,nan_padding?std::numeric_limits<float>::quiet_NaN():0);
     if(observe)observe("pad",value.v);
-    auto result=smooth?bicubic(value,side):nearest(value,side);
+    auto result=smooth?bicubic(value,side,side):nearest(value,side);
     if(observe)observe("output",result.v);
+    return std::move(result.v);
+}
+std::vector<float> objects_resize_chw(std::span<const float> data,uint32_t channels,
+    uint32_t height,uint32_t width,uint32_t output_height,uint32_t output_width,
+    bool smooth){
+    require(channels>=1 && channels<=4 && height>=1 && height<=4096 && width>=1 && width<=4096 &&
+        output_height>=1 && output_height<=4096 && output_width>=1 && output_width<=4096 &&
+        uint64_t(output_height)*output_width<=max_pixels &&
+        data.size()==uint64_t(channels)*height*width,"invalid direct resize shape");
+    tensor value(channels,height,width);value.v.assign(data.begin(),data.end());
+    auto result=smooth?bicubic(value,output_height,output_width):bilinear(value,output_height,output_width);
     return std::move(result.v);
 }
 }

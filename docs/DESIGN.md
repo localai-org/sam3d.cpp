@@ -5,10 +5,12 @@ task checklist. The [roadmap](ROADMAP.md) is authoritative for current scope and
 remaining work; [development history](../reference/HISTORY.md) records experiments.
 
 The supported implementation is the **SAM 3D Body pose branch**, with native
-CPU/Vulkan inference and an image/offline-video/live-webcam demo. Video currently
-uses independent frame estimates, not GEM temporal inference. Detailed hand
-refinement, feature-only GEM integration and SAM 3D Objects are future work.
-Sections describing those extensions are design, not claims of shipped support.
+CPU/Vulkan inference and an image/offline-video/live-webcam demo. An experimental
+**SAM 3D Objects** Vulkan path accepts a scene and object mask and exports a
+vertex-coloured geometry GLB. Its raw mesh decoder and fixed-view real-exemplar
+parity gates pass; repair, UV and texture-baking parity remain separate. Video currently uses independent frame
+estimates, not GEM temporal inference. Detailed hand refinement and feature-only
+GEM integration are future work.
 BF16 tolerances account for upstream floating-point variation, with isolated
 hand metrics kept non-blocking for the supported Body branch. Full-model and
 matched-workload performance acceptance remain separate gates.
@@ -21,8 +23,8 @@ An independent C++23/GGML library for Meta's SAM 3D models:
 
 - **Body (active):** recover human pose, shape, camera and ultimately an MHR mesh
   from an image. Expose the intermediate features that GEM-X actually consumes.
-- **Objects (deferred):** reconstruct object geometry and appearance from an image
-  and mask. It is a separate model family, not another head of Body.
+- **Objects (experimental):** reconstruct object geometry and appearance from an
+  image and mask. It is a separate model family, not another head of Body.
 - **gem-x.cpp is a consumer:** it owns GEM's learned temporal tracking model,
   SOMA decoding and downstream motion adapters. Neither library should require
   the other's demo, a Python runtime, or a physics engine.
@@ -85,7 +87,7 @@ F32, compared against a separately identified upstream F32 execution.
 | Candidate | Decision for this project |
 | --- | --- |
 | [AmmarkoV/SAM3DBody-cpp][body-port] | Source reference for preprocessing, MHR decoding and export. Not our engine: major networks use ONNX Runtime; build/dependency and C API contracts differ. |
-| [Asher-1/sam-3d-objects-ggml][objects-port] | Strong candidate for selective Objects graph reuse, including sparse stages and MoGe. Not accepted wholesale: raw-image workflow remains hybrid, mesh decoding/PBR incomplete, and no suitable flat C ABI. |
+| [Asher-1/sam-3d-objects-ggml][objects-port] | Credited basis for selected Objects graphs and conversion code. This project adds native raw-image MoGe/conditioning, corrected Vulkan execution, demo integration and its own parity evidence. Mesh decoding/PBR and a public Objects C ABI remain incomplete. |
 | Existing local GGML projects | Preferred infrastructure/operation references, subject to architecture-specific tests and attribution. Never treat their fixtures as SAM's oracle. |
 
 These are compatibility and static-review findings, not claims of malicious
@@ -224,9 +226,10 @@ and tested. Valid live pointers and truthful capacities remain caller duties.
 
 Each row defines an acceptance gate, not an assertion that it has passed or an
 immediate task assignment. The supported Body branch has scoped evidence for
-reference, inference and demo work; B4 hand refinement, G1 and Objects are future
-extensions. Consult the roadmap for remaining numerical/release work. Body/GEM
-and Objects retain separate manifests and progress reporting.
+reference, inference and demo work. Objects O1–O3 and the D2 workflow are under
+active experimental validation; the full upstream-render comparison is still
+open. Consult the roadmap for remaining numerical/release work. Body/GEM and
+Objects retain separate manifests and progress reporting.
 
 Layer-by-layer parity is the default development method for **every** component,
 not just an optional debugging aid. Establish an actual-upstream capture, compare
@@ -298,10 +301,12 @@ Camera-motion recovery and retargeting are subsequent explicit components.
 ## 7. Web demo and final visual end-to-end QA
 
 The web demo is a **required project deliverable**, similar to the previous
-GGML ports, while remaining optional for library users. Deliver Body mode at
-D1. Objects mode at D2 is deferred to a later goal; Objects-specific controls
-and QA below describe that future extension, not the current demo deliverable.
-Do not make Body's demo wait for Objects or GEM video integration.
+GGML ports, while remaining optional for library users. Body mode implements D1.
+The experimental Objects mode implements image upload, exact mask painting,
+native inference, history, indexed mesh rendering and geometry GLB download.
+The raw mesh portion of D2 has a pinned CUDA/Vulkan visual comparison; official
+mesh repair and texture baking remain O5 work. Body and Objects retain
+independent model lifetimes and acceptance status.
 
 ### Demo workflow
 
@@ -330,13 +335,14 @@ Do not make Body's demo wait for Objects or GEM video integration.
 
 ### Official-example comparison
 
-Choose at least one reproducible **Body** example first and one **Objects**
-example when that mode is delivered. Prefer original input images/masks and
+Choose at least one reproducible **Body** example and one **Objects** example.
+Prefer original input images/masks and
 visualizations shipped in the pinned upstream repositories/notebooks. Starting
 points are Body's [human demo][body-human-demo] and
 [dancing image][body-dancing-image], and Objects'
 [single-object demo][objects-single-demo]. These are candidate fixtures, not
-already captured or tested results. Record the selected image/mask bytes and
+already accepted results. The Objects implementation uses upstream's kids-room
+image and mask 14 as its pinned initial exemplar. Record the selected image/mask bytes and
 hashes, upstream commit/checkpoint/config, camera/crop, prompts, refinement,
 seed/noise and reference outputs in a fixture manifest; check image reuse terms.
 
