@@ -2,9 +2,8 @@
 
 This report records the first accepted native geometry-decoder baseline. It
 ports the released SLat mesh head and inference-mode FlexiCubes extraction to
-C++/GGML, then compares it with the pinned upstream implementation. Runtime
-optimization, mesh repair, UV generation and appearance baking are outside this
-baseline.
+C++/GGML, then compares it with the pinned upstream implementation. Mesh repair,
+UV generation and appearance baking are outside this baseline.
 
 ## Authority and fixed inputs
 
@@ -84,6 +83,25 @@ The native GLB is 23,453,288 bytes with SHA-256
 `427522d1a74b5f84840b021b5e8e7d8d55b54325e90c9463ab44a2f64c37f2c5`.
 The upstream-oracle GLB written by the same exporter is 23,451,752 bytes with
 SHA-256 `4f741b43730757de0779b112f04970fbac8bfd807edaba16d7330c8e182b484b`.
+
+## Post-parity host optimization
+
+The first optimization pass preserves the accepted arithmetic and output while
+removing avoidable ordered-tree work. Sparse subdivision now indexes parents
+with a bounded dense table when practical and a hash table otherwise. It looks
+up each parent's 27 neighbours once, then derives the rows of all eight children
+from precomputed bit transitions. FlexiCubes aggregation and edge counting use
+hash tables followed by compact sorted key lists where upstream ordering is
+observable. Deformed positions and sigmoid colours are computed once per grid
+vertex, and production extraction skips the capture-only aggregate sort.
+
+On the fixed real parity workload, the complete Vulkan parity executable fell
+from 23.59 to 15.90 seconds wall time (1.48x, 32.6% less). The four Vulkan graphs
+remained approximately 1.7 seconds, confirming that the reduction is in host
+table construction and extraction. Both CPU and Vulkan still pass every gate,
+and a full optimized image-to-GLB run produced the exact native GLB hash above.
+The level-two graph still reserves 4,675.36 MiB of Vulkan scratch memory; reducing
+that allocation requires a separately gated staged or fused sparse convolution.
 
 ## Reproduction
 

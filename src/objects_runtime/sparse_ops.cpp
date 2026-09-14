@@ -6,17 +6,43 @@
 #include "sparse_ops.hpp"
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <cmath>
 #include <map>
 #include <cstdio>
 #include <tuple>
+#include <unordered_map>
 
 namespace sam3d {
 
 namespace {
 
 using Key = std::tuple<int32_t, int32_t, int32_t>;
+
+struct MeshParentKey {
+    int32_t batch;
+    int32_t x;
+    int32_t y;
+    int32_t z;
+
+    bool operator==(const MeshParentKey&) const = default;
+};
+
+struct MeshParentKeyHash {
+    size_t operator()(const MeshParentKey& key) const noexcept {
+        size_t hash = 0xcbf29ce484222325ULL;
+        const auto mix = [&](int32_t value) {
+            hash ^= static_cast<uint32_t>(value);
+            hash *= 0x100000001b3ULL;
+        };
+        mix(key.batch);
+        mix(key.x);
+        mix(key.y);
+        mix(key.z);
+        return hash;
+    }
+};
 
 }  // namespace
 
@@ -249,36 +275,129 @@ bool MeshSubdivideTables::build(const int32_t* parent_coords, int64_t count) {
     child_count = count * 8;
     child_coords.resize((size_t)child_count * 4);
 
-    std::map<std::tuple<int32_t, Key>, int32_t> index;
+    // Every parent contributes all eight children. Build an index over the
+    // much smaller parent set, then derive child neighbours from the parent
+    // row and the three low coordinate bits. This needs 27 lookups per parent
+    // instead of 27 lookups for every child.
+    const int32_t first_batch = parent_coords[0];
+    int32_t minimum[3] = {parent_coords[1], parent_coords[2], parent_coords[3]};
+    int32_t maximum[3] = {minimum[0], minimum[1], minimum[2]};
+    bool single_batch = true;
+    for (int64_t parent = 1; parent < count; ++parent) {
+        single_batch &= parent_coords[parent * 4] == first_batch;
+        for (int axis = 0; axis < 3; ++axis) {
+            minimum[axis] = std::min(minimum[axis], parent_coords[parent * 4 + axis + 1]);
+            maximum[axis] = std::max(maximum[axis], parent_coords[parent * 4 + axis + 1]);
+        }
+    }
+    const uint64_t extent_x = static_cast<uint64_t>(
+        static_cast<int64_t>(maximum[0]) - minimum[0] + 1);
+    const uint64_t extent_y = static_cast<uint64_t>(
+        static_cast<int64_t>(maximum[1]) - minimum[1] + 1);
+    const uint64_t extent_z = static_cast<uint64_t>(
+        static_cast<int64_t>(maximum[2]) - minimum[2] + 1);
+    constexpr uint64_t kMaximumDenseCells = 64ULL * 1024 * 1024;
+    uint64_t dense_cells = kMaximumDenseCells + 1;
+    if (single_batch && extent_x <= kMaximumDenseCells &&
+        extent_y <= kMaximumDenseCells / extent_x) {
+        const uint64_t plane = extent_x * extent_y;
+        if (extent_z <= kMaximumDenseCells / plane) dense_cells = plane * extent_z;
+    }
+    const bool use_dense = single_batch && dense_cells <= kMaximumDenseCells &&
+                           dense_cells <= static_cast<uint64_t>(count) * 32;
+    std::vector<int32_t> dense_index;
+    if (use_dense) dense_index.assign(static_cast<size_t>(dense_cells), -1);
+    std::unordered_map<MeshParentKey, int32_t, MeshParentKeyHash> parent_index;
+    if (!use_dense) {
+        parent_index.max_load_factor(0.7f);
+        parent_index.reserve(static_cast<size_t>(count));
+    }
+    const auto dense_offset = [&](int32_t x, int32_t y, int32_t z) {
+        return (static_cast<size_t>(static_cast<int64_t>(x) - minimum[0]) * extent_y +
+                static_cast<size_t>(static_cast<int64_t>(y) - minimum[1])) * extent_z +
+               static_cast<size_t>(static_cast<int64_t>(z) - minimum[2]);
+    };
     for (int64_t parent = 0; parent < count; ++parent) {
         const int32_t batch = parent_coords[parent * 4];
+        const int32_t parent_x = parent_coords[parent * 4 + 1];
+        const int32_t parent_y = parent_coords[parent * 4 + 2];
+        const int32_t parent_z = parent_coords[parent * 4 + 3];
+        if (use_dense) {
+            int32_t& slot = dense_index[dense_offset(parent_x, parent_y, parent_z)];
+            if (slot >= 0) return false;
+            slot = static_cast<int32_t>(parent);
+        } else if (!parent_index.emplace(
+                       MeshParentKey{batch, parent_x, parent_y, parent_z},
+                       static_cast<int32_t>(parent)).second) {
+            return false;
+        }
         for (int child = 0; child < 8; ++child) {
             const int64_t row = parent * 8 + child;
-            const int32_t x = parent_coords[parent * 4 + 1] * 2 + child / 4;
-            const int32_t y = parent_coords[parent * 4 + 2] * 2 + (child / 2) % 2;
-            const int32_t z = parent_coords[parent * 4 + 3] * 2 + child % 2;
+            const int32_t x = parent_x * 2 + child / 4;
+            const int32_t y = parent_y * 2 + (child / 2) % 2;
+            const int32_t z = parent_z * 2 + child % 2;
             child_coords[(size_t)row * 4] = batch;
             child_coords[(size_t)row * 4 + 1] = x;
             child_coords[(size_t)row * 4 + 2] = y;
             child_coords[(size_t)row * 4 + 3] = z;
-            if (!index.emplace(std::make_tuple(batch, Key{x, y, z}), (int32_t)row).second)
-                return false;
+        }
+    }
+
+    std::array<std::array<uint8_t, 27>, 8> adjacent_offset{};
+    std::array<std::array<uint8_t, 27>, 8> adjacent_child{};
+    for (int child = 0; child < 8; ++child) {
+        const int bits[3] = {child / 4, (child / 2) % 2, child % 2};
+        for (int offset = 0; offset < 27; ++offset) {
+            const int delta[3] = {
+                offset / 9 - 1, (offset / 3) % 3 - 1, offset % 3 - 1};
+            int parent_delta[3];
+            int target_bits[3];
+            for (int axis = 0; axis < 3; ++axis) {
+                const int coordinate = bits[axis] + delta[axis];
+                parent_delta[axis] = coordinate < 0 ? -1 : coordinate > 1 ? 1 : 0;
+                target_bits[axis] = coordinate - 2 * parent_delta[axis];
+            }
+            adjacent_offset[child][offset] = static_cast<uint8_t>(
+                (parent_delta[0] + 1) * 9 + (parent_delta[1] + 1) * 3 + parent_delta[2] + 1);
+            adjacent_child[child][offset] = static_cast<uint8_t>(
+                target_bits[0] * 4 + target_bits[1] * 2 + target_bits[2]);
         }
     }
 
     neighbors.assign((size_t)child_count * 27, -1);
-    for (int64_t row = 0; row < child_count; ++row) {
-        const int32_t batch = child_coords[(size_t)row * 4];
-        const int32_t x = child_coords[(size_t)row * 4 + 1];
-        const int32_t y = child_coords[(size_t)row * 4 + 2];
-        const int32_t z = child_coords[(size_t)row * 4 + 3];
+    for (int64_t parent = 0; parent < count; ++parent) {
+        const int32_t batch = parent_coords[parent * 4];
+        const int32_t parent_x = parent_coords[parent * 4 + 1];
+        const int32_t parent_y = parent_coords[parent * 4 + 2];
+        const int32_t parent_z = parent_coords[parent * 4 + 3];
+        std::array<int32_t, 27> adjacent_parents;
         for (int offset = 0; offset < 27; ++offset) {
             const int32_t dx = offset / 9 - 1;
             const int32_t dy = (offset / 3) % 3 - 1;
             const int32_t dz = offset % 3 - 1;
-            const auto found = index.find(std::make_tuple(batch, Key{x + dx, y + dy, z + dz}));
-            if (found != index.end())
-                neighbors[(size_t)row * 27 + offset] = found->second;
+            const int32_t x = parent_x + dx;
+            const int32_t y = parent_y + dy;
+            const int32_t z = parent_z + dz;
+            if (use_dense) {
+                adjacent_parents[static_cast<size_t>(offset)] =
+                    x < minimum[0] || x > maximum[0] || y < minimum[1] || y > maximum[1] ||
+                    z < minimum[2] || z > maximum[2] ? -1 : dense_index[dense_offset(x, y, z)];
+            } else {
+                const auto found = parent_index.find(MeshParentKey{batch, x, y, z});
+                adjacent_parents[static_cast<size_t>(offset)] =
+                    found == parent_index.end() ? -1 : found->second;
+            }
+        }
+        for (int child = 0; child < 8; ++child) {
+            const int64_t row = parent * 8 + child;
+            for (int offset = 0; offset < 27; ++offset) {
+                const int32_t target_parent =
+                    adjacent_parents[adjacent_offset[child][offset]];
+                if (target_parent >= 0) {
+                    neighbors[static_cast<size_t>(row) * 27 + offset] =
+                        target_parent * 8 + adjacent_child[child][offset];
+                }
+            }
         }
     }
     return true;

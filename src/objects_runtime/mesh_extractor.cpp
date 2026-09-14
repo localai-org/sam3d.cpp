@@ -9,9 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <map>
 #include <set>
-#include <tuple>
 #include <unordered_map>
 #include <utility>
 
@@ -33,8 +31,6 @@ constexpr std::array<int32_t, 24> kEdges{{
 }};
 constexpr std::array<int32_t, 6> kSplit1{{0, 1, 2, 0, 2, 3}};
 constexpr std::array<int32_t, 6> kSplit2{{0, 1, 3, 3, 1, 2}};
-
-using Coord = std::tuple<int32_t, int32_t, int32_t>;
 
 int32_t vertex_id(int32_t x, int32_t y, int32_t z) {
     return (x * kVertexResolution + y) * kVertexResolution + z;
@@ -71,28 +67,27 @@ struct SurfaceCube {
     std::array<int32_t, 8> vertices{};
 };
 
-std::array<float, 3> deformed_position(
+struct TransformedVertex {
+    std::array<float, 3> position{};
+    std::array<float, kColorChannels> color{};
+};
+
+TransformedVertex transformed_vertex(
     int32_t dense_vertex,
-    const std::unordered_map<int32_t, std::array<float, kAttrChannels>>& attrs) {
+    const std::unordered_map<int32_t, TransformedVertex>& attributes) {
+    const auto found = attributes.find(dense_vertex);
+    if (found != attributes.end()) return found->second;
+    TransformedVertex result;
     const auto coord = vertex_coord(dense_vertex);
-    std::array<float, 3> result{};
-    const auto found = attrs.find(dense_vertex);
-    for (int axis = 0; axis < 3; ++axis) {
-        const float deformation = found == attrs.end() ? 0.0f : found->second[1 + axis];
-        result[axis] = static_cast<float>(coord[axis]) / kResolution - 0.5f +
-                       (1.0f / (kResolution * 2.0f)) * std::tanh(deformation);
-    }
+    for (int axis = 0; axis < 3; ++axis)
+        result.position[axis] = static_cast<float>(coord[axis]) / kResolution - 0.5f;
+    result.color.fill(0.5f);
     return result;
 }
 
-std::array<float, kColorChannels> vertex_color(
-    int32_t dense_vertex,
-    const std::unordered_map<int32_t, std::array<float, kAttrChannels>>& attrs) {
-    std::array<float, kColorChannels> result{};
-    const auto found = attrs.find(dense_vertex);
-    for (int channel = 0; channel < kColorChannels; ++channel)
-        result[channel] = sigmoid(found == attrs.end() ? 0.0f : found->second[4 + channel]);
-    return result;
+uint64_t edge_key(int32_t first, int32_t second) {
+    return (static_cast<uint64_t>(static_cast<uint32_t>(first)) << 32) |
+           static_cast<uint32_t>(second);
 }
 
 }  // namespace
@@ -109,7 +104,9 @@ bool extract_object_mesh(const float* raw, const int32_t* coords, int64_t cube_c
 
     // sparse_cube2verts: torch.unique(..., dim=0) establishes lexicographic
     // coordinate order before the include_self=False mean reduction.
-    std::map<Coord, Aggregate> aggregate;
+    std::unordered_map<int32_t, Aggregate> aggregate;
+    aggregate.max_load_factor(0.7f);
+    aggregate.reserve(static_cast<size_t>(cube_count) * 2);
     std::unordered_map<int32_t, int32_t> cube_source;
     cube_source.reserve((size_t)cube_count * 2);
     for (int64_t row = 0; row < cube_count; ++row) {
@@ -130,9 +127,10 @@ bool extract_object_mesh(const float* raw, const int32_t* coords, int64_t cube_c
         }
         const float* features = raw + row * kRawChannels;
         for (int corner = 0; corner < 8; ++corner) {
-            auto& value = aggregate[Coord{x + kCorners[corner][0],
-                                          y + kCorners[corner][1],
-                                          z + kCorners[corner][2]}];
+            const int32_t dense = vertex_id(x + kCorners[corner][0],
+                                            y + kCorners[corner][1],
+                                            z + kCorners[corner][2]);
+            auto& value = aggregate[dense];
             value.sum[0] += features[corner] - 1.0f / kResolution;
             for (int axis = 0; axis < 3; ++axis)
                 value.sum[1 + axis] += features[8 + corner * 3 + axis];
@@ -144,24 +142,44 @@ bool extract_object_mesh(const float* raw, const int32_t* coords, int64_t cube_c
 
     const size_t dense_vertex_count = (size_t)kVertexResolution * kVertexResolution * kVertexResolution;
     std::vector<float> sdf(dense_vertex_count, 1.0f);
-    std::unordered_map<int32_t, std::array<float, kAttrChannels>> vertex_attrs;
+    std::unordered_map<int32_t, TransformedVertex> vertex_attrs;
     vertex_attrs.reserve(aggregate.size() * 2);
     if (taps) {
         taps->aggregate_vertex_coords.reserve(aggregate.size() * 3);
         taps->aggregate_vertex_attributes.reserve(aggregate.size() * kAttrChannels);
     }
-    for (const auto& [key, value] : aggregate) {
-        const auto [x, y, z] = key;
-        const int32_t dense = vertex_id(x, y, z);
+    const auto store_aggregate = [&](int32_t dense, const Aggregate& value) {
+        const auto coord = vertex_coord(dense);
         std::array<float, kAttrChannels> mean{};
         for (int channel = 0; channel < kAttrChannels; ++channel)
             mean[channel] = value.sum[channel] / value.count;
         sdf[(size_t)dense] = mean[0];
-        vertex_attrs.emplace(dense, mean);
+        TransformedVertex transformed;
+        for (int axis = 0; axis < 3; ++axis) {
+            transformed.position[axis] = static_cast<float>(coord[axis]) / kResolution - 0.5f +
+                                         (1.0f / (kResolution * 2.0f)) *
+                                             std::tanh(mean[1 + axis]);
+        }
+        for (int channel = 0; channel < kColorChannels; ++channel)
+            transformed.color[channel] = sigmoid(mean[4 + channel]);
+        vertex_attrs.emplace(dense, transformed);
         if (taps) {
-            taps->aggregate_vertex_coords.insert(taps->aggregate_vertex_coords.end(), {x, y, z});
+            taps->aggregate_vertex_coords.insert(
+                taps->aggregate_vertex_coords.end(), {coord[0], coord[1], coord[2]});
             taps->aggregate_vertex_attributes.insert(taps->aggregate_vertex_attributes.end(), mean.begin(), mean.end());
         }
+    };
+    if (taps) {
+        // Captures follow torch.unique's lexicographic coordinate order.
+        std::vector<int32_t> aggregate_vertices;
+        aggregate_vertices.reserve(aggregate.size());
+        for (const auto& [dense, unused] : aggregate) aggregate_vertices.push_back(dense);
+        std::sort(aggregate_vertices.begin(), aggregate_vertices.end());
+        for (int32_t dense : aggregate_vertices) store_aggregate(dense, aggregate.at(dense));
+    } else {
+        // Production extraction addresses these values by dense vertex id, so
+        // iteration order cannot affect geometry and sorting would be wasted.
+        for (const auto& [dense, value] : aggregate) store_aggregate(dense, value);
     }
 
     // Identify surface cubes in the same dense lexicographic order produced
@@ -217,22 +235,30 @@ bool extract_object_mesh(const float* raw, const int32_t* coords, int64_t cube_c
         }
     }
 
-    struct EdgeInfo { int32_t count = 0; int32_t unique_id = -1; int32_t surface_id = -1; };
-    std::map<std::pair<int32_t, int32_t>, EdgeInfo> unique_edges;
+    struct EdgeInfo { int32_t count = 0; int32_t surface_id = -1; };
+    std::unordered_map<uint64_t, EdgeInfo> unique_edges;
+    unique_edges.max_load_factor(0.7f);
+    unique_edges.reserve(surfaces.size() * 4);
     for (const SurfaceCube& cube : surfaces) {
         for (int edge = 0; edge < 12; ++edge) {
-            const auto key = std::pair{cube.vertices[kEdges[edge * 2]], cube.vertices[kEdges[edge * 2 + 1]]};
+            const uint64_t key = edge_key(cube.vertices[kEdges[edge * 2]],
+                                          cube.vertices[kEdges[edge * 2 + 1]]);
             ++unique_edges[key].count;
         }
     }
+    std::vector<uint64_t> edge_keys;
+    edge_keys.reserve(unique_edges.size());
+    for (const auto& [key, unused] : unique_edges) edge_keys.push_back(key);
+    std::sort(edge_keys.begin(), edge_keys.end());
     std::vector<std::array<int32_t, 2>> surface_edges;
-    int32_t unique_id = 0;
-    for (auto& [key, info] : unique_edges) {
-        info.unique_id = unique_id++;
-        if ((sdf[(size_t)key.first] < 0.0f) != (sdf[(size_t)key.second] < 0.0f)) {
+    for (uint64_t key : edge_keys) {
+        const int32_t first = static_cast<int32_t>(key >> 32);
+        const int32_t second = static_cast<int32_t>(key);
+        EdgeInfo& info = unique_edges.at(key);
+        if ((sdf[(size_t)first] < 0.0f) != (sdf[(size_t)second] < 0.0f)) {
             info.surface_id = static_cast<int32_t>(surface_edges.size());
-            surface_edges.push_back({key.first, key.second});
-            if (taps) taps->surface_edges.insert(taps->surface_edges.end(), {key.first, key.second});
+            surface_edges.push_back({first, second});
+            if (taps) taps->surface_edges.insert(taps->surface_edges.end(), {first, second});
         }
     }
     const size_t occurrence_count = surfaces.size() * 12;
@@ -241,7 +267,8 @@ bool extract_object_mesh(const float* raw, const int32_t* coords, int64_t cube_c
     for (size_t cube_index = 0; cube_index < surfaces.size(); ++cube_index) {
         const SurfaceCube& cube = surfaces[cube_index];
         for (int edge = 0; edge < 12; ++edge) {
-            const auto key = std::pair{cube.vertices[kEdges[edge * 2]], cube.vertices[kEdges[edge * 2 + 1]]};
+            const uint64_t key = edge_key(cube.vertices[kEdges[edge * 2]],
+                                          cube.vertices[kEdges[edge * 2 + 1]]);
             const EdgeInfo& info = unique_edges.at(key);
             const size_t occurrence = cube_index * 12 + edge;
             edge_map[occurrence] = info.surface_id;
@@ -283,16 +310,16 @@ bool extract_object_mesh(const float* raw, const int32_t* coords, int64_t cube_c
                     const float wa = sdf[(size_t)a] * alpha[cube_index][kEdges[edge * 2]];
                     const float wb = sdf[(size_t)b] * alpha[cube_index][kEdges[edge * 2 + 1]];
                     const float denominator = wb - wa;
-                    const auto pa = deformed_position(a, vertex_attrs);
-                    const auto pb = deformed_position(b, vertex_attrs);
-                    const auto ca = vertex_color(a, vertex_attrs);
-                    const auto cb = vertex_color(b, vertex_attrs);
+                    const TransformedVertex va = transformed_vertex(a, vertex_attrs);
+                    const TransformedVertex vb = transformed_vertex(b, vertex_attrs);
                     const float edge_beta = beta[cube_index][edge];
                     beta_sum += edge_beta;
                     for (int axis = 0; axis < 3; ++axis)
-                        position[axis] += ((pa[axis] * wb - pb[axis] * wa) / denominator) * edge_beta;
+                        position[axis] += ((va.position[axis] * wb - vb.position[axis] * wa) /
+                                           denominator) * edge_beta;
                     for (int channel = 0; channel < kColorChannels; ++channel)
-                        color[channel] += ((ca[channel] * wb - cb[channel] * wa) / denominator) * edge_beta;
+                        color[channel] += ((va.color[channel] * wb - vb.color[channel] * wa) /
+                                          denominator) * edge_beta;
                     dual_index_map[cube_index * 12 + edge] = dual_id;
                 }
                 for (float& value : position) value /= beta_sum;
