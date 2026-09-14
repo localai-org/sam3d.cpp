@@ -180,6 +180,10 @@ func (a *app) submitObject(w http.ResponseWriter, r *http.Request) {
 		Width: wid, Height: hei, SourceSHA: hex.EncodeToString(sourceHash[:]),
 		InputSHA: hex.EncodeToString(inputHash[:]),
 		Backend:  a.cfg.backend, Precision: "f16 weights / f32 compute", Provenance: a.provenance}
+	j.Preparation = r.FormValue("preparation_note")
+	if len(j.Preparation) > 512 {
+		j.Preparation = j.Preparation[:512]
+	}
 	if err = a.save(j); err != nil {
 		fail(w, 500, err)
 		return

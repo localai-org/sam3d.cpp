@@ -210,6 +210,7 @@ func objectUpload(t *testing.T, a *app, selected bool) *httptest.ResponseRecorde
 		}
 	}
 	png.Encode(maskPart, mask)
+	writer.WriteField("preparation_note", "FFmpeg resized this object photo.")
 	writer.Close()
 	req := httptest.NewRequest("POST", "http://localhost/api/object-jobs", &body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -237,6 +238,9 @@ func TestObjectUploadPacksExactMask(t *testing.T) {
 	if j.Kind != "object" || !bytes.Equal(packed[:8], []byte("S3DOBJ01")) ||
 		binary.LittleEndian.Uint32(packed[8:12]) != 8 || binary.LittleEndian.Uint32(packed[12:16]) != 8 {
 		t.Fatal("invalid object job/container metadata")
+	}
+	if j.Preparation != "FFmpeg resized this object photo." {
+		t.Fatal("object photo preparation notice lost")
 	}
 	inputHash := sha256.Sum256(packed)
 	if j.InputSHA != hex.EncodeToString(inputHash[:]) || len(j.SourceSHA) != 64 {

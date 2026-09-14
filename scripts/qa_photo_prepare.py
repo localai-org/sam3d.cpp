@@ -42,6 +42,11 @@ def main():
             c.call('Emulation.setDeviceMetricsOverride',dict(width=1400,height=1000,deviceScaleFactor=1,mobile=False))
             c.call('Page.navigate',dict(url=a.url));c.wait('window.sam3dQA?.state.ready')
             report['browser']=c.call('Browser.getVersion')
+            # A persisted Object job can be selected during startup. Photo
+            # preparation QA needs Body mode, where a valid image enables the
+            # generate button without an object mask.
+            c.evaluate("(()=>{const e=document.querySelector('#reconstruction-kind');e.value='body';e.dispatchEvent(new Event('change'))})()")
+            c.wait("window.sam3dQA.state.kind==='body'")
             for filename,w,h,converted in [('photo.bmp',64,64,True),('large.png',4000,2800,True),('large-file.png',64,64,True),('normal.png',64,64,False)]:
                 c.file('#upload',a.output/filename)
                 c.wait('window.sam3dQA.state.name==='+json.dumps(filename)+' && window.sam3dQA.state.file && !window.sam3dQA.state.prepareAbort',60)
