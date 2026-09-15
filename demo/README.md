@@ -25,8 +25,9 @@ This is the working **body pose branch**, not the full hand-refined estimator.
 The standalone body path has no automatic person detection, camera estimation,
 texture generation or learned temporal model. The optional GEM-X path adds the
 same YOLOX-X HumanArt detector and ByteTrack association used by upstream.
-The default focal length is the image diagonal;
-known camera intrinsics can be entered explicitly. The model operates on its
+The Body model's default focal length is the image diagonal;
+known camera intrinsics can be entered explicitly. GEM-X uses its published
+`max(width,height)` estimate for the temporal camera condition. The model operates on its
 own padded crop, so the selection rectangle is not a hard pixel mask.
 
 ## Offline video and live webcam
@@ -49,10 +50,13 @@ Body/ViTPose crops. The Body worker automatically selects its GEM-compatible
 ViTPose while the Body worker runs, joins the observations at the temporal
 denoiser, and returns the newest SOMA-77 skeleton for video/live display.
 Offline runs and recorded live takes retain `.gpose` samples and export a named
-SOMA skeleton animation.
-The current demo supplies zero camera angular velocity, matching GEM-X's static
-camera mode, so GEM-X exports are in-place. Switching between concurrent
-tracking sessions resets the shared temporal context.
+SOMA skeleton animation. The current demo supplies zero camera angular velocity,
+matching GEM-X's static-camera mode. Root translation is accumulated causally
+between live frames. The released GEM-X pipeline processes a complete clip
+bidirectionally, so future observations can revise its earlier poses and
+velocities; live samples cannot be numerically identical to that final offline
+result. Switching between concurrent tracking sessions resets the shared
+temporal context.
 
 Select **Offline video**, choose a browser-decodable video (typically MP4/WebM),
 select one person in the preview, set the source start time, sampling rate and duration, and start.

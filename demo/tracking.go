@@ -460,7 +460,7 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 			r.timings["detect"] = elapsedMS(detectorStarted)
 			if e == nil {
 				r.s.Box = tracked
-				e = patchPackedBox(r.packed, tracked)
+				e = patchPackedBox(r.packed, gemxBodyBox(tracked))
 			}
 			if e == nil {
 				e = os.WriteFile(filepath.Join(dir, "image.input"), r.packed, 0600)
