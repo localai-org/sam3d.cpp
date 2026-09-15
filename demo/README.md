@@ -22,45 +22,13 @@ Mesh GLB and OBJ downloads are static posed meshes in metres, Y-up.
 or an animation from a video/live take.
 
 This is the working **body pose branch**, not the full hand-refined estimator.
-The standalone body path has no automatic person detection, camera estimation,
-texture generation or learned temporal model. The optional GEM-X path adds the
-same YOLOX-X HumanArt detector and ByteTrack association used by upstream.
-The Body model's default focal length is the image diagonal;
-known camera intrinsics can be entered explicitly. GEM-X uses its published
-`max(width,height)` estimate for the temporal camera condition. The model operates on its
+There is no automatic person detection, camera estimation, texture generation
+or learned temporal model. Video tracking applies the same estimator to sampled
+frames of one selected person. The default focal length is the image diagonal;
+known camera intrinsics can be entered explicitly. The model operates on its
 own padded crop, so the selection rectangle is not a hard pixel mask.
 
 ## Offline video and live webcam
-
-The tracking path can optionally run native GEM-X temporal SOMA-77 inference.
-Set all four options together:
-
-```sh
---gemx-runner /path/to/gem-x.cpp/build/vulkan/gemx-pipeline \
---gemx-denoiser /path/to/gem-x-f32.gguf \
---gemx-vitpose /path/to/vitpose-f32.gguf \
---gemx-yolox /path/to/yolox-f32.gguf
-```
-
-With these options, the initial manual box chooses one detected person. YOLOX
-runs on every frame, ByteTrack preserves that identity through motion and short
-detection gaps, and the tracked box drives both the on-screen rectangle and the
-Body/ViTPose crops. The Body worker automatically selects its GEM-compatible
-1024-value pose token. After detection, the persistent GEM-X worker evaluates
-ViTPose while the Body worker runs, joins the observations at the temporal
-denoiser, and returns the newest SOMA-77 skeleton for video/live display.
-The **Tracking model** selector chooses this GEM-X path or the plain SAM 3D Body
-path independently for each video/live session. Plain Body keeps the selected
-or projected-follow box and returns its per-frame 127-joint skeleton and mesh;
-GEM-X enables YOLOX, ByteTrack and the temporal 77-joint SOMA result.
-Offline runs and recorded live takes retain `.gpose` samples and export a named
-SOMA skeleton animation. The current demo supplies zero camera angular velocity,
-matching GEM-X's static-camera mode. Root translation is accumulated causally
-between live frames. The released GEM-X pipeline processes a complete clip
-bidirectionally, so future observations can revise its earlier poses and
-velocities; live samples cannot be numerically identical to that final offline
-result. Switching between concurrent tracking sessions resets the shared
-temporal context.
 
 Select **Offline video**, choose a browser-decodable video (typically MP4/WebM),
 select one person in the preview, set the source start time, sampling rate and duration, and start.

@@ -1,4 +1,4 @@
-#input-mode,#track-model{width:100%;padding:9px;margin:8px 0 12px;background:#142138;color:#e6edf9;border:1px solid #34435f;border-radius:7px;font:inherit}
+#input-mode{width:100%;padding:9px;margin:8px 0 12px;background:#142138;color:#e6edf9;border:1px solid #34435f;border-radius:7px;font:inherit}
 #track-status{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;margin:12px 0;color:#9bd5e6}
 #track-status.error{color:#ffb0b9}
 #track-stop,#camera-open{width:100%;margin-top:8px}

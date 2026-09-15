@@ -7,16 +7,14 @@ export function initTracking(view) {
  let recording=null,recordBusy=false,recordStarted=0,cameraBusy=false;
  const video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='auto';
  const canvas=document.createElement('canvas'),cx=canvas.getContext('2d');
- const diagnostics={mode:'photo',running:false,gemxAvailable:false,frames:0,actualHz:0,interpolations:0,maxInFlight:0,errors:[],buffer:0,timings:[],renderTimings:[]};
+ const diagnostics={mode:'photo',running:false,frames:0,actualHz:0,interpolations:0,maxInFlight:0,errors:[],buffer:0,timings:[],renderTimings:[]};
  let mode='photo',epoch=0,ready=false,url=null,stream=null,session=null,abort=null,task=null,name='',faces=null,sourceName='',cancelPipeline=null;
  const live=new LivePresentation(25);
  let presentation=null,renderedPresentation=null,previewTime=-1;
  let mixed=null,startClock=0,lastCapture=-1,playback=null,playing=false,playClock=0,playOrigin=0,fetching=false,cache=new Map(),lastDisplay=null;
  function message(text,error=false){$('track-status').textContent=text;$('track-status').className=error?'error':''}
  function rate(){const v=Number($('track-hz').value);if(!Number.isInteger(v)||v<1||v>30)throw Error('Choose a maximum rate from 1 to 30 Hz.');return v}
- function controls(){const running=!!task;$('track-start').disabled=!ready||running;$('track-stop').hidden=!running;for(const id of ['track-hz','track-duration','video-upload','camera-open','follow-box','track-model'])$(id).disabled=running||(id==='track-model'&&!diagnostics.gemxAvailable);$('camera-open').disabled=running||cameraBusy;$('camera-open').setAttribute('aria-busy',String(cameraBusy));$('camera-open').textContent=cameraBusy?'Opening webcam…':'Open webcam';view.lock(running);diagnostics.running=running;$('track-record').hidden=mode!=='live'||!session||!running;$('track-record').disabled=recordBusy;$('track-stop').disabled=recordBusy;$('input-mode').disabled=recordBusy;$('track-record').setAttribute('aria-pressed',String(!!recording));$('track-record').textContent=recording?'■ Stop recording':'● Record take';for(const id of ['track-start-time'])$(id).disabled=running}
- function modelHelp(){const gemx=$('track-model').value==='gemx';$('track-model-help').textContent=gemx?'Runs YOLOX tracking, ViTPose, SAM 3D Body features and the causal GEM-X temporal model. Returns a 77-joint SOMA skeleton.':'Runs SAM 3D Body independently on each frame. It uses the selected box, optionally updated by “Follow projected person box”, and returns the 127-joint skeleton and body mesh.';diagnostics.trackingModel=gemx?'gemx':'body'}
- $('track-model').onchange=modelHelp;
+ function controls(){const running=!!task;$('track-start').disabled=!ready||running;$('track-stop').hidden=!running;for(const id of ['track-hz','track-duration','video-upload','camera-open','follow-box'])$(id).disabled=running;$('camera-open').disabled=running||cameraBusy;$('camera-open').setAttribute('aria-busy',String(cameraBusy));$('camera-open').textContent=cameraBusy?'Opening webcam…':'Open webcam';view.lock(running);diagnostics.running=running;$('track-record').hidden=mode!=='live'||!session||!running;$('track-record').disabled=recordBusy;$('track-stop').disabled=recordBusy;$('input-mode').disabled=recordBusy;$('track-record').setAttribute('aria-pressed',String(!!recording));$('track-record').textContent=recording?'■ Stop recording':'● Record take';for(const id of ['track-start-time'])$(id).disabled=running}
  function releaseSource(){ready=false;video.pause();stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;video.removeAttribute('src');video.load();if(url)URL.revokeObjectURL(url);url=null;controls()}
  function resetPlayback(){playing=false;playback=null;cache.clear();live.reset();presentation=null;renderedPresentation=null;faces=null;mixed=null;lastDisplay=null;$('track-playback').hidden=true;$('track-play').textContent='Play';view.clear()}
  async function stop(){epoch++;abort?.abort();cancelPipeline?.();const pending=task;if(pending)await pending;task=null;abort=null;if(session){const id=session.id;session=null;try{await view.api(`/api/tracks/${id}/finish`,{method:'POST'})}catch(e){message(e.message,true)}}recording=null;$('record-status').textContent='';playing=false;controls();await history()}
@@ -69,13 +67,11 @@ export function initTracking(view) {
    measured.headers_ms=performance.now()-requestStarted;
    if(response.status===429){if(mode==='live')return null;message('Waiting for the shared inference worker…');await sleep(100);continue}
    if(!response.ok){let e;try{e=(await response.json()).error}catch{e=response.statusText}throw Error(e)}
-	  const tracked=(response.headers.get('X-Track-Box')||'').split(',').map(Number);
-	  const trackedBox=tracked.length===4&&tracked.every(Number.isFinite)&&tracked[2]-tracked[0]>=8&&tracked[3]-tracked[1]>=8?tracked:null;
    const downloadStarted=performance.now(),buffer=await response.arrayBuffer();measured.download_ms=performance.now()-downloadStarted;
    const unpackStarted=performance.now(),frame=decodeFrame(buffer,faces);measured.unpack_ms=performance.now()-unpackStarted;
    measured.request_ms=performance.now()-requestStarted;measured.response_bytes=buffer.byteLength;
    measured.server={};for(const item of (response.headers.get('Server-Timing')||'').split(',')){const match=item.trim().match(/^([a-z_]+);dur=([0-9.]+)$/);if(match)measured.server[match[1]]=Number(match[2])}
-   frame.timing=measured;frame.box=trackedBox;if(recording&&response.headers.get('X-Take-ID')===recording.id){recording.count=Number(response.headers.get('X-Take-Count'));if(response.headers.get('X-Take-State')!=='recording'){recording=null;controls();history();$('record-status').textContent='Take saved (recording limit reached).'}}faces=frame.body.faces;return frame;
+   frame.timing=measured;if(recording&&response.headers.get('X-Take-ID')===recording.id){recording.count=Number(response.headers.get('X-Take-Count'));if(response.headers.get('X-Take-State')!=='recording'){recording=null;controls();history();$('record-status').textContent='Take saved (recording limit reached).'}}faces=frame.body.faces;return frame;
   }
   return null;
  }
@@ -92,7 +88,7 @@ export function initTracking(view) {
    diagnostics.cameraSource=cameraFrames?'camera-track':'video-element';
    slot=new LatestFrameSlot();
    cancelPipeline=()=>{slot.close();encoder.close();cameraFrames?.close()};
-   const created=await view.api('/api/tracks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,name,hz,width:canvas.width,height:canvas.height,gemx:$('track-model').value==='gemx'})});
+   const created=await view.api('/api/tracks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,name,hz,width:canvas.width,height:canvas.height})});
    session=created;controls();
    if(token!==epoch)return;
    async function prepare(stamp,snapshot=cameraFrames?.take()){
@@ -175,7 +171,7 @@ export function initTracking(view) {
      const received=performance.now();live.push(frame.body,received);
      presentation={timing,captured:prepared.captured,received};diagnostics.buffer=1;
     }else display(frame.body);
-    if($('follow-box').checked){s=frame.box?{...s,box:frame.box}:followBox(frame.body,s,canvas.width,canvas.height);view.setSettings(s)}
+    if($('follow-box').checked){s=followBox(frame.body,s,canvas.width,canvas.height);view.setSettings(s)}
     $('track-metrics').textContent=`${diagnostics.frames} frames · ${diagnostics.actualHz.toFixed(1)} Hz recent · ${hz} Hz cap · ${(latency*1000).toFixed(0)} ms frame latency${mode==='live'?` · ${live.duration} ms blend · no playback buffer`:''}`;
     message(mode==='offline'?`Processing ${Math.min(duration,prepared.stamp+1/hz).toFixed(1)} / ${duration.toFixed(1)} seconds…`:'Tracking live · latest frames only');
    }
@@ -230,13 +226,13 @@ export function initTracking(view) {
   if(t.mode!=='take'){const response=await fetch(`/tracks/${t.id}/faces.bin`);if(!response.ok)throw Error('Saved topology unavailable');const buffer=await response.arrayBuffer();
   if(token!==epoch)return;
   if(buffer.byteLength!==36874*3*4)throw Error('Invalid saved topology');faces=new Uint32Array(buffer);}else faces=new Uint32Array();
-  playback=t;$('track-model').value=t.gemx?'gemx':'body';modelHelp();$('track-playback').hidden=false;$('track-seek').min=t.samples[0].time;$('track-seek').max=t.samples.at(-1).time;$('track-seek').value=t.samples[0].time;$('track-manifest').href=`/tracks/${t.id}/track.json`;$('trim-start').value=t.samples[0].time;$('trim-end').value=t.samples.at(-1).time;exportLink();
+  playback=t;$('track-playback').hidden=false;$('track-seek').min=t.samples[0].time;$('track-seek').max=t.samples.at(-1).time;$('track-seek').value=t.samples[0].time;$('track-manifest').href=`/tracks/${t.id}/track.json`;$('trim-start').value=t.samples[0].time;$('trim-end').value=t.samples.at(-1).time;exportLink();
   if(fromHistory){
    const im=await createImageBitmap(await (await fetch(`/tracks/${t.id}/preview.jpg`)).blob());
    if(token!==epoch){im.close();return}
    canvas.width=t.width;canvas.height=t.height;cx.drawImage(im,0,0);im.close();view.preview(canvas,t.name+' (saved first frame; source video not retained)',false);sourceName='';
   }
-  view.setSettings(t.samples[0].settings);await paintPlayback(Number($('track-seek').value));message(`${t.count} saved poses · ${t.hz} Hz sampling · ${t.gemx?'GEM-X temporal':'SAM 3D Body per-frame'} · ${t.precision.toUpperCase()}`);
+  view.setSettings(t.samples[0].settings);await paintPlayback(Number($('track-seek').value));message(`${t.count} saved poses · ${t.hz} Hz sampling · ${t.precision.toUpperCase()}`);
  }
  async function getFrame(i){
   if(cache.has(i))return cache.get(i);const t=playback;if(!t)return null;
@@ -278,7 +274,6 @@ export function initTracking(view) {
  }
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='live')stop().then(()=>{releaseSource();message('Webcam stopped while this tab was hidden.')})});
  window.addEventListener('pagehide',()=>{abort?.abort();cancelPipeline?.();stream?.getTracks().forEach(t=>t.stop());if(session)fetch(`/api/tracks/${session.id}/finish`,{method:'POST',keepalive:true}).catch(()=>{})});
- function configure(config){diagnostics.gemxAvailable=!!config.gemx;const option=$('track-model').querySelector('option[value="gemx"]');option.disabled=!diagnostics.gemxAvailable;if(!diagnostics.gemxAvailable)$('track-model').value='body';modelHelp();controls()}
- history().catch(e=>message(e.message,true));modelHelp();controls();
- return {tick,afterRender,diagnostics,configure,leave:()=>mode==='photo'?Promise.resolve():changeMode('photo')};
+ history().catch(e=>message(e.message,true));controls();
+ return {tick,afterRender,diagnostics,leave:()=>mode==='photo'?Promise.resolve():changeMode('photo')};
 }

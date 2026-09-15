@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"crypto/rand"
-	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -110,7 +107,7 @@ func (a *app) skeletonRoutes(m *http.ServeMux) {
 		if name == "" {
 			name = "Webcam take " + time.Now().Format("15:04:05")
 		}
-		t := &track{ID: hex.EncodeToString(nonce[:]), Name: name, Mode: "take", Hz: session.Hz, Width: session.Width, Height: session.Height, Created: time.Now().UTC(), State: "recording", Precision: session.Precision, Provenance: session.Provenance, Skeleton: true, GEMX: session.GEMX, Start: in.Time, Samples: []trackSample{}}
+		t := &track{ID: hex.EncodeToString(nonce[:]), Name: name, Mode: "take", Hz: session.Hz, Width: session.Width, Height: session.Height, Created: time.Now().UTC(), State: "recording", Precision: session.Precision, Provenance: session.Provenance, Skeleton: true, Start: in.Time, Samples: []trackSample{}}
 		if e = os.Mkdir(a.trackDir(t.ID), 0700); e != nil {
 			fail(w, 500, e)
 			return
@@ -247,18 +244,6 @@ func (a *app) exportTrackSkeleton(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "trim start must precede end")
 		return
 	}
-	a.mu.Lock()
-	gemxTrack := a.tracks[r.PathValue("id")]
-	useGEMX := gemxTrack != nil && gemxTrack.GEMX
-	a.mu.Unlock()
-	if useGEMX {
-		if movementQuery(r) != "in-place" {
-			fail(w, 400, "GEM-X live samples currently export in-place motion")
-			return
-		}
-		a.exportGemxSkeleton(w, r, start, end)
-		return
-	}
 	frames, e := func() ([]skeletonFrame, error) {
 		a.mu.Lock()
 		defer a.mu.Unlock()
@@ -295,71 +280,4 @@ func (a *app) exportTrackSkeleton(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sendGLB(w, r.PathValue("id"), data)
-}
-
-func (a *app) exportGemxSkeleton(w http.ResponseWriter, r *http.Request, start, end float64) {
-	a.mu.Lock()
-	t := a.tracks[r.PathValue("id")]
-	if t == nil || t.Mode == "live" || !t.GEMX || t.State == "recording" {
-		a.mu.Unlock()
-		fail(w, 409, "stop recording before exporting GEM-X motion")
-		return
-	}
-	paths := make([]string, 0, len(t.Samples))
-	for i, sample := range t.Samples {
-		if sample.Time >= start && sample.Time <= end {
-			paths = append(paths, filepath.Join(a.trackDir(t.ID), fmt.Sprintf("%06d.gpose", i)))
-		}
-	}
-	hz, id := t.Hz, t.ID
-	a.mu.Unlock()
-	if len(paths) == 0 {
-		fail(w, 400, "export interval contains no poses")
-		return
-	}
-	manifest, e := os.CreateTemp(a.cfg.data, ".gemx-manifest-")
-	if e != nil {
-		fail(w, 500, e)
-		return
-	}
-	manifestPath := manifest.Name()
-	manifest.Close()
-	defer os.Remove(manifestPath)
-	var data bytes.Buffer
-	data.WriteString("GEMMAN01")
-	binary.Write(&data, binary.LittleEndian, uint32(len(paths)))
-	for _, path := range paths {
-		binary.Write(&data, binary.LittleEndian, uint32(len(path)))
-		data.WriteString(path)
-	}
-	if e = os.WriteFile(manifestPath, data.Bytes(), 0600); e != nil {
-		fail(w, 500, e)
-		return
-	}
-	output, e := os.CreateTemp(a.cfg.data, ".gemx-export-")
-	if e != nil {
-		fail(w, 500, e)
-		return
-	}
-	outputPath := output.Name()
-	output.Close()
-	defer os.Remove(outputPath)
-	args := []string{"--export", a.cfg.gemxDenoiser, a.cfg.module, a.cfg.backend,
-		strconv.Itoa(a.cfg.device), a.cfg.description, strconv.Itoa(a.cfg.threads),
-		strconv.FormatFloat(hz, 'g', -1, 64), manifestPath, outputPath}
-	cmd := exec.CommandContext(r.Context(), a.cfg.gemxRunner, args...)
-	cmd.Env = a.cfg.nativeEnvironment(os.Environ())
-	if diagnostics, err := cmd.CombinedOutput(); err != nil {
-		if len(diagnostics) > 4096 {
-			diagnostics = diagnostics[len(diagnostics)-4096:]
-		}
-		fail(w, 500, fmt.Errorf("GEM-X export: %v: %s", err, strings.TrimSpace(string(diagnostics))))
-		return
-	}
-	glb, e := os.ReadFile(outputPath)
-	if e != nil || len(glb) < 20 || len(glb) > 64<<20 {
-		fail(w, 500, "GEM-X exporter produced an invalid GLB")
-		return
-	}
-	sendGLB(w, id, glb)
 }

@@ -12,7 +12,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -63,32 +62,6 @@ func TestTrackingValidation(t *testing.T) {
 		a.routes().ServeHTTP(w, httptest.NewRequest("GET", path, nil))
 		if w.Code != 404 {
 			t.Fatal(path, w.Code)
-		}
-	}
-}
-
-func TestTrackSelectsBodyOrGEMX(t *testing.T) {
-	request := func(a *app, gemx bool) *httptest.ResponseRecorder {
-		t.Helper()
-		body := `{"name":"model choice","mode":"live","hz":10,"width":8,"height":8,"gemx":` + strconv.FormatBool(gemx) + `}`
-		w := httptest.NewRecorder()
-		a.routes().ServeHTTP(w, httptest.NewRequest("POST", "/api/tracks", strings.NewReader(body)))
-		return w
-	}
-	a := testApp(t)
-	if w := request(a, true); w.Code != 400 || !strings.Contains(w.Body.String(), "unavailable") {
-		t.Fatalf("unavailable GEM-X: %d %s", w.Code, w.Body.String())
-	}
-	a.cfg.gemxRunner, a.cfg.gemxDenoiser = "runner", "denoiser"
-	a.cfg.gemxVitpose, a.cfg.gemxYolox = "vitpose", "yolox"
-	for _, want := range []bool{false, true} {
-		w := request(a, want)
-		if w.Code != 201 {
-			t.Fatalf("create GEM-X=%v: %d %s", want, w.Code, w.Body.String())
-		}
-		var got track
-		if e := json.Unmarshal(w.Body.Bytes(), &got); e != nil || got.GEMX != want {
-			t.Fatalf("create GEM-X=%v returned %+v: %v", want, got, e)
 		}
 	}
 }

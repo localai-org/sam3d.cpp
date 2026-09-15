@@ -8,17 +8,6 @@ export function bracket(samples, time) {
  return [lo,next,dt>0?Math.max(0,Math.min(1,(time-samples[lo].time)/dt)):0];
 }
 export function decodeFrame(buffer,faces) {
- const magic=new TextDecoder().decode(new Uint8Array(buffer,0,8));
- const gemSize=16+77*3*4+77*4+3*4;
- if(buffer.byteLength===gemSize&&magic==='GEMTRK01'){
-  const view=new DataView(buffer),time=view.getFloat64(8,true);if(!Number.isFinite(time)||time<0)throw Error('Invalid GEM-X timestamp');
-  let offset=16;const joints=new Float32Array(77*3);
-  for(let i=0;i<joints.length;i++,offset+=4){joints[i]=view.getFloat32(offset,true);if(!Number.isFinite(joints[i])||Math.abs(joints[i])>100)throw Error('Invalid GEM-X skeleton')}
-  const parents=new Int32Array(77);
-  for(let i=0;i<77;i++,offset+=4){parents[i]=view.getInt32(offset,true);if((i===0&&parents[i]!==-1)||(i>0&&(parents[i]<0||parents[i]>=i)))throw Error('Invalid GEM-X topology')}
-  const camera=new Float32Array(3);for(let i=0;i<3;i++,offset+=4){camera[i]=view.getFloat32(offset,true);if(!Number.isFinite(camera[i])||Math.abs(camera[i])>100)throw Error('Invalid GEM-X camera')}
-  return {time,body:{schema:'gemx.soma.track.v1',parents,faces:new Uint32Array(),tensors:{vertices:new Float32Array(),joints,camera_translation:camera}}};
- }
  if(buffer.byteLength===16+(127*8+3)*4 && new TextDecoder().decode(new Uint8Array(buffer,0,8))==='S3DSKL01')return decodeSkeletonFrame(buffer);
  const floats=18439*3+127*3+3, size=16+floats*4;
  if(buffer.byteLength!==size&&buffer.byteLength!==size+36874*3*4)throw Error('Invalid video frame size');
@@ -38,14 +27,13 @@ export function mixBodies(a,b,alpha,out) {
   let dest=out.tensors[key];if(!dest||dest.length!==av.length)dest=out.tensors[key]=new Float32Array(av.length);
   for(let i=0;i<av.length;i++)dest[i]=av[i]+(bv[i]-av[i])*alpha;
  }
- out.schema=a.schema;out.faces=a.faces;out.parents=a.parents;
  return out;
 }
 // Projected joints only guide the next crop, never fit/deform the skeleton.
 // Bounded changes avoid a single poor frame throwing the crop off the image.
 export function followBox(body,s,w,h) {
  const j=body.tensors.joints,t=body.tensors.camera_translation,c=s.camera,points=[];
- for(let i=1;i<j.length/3;i++){const z=j[3*i+2]+t[2];if(z<=.05)return s;points.push([(j[3*i]+t[0])/z*c[0]+c[2],(j[3*i+1]+t[1])/z*c[1]+c[3]])}
+ for(let i=1;i<127;i++){const z=j[3*i+2]+t[2];if(z<=.05)return s;points.push([(j[3*i]+t[0])/z*c[0]+c[2],(j[3*i+1]+t[1])/z*c[1]+c[3]])}
  const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
  if(![x0,x1,y0,y1].every(Number.isFinite)||x1-x0<8||y1-y0<8||x0< -w||x1>2*w||y0< -h||y1>2*h)return s;
  const want=[Math.max(0,x0-(x1-x0)*.2),Math.max(0,y0-(y1-y0)*.15),Math.min(w,x1+(x1-x0)*.2),Math.min(h,y1+(y1-y0)*.15)];

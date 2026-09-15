@@ -2,35 +2,10 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"image"
 	"image/color"
 	"math"
 )
-
-func patchPackedBox(packed []byte, box [4]float32) error {
-	if len(packed) < 52 || string(packed[:8]) != "S3DIMG01" {
-		return fmt.Errorf("invalid packed image")
-	}
-	for i, v := range box {
-		if math.IsNaN(float64(v)) || math.IsInf(float64(v), 0) {
-			return fmt.Errorf("invalid tracked box")
-		}
-		binary.LittleEndian.PutUint32(packed[20+4*i:], math.Float32bits(v))
-	}
-	return nil
-}
-
-// GEM-X derives a 192:256 person crop, enlarges it by 1.2, then passes the
-// resulting square box to SAM 3D Body. Body applies its own published 1.25
-// preprocessing padding. Keep the detector box for tracking and display, but
-// use this box for the Body pose token consumed by GEM-X.
-func gemxBodyBox(box [4]float32) [4]float32 {
-	w, h := box[2]-box[0], box[3]-box[1]
-	size := max(h, w/.75) * 1.2
-	cx, cy := (box[0]+box[2])*.5, (box[1]+box[3])*.5
-	return [4]float32{cx - size*.5, cy - size*.5, cx + size*.5, cy + size*.5}
-}
 
 // Same native wire bytes and black-alpha compositing as Image.At().RGBA(),
 // without per-pixel interface boxing or bytes.Buffer method calls for common
