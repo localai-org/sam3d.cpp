@@ -25,7 +25,7 @@ func TestBodyInferenceModes(t *testing.T) {
 	if (config{bodyMode: "fas448"}).validateBodyMode() == nil {
 		t.Fatal("invalid mode accepted")
 	}
-	gem := config{bodyMode: "standard", gemxRunner: "runner", gemxDenoiser: "denoiser", gemxVitpose: "pose"}
+	gem := config{bodyMode: "standard", gemxRunner: "runner", gemxDenoiser: "denoiser", gemxVitpose: "pose", gemxYolox: "yolox"}
 	if args := gem.bodyInferenceArgs([]string{"--worker"}); !reflect.DeepEqual(args, []string{"--worker", "--gem-features"}) {
 		t.Fatal(args)
 	}

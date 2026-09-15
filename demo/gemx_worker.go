@@ -33,12 +33,12 @@ type gemxPose struct {
 }
 
 func (c config) gemxEnabled() bool {
-	return c.gemxRunner != "" && c.gemxDenoiser != "" && c.gemxVitpose != ""
+	return c.gemxRunner != "" && c.gemxDenoiser != "" && c.gemxVitpose != "" && c.gemxYolox != ""
 }
 
 func (a *app) startGemxWorker(ctx context.Context) error {
 	c := a.cfg
-	args := []string{"--worker", c.gemxDenoiser, c.gemxVitpose, c.module, c.backend,
+	args := []string{"--worker", c.gemxDenoiser, c.gemxVitpose, c.gemxYolox, c.module, c.backend,
 		strconv.Itoa(c.device), c.description, strconv.Itoa(c.threads), "120"}
 	cmd := exec.Command(c.gemxRunner, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
@@ -132,17 +132,22 @@ func gemxRequest(fields ...string) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-func (a *app) runGemxFrame(ctx context.Context, stream, dir string) error {
+type gemxPending struct {
+	worker *gemxWorker
+}
+
+func (a *app) beginGemxFrame(ctx context.Context, stream, dir string) ([4]float32, *gemxPending, error) {
+	var box [4]float32
 	if a.gemx == nil {
 		if e := a.startGemxWorker(ctx); e != nil {
-			return e
+			return box, nil, e
 		}
 	}
 	w := a.gemx
 	frame, e := gemxRequest(stream, filepath.Join(dir, "image.input"),
 		filepath.Join(dir, "result.bin"), filepath.Join(dir, "gemx.pose"))
 	if e != nil {
-		return e
+		return box, nil, e
 	}
 	sent := make(chan error, 1)
 	go func() { _, e := w.input.Write(frame); sent <- e }()
@@ -150,12 +155,38 @@ func (a *app) runGemxFrame(ctx context.Context, stream, dir string) error {
 	case e = <-sent:
 		if e != nil {
 			a.stopGemxWorker()
-			return e
+			return box, nil, e
 		}
 	case <-ctx.Done():
 		a.stopGemxWorker()
-		return ctx.Err()
+		return box, nil, ctx.Err()
 	}
+	select {
+	case line := <-w.events:
+		var x0, y0, x1, y1 float64
+		if n, scanErr := fmt.Sscanf(line, "BOX %f %f %f %f", &x0, &y0, &x1, &y1); scanErr != nil || n != 4 ||
+			math.IsNaN(x0) || math.IsNaN(y0) || math.IsNaN(x1) || math.IsNaN(y1) ||
+			math.IsInf(x0, 0) || math.IsInf(y0, 0) || math.IsInf(x1, 0) || math.IsInf(y1, 0) ||
+			x1-x0 < 8 || y1-y0 < 8 {
+			a.stopGemxWorker()
+			return box, nil, fmt.Errorf("unexpected GEM-X worker reply %q", line)
+		}
+		box = [4]float32{float32(x0), float32(y0), float32(x1), float32(y1)}
+		return box, &gemxPending{worker: w}, nil
+	case e = <-w.done:
+		a.gemx = nil
+		return box, nil, fmt.Errorf("GEM-X worker exited: %v", e)
+	case <-ctx.Done():
+		a.stopGemxWorker()
+		return box, nil, ctx.Err()
+	}
+}
+
+func (a *app) finishGemxFrame(ctx context.Context, pending *gemxPending) error {
+	if pending == nil || pending.worker == nil || a.gemx != pending.worker {
+		return fmt.Errorf("GEM-X worker changed while processing a frame")
+	}
+	w := pending.worker
 	select {
 	case line := <-w.events:
 		if line != "DONE" {
@@ -163,7 +194,7 @@ func (a *app) runGemxFrame(ctx context.Context, stream, dir string) error {
 			return fmt.Errorf("unexpected GEM-X worker reply %q", line)
 		}
 		return nil
-	case e = <-w.done:
+	case e := <-w.done:
 		a.gemx = nil
 		return fmt.Errorf("GEM-X worker exited: %v", e)
 	case <-ctx.Done():

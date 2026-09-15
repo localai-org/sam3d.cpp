@@ -52,11 +52,13 @@ export function initTracking(view) {
    measured.headers_ms=performance.now()-requestStarted;
    if(response.status===429){if(mode==='live')return null;message('Waiting for the shared inference worker…');await sleep(100);continue}
    if(!response.ok){let e;try{e=(await response.json()).error}catch{e=response.statusText}throw Error(e)}
+	  const tracked=(response.headers.get('X-Track-Box')||'').split(',').map(Number);
+	  const trackedBox=tracked.length===4&&tracked.every(Number.isFinite)&&tracked[2]-tracked[0]>=8&&tracked[3]-tracked[1]>=8?tracked:null;
    const downloadStarted=performance.now(),buffer=await response.arrayBuffer();measured.download_ms=performance.now()-downloadStarted;
    const unpackStarted=performance.now(),frame=decodeFrame(buffer,faces);measured.unpack_ms=performance.now()-unpackStarted;
    measured.request_ms=performance.now()-requestStarted;measured.response_bytes=buffer.byteLength;
    measured.server={};for(const item of (response.headers.get('Server-Timing')||'').split(',')){const match=item.trim().match(/^([a-z_]+);dur=([0-9.]+)$/);if(match)measured.server[match[1]]=Number(match[2])}
-   frame.timing=measured;if(recording&&response.headers.get('X-Take-ID')===recording.id){recording.count=Number(response.headers.get('X-Take-Count'));if(response.headers.get('X-Take-State')!=='recording'){recording=null;controls();history();$('record-status').textContent='Take saved (recording limit reached).'}}faces=frame.body.faces;return frame;
+   frame.timing=measured;frame.box=trackedBox;if(recording&&response.headers.get('X-Take-ID')===recording.id){recording.count=Number(response.headers.get('X-Take-Count'));if(response.headers.get('X-Take-State')!=='recording'){recording=null;controls();history();$('record-status').textContent='Take saved (recording limit reached).'}}faces=frame.body.faces;return frame;
   }
   return null;
  }
@@ -156,7 +158,7 @@ export function initTracking(view) {
      const received=performance.now();live.push(frame.body,received);
      presentation={timing,captured:prepared.captured,received};diagnostics.buffer=1;
     }else display(frame.body);
-    if($('follow-box').checked){s=followBox(frame.body,s,canvas.width,canvas.height);view.setSettings(s)}
+    if($('follow-box').checked){s=frame.box?{...s,box:frame.box}:followBox(frame.body,s,canvas.width,canvas.height);view.setSettings(s)}
     $('track-metrics').textContent=`${diagnostics.frames} frames · ${diagnostics.actualHz.toFixed(1)} Hz recent · ${hz} Hz cap · ${(latency*1000).toFixed(0)} ms frame latency${mode==='live'?` · ${live.duration} ms blend · no playback buffer`:''}`;
     message(mode==='offline'?`Processing ${Math.min(duration,prepared.stamp+1/hz).toFixed(1)} / ${duration.toFixed(1)} seconds…`:'Tracking live · latest frames only');
    }

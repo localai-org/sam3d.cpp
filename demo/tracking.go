@@ -409,6 +409,9 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 		}
 		a.mu.Unlock()
 		w.Header().Set("Content-Type", "application/octet-stream")
+		if a.cfg.gemxEnabled() {
+			w.Header().Set("X-Track-Box", fmt.Sprintf("%.6g,%.6g,%.6g,%.6g", req.s.Box[0], req.s.Box[1], req.s.Box[2], req.s.Box[3]))
+		}
 		timings["server"] = elapsedMS(started)
 		w.Header().Set("Server-Timing", timingHeader(timings))
 		w.Write(reply.data)
@@ -449,25 +452,36 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 	defer os.RemoveAll(dir)
 	if e = os.WriteFile(filepath.Join(dir, "image.input"), r.packed, 0600); e == nil {
 		r.timings["input_file"] = elapsedMS(inputStarted)
-		var gemxDone chan error
+		var gemxFrame *gemxPending
 		if a.cfg.gemxEnabled() {
-			gemxDone = make(chan error, 1)
-			go func() { gemxDone <- a.runGemxFrame(ctx, r.t.ID, dir) }()
-		}
-		workerStarted := time.Now()
-		e = a.runResidentPaths(ctx, dir, func(string) {}, func(line string) {
-			var value float64
-			if n, err := fmt.Sscanf(line, "TIMING body_infer_ms %f", &value); err == nil && n == 1 && value >= 0 && !math.IsInf(value, 0) && !math.IsNaN(value) {
-				r.timings["infer"] = value
+			detectorStarted := time.Now()
+			var tracked [4]float32
+			tracked, gemxFrame, e = a.beginGemxFrame(ctx, r.t.ID, dir)
+			r.timings["detect"] = elapsedMS(detectorStarted)
+			if e == nil {
+				r.s.Box = tracked
+				e = patchPackedBox(r.packed, tracked)
 			}
-		})
-		r.timings["worker"] = elapsedMS(workerStarted)
+			if e == nil {
+				e = os.WriteFile(filepath.Join(dir, "image.input"), r.packed, 0600)
+			}
+		}
+		if e == nil {
+			workerStarted := time.Now()
+			e = a.runResidentPaths(ctx, dir, func(string) {}, func(line string) {
+				var value float64
+				if n, err := fmt.Sscanf(line, "TIMING body_infer_ms %f", &value); err == nil && n == 1 && value >= 0 && !math.IsInf(value, 0) && !math.IsNaN(value) {
+					r.timings["infer"] = value
+				}
+			})
+			r.timings["worker"] = elapsedMS(workerStarted)
+		}
 		if e != nil {
 			cancel()
 		}
-		if gemxDone != nil {
+		if gemxFrame != nil {
 			gemxStarted := time.Now()
-			gemxError := <-gemxDone
+			gemxError := a.finishGemxFrame(ctx, gemxFrame)
 			r.timings["gemx_wait"] = elapsedMS(gemxStarted)
 			if e == nil {
 				e = gemxError

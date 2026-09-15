@@ -2,10 +2,24 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"image"
 	"image/color"
 	"math"
 )
+
+func patchPackedBox(packed []byte, box [4]float32) error {
+	if len(packed) < 52 || string(packed[:8]) != "S3DIMG01" {
+		return fmt.Errorf("invalid packed image")
+	}
+	for i, v := range box {
+		if math.IsNaN(float64(v)) || math.IsInf(float64(v), 0) {
+			return fmt.Errorf("invalid tracked box")
+		}
+		binary.LittleEndian.PutUint32(packed[20+4*i:], math.Float32bits(v))
+	}
+	return nil
+}
 
 // Same native wire bytes and black-alpha compositing as Image.At().RGBA(),
 // without per-pixel interface boxing or bytes.Buffer method calls for common

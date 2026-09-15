@@ -93,6 +93,30 @@ func TestPackImageExact(t *testing.T) {
 	check(decoded)
 }
 
+func TestPatchPackedBox(t *testing.T) {
+	original := settings{Box: [4]float32{1, 2, 30, 40}, Camera: [4]float32{100, 101, 50, 51}}
+	packed := packImage(image.NewRGBA(image.Rect(0, 0, 8, 8)), original)
+	tracked := [4]float32{3.25, 4.5, 70.75, 80}
+	if err := patchPackedBox(packed, tracked); err != nil {
+		t.Fatal(err)
+	}
+	for i, want := range tracked {
+		got := math.Float32frombits(binary.LittleEndian.Uint32(packed[20+4*i:]))
+		if got != want {
+			t.Fatalf("box %d: got %g want %g", i, got, want)
+		}
+	}
+	for i, want := range original.Camera {
+		got := math.Float32frombits(binary.LittleEndian.Uint32(packed[36+4*i:]))
+		if got != want {
+			t.Fatalf("camera %d changed: got %g want %g", i, got, want)
+		}
+	}
+	if err := patchPackedBox([]byte("bad"), tracked); err == nil {
+		t.Fatal("invalid packed image accepted")
+	}
+}
+
 func TestYCbCrEightBitEquivalence(t *testing.T) {
 	// Exhaust all 24 input bits. The old path truncates 16-bit RGBA; replacing it
 	// with a superficially similar conversion must not change rounding/clipping.

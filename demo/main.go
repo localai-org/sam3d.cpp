@@ -75,7 +75,7 @@ type config struct {
 	ffmpeg                                                                             string
 	addr, data, runner, module, backend, description, backbone, branch, mhr, reference string
 	objectRunner, objectModels                                                         string
-	gemxRunner, gemxDenoiser, gemxVitpose                                              string
+	gemxRunner, gemxDenoiser, gemxVitpose, gemxYolox                                   string
 	device, threads, memory, reserve, maxJobs                                          int
 	storage                                                                            int64
 	timeout                                                                            time.Duration
@@ -680,6 +680,7 @@ func main() {
 	flag.StringVar(&c.gemxRunner, "gemx-runner", "", "optional persistent GEM-X pipeline executable")
 	flag.StringVar(&c.gemxDenoiser, "gemx-denoiser", "", "GEM-X denoiser/identity GGUF")
 	flag.StringVar(&c.gemxVitpose, "gemx-vitpose", "", "GEM-X ViTPose GGUF")
+	flag.StringVar(&c.gemxYolox, "gemx-yolox", "", "GEM-X YOLOX-X HumanArt GGUF")
 	flag.BoolVar(&c.persistent, "persistent-worker", true, "reuse the bounded native model session across images")
 	flag.DurationVar(&c.workerIdle, "worker-idle", 2*time.Minute, "release resident RAM/VRAM after this idle period (within one timer interval)")
 	flag.StringVar(&c.module, "module", "", "explicit GGML backend module")
@@ -704,8 +705,8 @@ func main() {
 	if (c.backend != "CPU" && c.backend != "Vulkan") || c.threads < 1 || c.threads > 256 || c.device < 0 || c.maxJobs < 1 || c.storage < 320<<20 || c.timeout < time.Second || c.memory < 0 || (c.memory > 0 && c.memory < 64) || c.reserve < 64 || c.workerIdle < time.Second {
 		log.Fatal("invalid runtime limits or backend")
 	}
-	if (c.gemxRunner == "") != (c.gemxDenoiser == "") || (c.gemxRunner == "") != (c.gemxVitpose == "") {
-		log.Fatal("--gemx-runner, --gemx-denoiser and --gemx-vitpose must be set together")
+	if (c.gemxRunner == "") != (c.gemxDenoiser == "") || (c.gemxRunner == "") != (c.gemxVitpose == "") || (c.gemxRunner == "") != (c.gemxYolox == "") {
+		log.Fatal("--gemx-runner, --gemx-denoiser, --gemx-vitpose and --gemx-yolox must be set together")
 	}
 	for _, p := range []*string{&c.data, &c.runner, &c.module, &c.backbone, &c.branch, &c.mhr, &c.objectRunner, &c.objectModels} {
 		if *p == "" {
@@ -725,7 +726,7 @@ func main() {
 		}
 	}
 	if c.gemxEnabled() {
-		for _, p := range []*string{&c.gemxRunner, &c.gemxDenoiser, &c.gemxVitpose} {
+		for _, p := range []*string{&c.gemxRunner, &c.gemxDenoiser, &c.gemxVitpose, &c.gemxYolox} {
 			v, err := filepath.Abs(*p)
 			if err != nil {
 				log.Fatal(err)
@@ -745,7 +746,7 @@ func main() {
 		a.provenance[label+"_sha256"] = sha
 	}
 	if c.gemxEnabled() {
-		for label, path := range map[string]string{"gemx_runner": c.gemxRunner, "gemx_denoiser": c.gemxDenoiser, "gemx_vitpose": c.gemxVitpose} {
+		for label, path := range map[string]string{"gemx_runner": c.gemxRunner, "gemx_denoiser": c.gemxDenoiser, "gemx_vitpose": c.gemxVitpose, "gemx_yolox": c.gemxYolox} {
 			sha, err := digest(path)
 			if err != nil {
 				log.Fatal(err)
