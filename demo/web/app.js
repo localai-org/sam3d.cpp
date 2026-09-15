@@ -148,6 +148,7 @@ window.sam3dQA.tracking=tracking.diagnostics;
 try {
  const cfg=await api('/api/config');
  state.config=cfg;
+ tracking.configure(cfg);
  $('model').textContent=`${cfg.model} · ${cfg.backend}`;
  state.ready=true;
  if(cfg.reference) {

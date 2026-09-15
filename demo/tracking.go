@@ -219,9 +219,18 @@ func (a *app) createTrack(w http.ResponseWriter, r *http.Request) {
 		Hz     float64 `json:"hz"`
 		Width  int     `json:"width"`
 		Height int     `json:"height"`
+		GEMX   *bool   `json:"gemx"`
 	}
 	if strictJSON(http.MaxBytesReader(w, r.Body, 4096), &in) != nil || (in.Mode != "offline" && in.Mode != "live") || in.Hz < 1 || in.Hz > 30 || in.Width < 8 || in.Height < 8 || in.Width > 1280 || in.Height > 1280 || in.Width*in.Height > 1000000 {
 		fail(w, 400, "mode offline/live; rate 1–30 Hz; frames 8–1280 px and at most 1 MP required")
+		return
+	}
+	useGEMX := a.cfg.gemxEnabled()
+	if in.GEMX != nil {
+		useGEMX = *in.GEMX
+	}
+	if useGEMX && !a.cfg.gemxEnabled() {
+		fail(w, 400, "GEM-X tracking is unavailable on this server")
 		return
 	}
 	a.mu.Lock()
@@ -261,7 +270,7 @@ func (a *app) createTrack(w http.ResponseWriter, r *http.Request) {
 	if len(in.Name) > 160 {
 		in.Name = in.Name[:160]
 	}
-	t := &track{ID: hex.EncodeToString(nonce[:]), Name: in.Name, Mode: in.Mode, Hz: in.Hz, Width: in.Width, Height: in.Height, Created: time.Now().UTC(), State: "recording", Skeleton: true, GEMX: a.cfg.gemxEnabled(), Precision: a.cfg.precisionName(), Provenance: a.provenance, Samples: []trackSample{}, last: time.Now()}
+	t := &track{ID: hex.EncodeToString(nonce[:]), Name: in.Name, Mode: in.Mode, Hz: in.Hz, Width: in.Width, Height: in.Height, Created: time.Now().UTC(), State: "recording", Skeleton: true, GEMX: useGEMX, Precision: a.cfg.precisionName(), Provenance: a.provenance, Samples: []trackSample{}, last: time.Now()}
 	if t.Mode == "offline" {
 		if e = os.Mkdir(a.trackDir(t.ID), 0700); e != nil {
 			fail(w, 500, e)
@@ -409,7 +418,7 @@ func (a *app) submitFrame(w http.ResponseWriter, r *http.Request) {
 		}
 		a.mu.Unlock()
 		w.Header().Set("Content-Type", "application/octet-stream")
-		if a.cfg.gemxEnabled() {
+		if req.t.GEMX {
 			w.Header().Set("X-Track-Box", fmt.Sprintf("%.6g,%.6g,%.6g,%.6g", req.s.Box[0], req.s.Box[1], req.s.Box[2], req.s.Box[3]))
 		}
 		timings["server"] = elapsedMS(started)
@@ -453,7 +462,7 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 	if e = os.WriteFile(filepath.Join(dir, "image.input"), r.packed, 0600); e == nil {
 		r.timings["input_file"] = elapsedMS(inputStarted)
 		var gemxFrame *gemxPending
-		if a.cfg.gemxEnabled() {
+		if r.t.GEMX {
 			detectorStarted := time.Now()
 			var tracked [4]float32
 			tracked, gemxFrame, e = a.beginGemxFrame(ctx, r.t.ID, dir)
@@ -508,7 +517,7 @@ func (a *app) runFrame(server context.Context, r *frameRequest) {
 		return
 	}
 	var gemxPose *gemxPose
-	if a.cfg.gemxEnabled() {
+	if r.t.GEMX {
 		f, e = os.Open(filepath.Join(dir, "gemx.pose"))
 		if e == nil {
 			gemxPose, e = parseGemxPose(f)

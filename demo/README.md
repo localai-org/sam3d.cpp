@@ -49,6 +49,10 @@ Body/ViTPose crops. The Body worker automatically selects its GEM-compatible
 1024-value pose token. After detection, the persistent GEM-X worker evaluates
 ViTPose while the Body worker runs, joins the observations at the temporal
 denoiser, and returns the newest SOMA-77 skeleton for video/live display.
+The **Tracking model** selector chooses this GEM-X path or the plain SAM 3D Body
+path independently for each video/live session. Plain Body keeps the selected
+or projected-follow box and returns its per-frame 127-joint skeleton and mesh;
+GEM-X enables YOLOX, ByteTrack and the temporal 77-joint SOMA result.
 Offline runs and recorded live takes retain `.gpose` samples and export a named
 SOMA skeleton animation. The current demo supplies zero camera angular velocity,
 matching GEM-X's static-camera mode. Root translation is accumulated causally
