@@ -4,7 +4,7 @@ import {LivePresentation} from './live-presentation.js';
 
 export function initTracking(view) {
  const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
- let recording=null,recordBusy=false,recordStarted=0;
+ let recording=null,recordBusy=false,recordStarted=0,cameraBusy=false;
  const video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='auto';
  const canvas=document.createElement('canvas'),cx=canvas.getContext('2d');
  const diagnostics={mode:'photo',running:false,frames:0,actualHz:0,interpolations:0,maxInFlight:0,errors:[],buffer:0,timings:[],renderTimings:[]};
@@ -14,14 +14,20 @@ export function initTracking(view) {
  let mixed=null,startClock=0,lastCapture=-1,playback=null,playing=false,playClock=0,playOrigin=0,fetching=false,cache=new Map(),lastDisplay=null;
  function message(text,error=false){$('track-status').textContent=text;$('track-status').className=error?'error':''}
  function rate(){const v=Number($('track-hz').value);if(!Number.isInteger(v)||v<1||v>30)throw Error('Choose a maximum rate from 1 to 30 Hz.');return v}
- function controls(){const running=!!task;$('track-start').disabled=!ready||running;$('track-stop').hidden=!running;for(const id of ['track-hz','track-duration','video-upload','camera-open','follow-box'])$(id).disabled=running;view.lock(running);diagnostics.running=running;$('track-record').hidden=mode!=='live'||!session||!running;$('track-record').disabled=recordBusy;$('track-stop').disabled=recordBusy;$('input-mode').disabled=recordBusy;$('track-record').setAttribute('aria-pressed',String(!!recording));$('track-record').textContent=recording?'■ Stop recording':'● Record take';for(const id of ['track-start-time'])$(id).disabled=running}
+ function controls(){const running=!!task;$('track-start').disabled=!ready||running;$('track-stop').hidden=!running;for(const id of ['track-hz','track-duration','video-upload','camera-open','follow-box'])$(id).disabled=running;$('camera-open').disabled=running||cameraBusy;$('camera-open').setAttribute('aria-busy',String(cameraBusy));$('camera-open').textContent=cameraBusy?'Opening webcam…':'Open webcam';view.lock(running);diagnostics.running=running;$('track-record').hidden=mode!=='live'||!session||!running;$('track-record').disabled=recordBusy;$('track-stop').disabled=recordBusy;$('input-mode').disabled=recordBusy;$('track-record').setAttribute('aria-pressed',String(!!recording));$('track-record').textContent=recording?'■ Stop recording':'● Record take';for(const id of ['track-start-time'])$(id).disabled=running}
  function releaseSource(){ready=false;video.pause();stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;video.removeAttribute('src');video.load();if(url)URL.revokeObjectURL(url);url=null;controls()}
  function resetPlayback(){playing=false;playback=null;cache.clear();live.reset();presentation=null;renderedPresentation=null;faces=null;mixed=null;lastDisplay=null;$('track-playback').hidden=true;$('track-play').textContent='Play';view.clear()}
  async function stop(){epoch++;abort?.abort();cancelPipeline?.();const pending=task;if(pending)await pending;task=null;abort=null;if(session){const id=session.id;session=null;try{await view.api(`/api/tracks/${id}/finish`,{method:'POST'})}catch(e){message(e.message,true)}}recording=null;$('record-status').textContent='';playing=false;controls();await history()}
  async function changeMode(next){await stop();releaseSource();resetPlayback();mode=next;diagnostics.mode=mode;$('input-mode').value=mode;view.mode(mode!=='photo');$('video-options').hidden=mode==='photo';$('video-upload-label').hidden=mode!=='offline';$('camera-open').hidden=mode!=='live';$('duration-label').hidden=mode!=='offline';$('start-time-label').hidden=mode!=='offline';$('camera-notice').hidden=mode!=='live'||!!navigator.mediaDevices?.getUserMedia;message('Choose a video or open the webcam.')}
  const guarded=fn=>async(...args)=>{try{await fn(...args)}catch(e){diagnostics.errors.push(e.message);message(e.message,true);controls()}};
  $('input-mode').onchange=guarded(()=>changeMode($('input-mode').value));
- function once(event,token){return new Promise((resolve,reject)=>{const timer=setTimeout(()=>finish(Error('Video decoding timed out. Use a browser-supported MP4/WebM video.')),15000);function finish(error){clearTimeout(timer);video.removeEventListener(event,ok);video.removeEventListener('error',bad);error?reject(error):resolve()}function ok(){finish(token===epoch?null:Error('Video selection changed'))}function bad(){finish(Error('Browser cannot decode this video; try H.264 MP4 or VP9 WebM.'))}video.addEventListener(event,ok,{once:true});video.addEventListener('error',bad,{once:true})})}
+ function once(event,token,timeout='Video decoding timed out. Use a browser-supported MP4/WebM video.'){return new Promise((resolve,reject)=>{const timer=setTimeout(()=>finish(Error(timeout)),15000);function finish(error){clearTimeout(timer);video.removeEventListener(event,ok);video.removeEventListener('error',bad);error?reject(error):resolve()}function ok(){finish(token===epoch?null:Error('Video selection changed'))}function bad(){finish(Error('Browser could not read the selected video source.'))}video.addEventListener(event,ok,{once:true});video.addEventListener('error',bad,{once:true})})}
+ function cameraError(error){
+  if(error?.name==='NotAllowedError'||error?.name==='SecurityError')return Error('Camera access was denied or blocked. Allow camera access for this site in your browser settings, then try again.');
+  if(error?.name==='NotFoundError'||error?.name==='DevicesNotFoundError')return Error('No camera was found. Connect or enable a camera, then try again.');
+  if(error?.name==='NotReadableError'||error?.name==='TrackStartError')return Error('The camera could not be started. Close other apps using it, then try again.');
+  return error instanceof Error?error:Error('The camera could not be opened.');
+ }
  function capture(initial=false){if(video.readyState<2)throw Error('No decoded video frame available');cx.drawImage(video,0,0,canvas.width,canvas.height);previewTime=video.currentTime;view.preview(canvas,name,initial)}
  function dimensions(){const scale=Math.min(1,960/video.videoWidth,960/video.videoHeight);canvas.width=Math.max(8,Math.round(video.videoWidth*scale));canvas.height=Math.max(8,Math.round(video.videoHeight*scale))}
  async function seek(time,token){if(Math.abs(video.currentTime-time)<.0001&&video.readyState>=2)return;const done=once('seeked',token);video.currentTime=time;await done}
@@ -34,13 +40,22 @@ export function initTracking(view) {
   dimensions();capture(true);ready=true;$('track-duration').value=Math.min(10,video.duration).toFixed(2);controls();message(`${video.duration.toFixed(2)} seconds. Select one person, then start. Frames are resized to ${canvas.width} × ${canvas.height}.`);
  });
  $('camera-open').onclick=guarded(async()=>{
-  if(!navigator.mediaDevices?.getUserMedia)throw Error('Webcam access requires HTTPS or localhost. Use HTTPS for the remote demo.');
-  await stop();releaseSource();resetPlayback();const token=epoch;
-  const acquired=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:960},height:{ideal:720}},audio:false});
-  if(token!==epoch){acquired.getTracks().forEach(t=>t.stop());return}
-  stream=acquired;name=sourceName='Webcam';const loaded=once('loadeddata',token);video.srcObject=stream;await video.play();await loaded;if(token!==epoch)return;
-  dimensions();capture(true);ready=true;controls();message('Webcam ready. Select one person in the preview, then start.');
-  stream.getVideoTracks()[0].addEventListener('ended',()=>{stop().then(()=>{releaseSource();message('Camera disconnected. Reopen it to continue.',true)})});
+  if(cameraBusy)return;if(!navigator.mediaDevices?.getUserMedia)throw Error('Webcam access requires HTTPS or localhost. Use HTTPS for the remote demo.');
+  cameraBusy=true;controls();message('Preparing webcam…');let acquired=null;
+  try{
+   await stop();releaseSource();resetPlayback();const token=epoch;
+   const permission=await navigator.permissions?.query?.({name:'camera'}).catch(()=>null);
+   if(permission?.state==='denied')throw Object.assign(Error(),{name:'NotAllowedError'});
+   message('Waiting for camera permission…');
+   acquired=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:960},height:{ideal:720}},audio:false});
+   if(token!==epoch){acquired.getTracks().forEach(t=>t.stop());return}
+   stream=acquired;name=sourceName='Webcam';message('Camera opened; waiting for the first frame…');
+   const loaded=once('loadeddata',token,'Camera opened, but no video frame arrived. Check the camera privacy switch and try again.');video.srcObject=stream;
+   await Promise.all([video.play(),loaded]);if(token!==epoch)return;
+   dimensions();capture(true);ready=true;message('Webcam ready. Select one person in the preview, then start.');
+   stream.getVideoTracks()[0].addEventListener('ended',()=>{stop().then(()=>{releaseSource();message('Camera disconnected. Reopen it to continue.',true)})});
+  }catch(error){acquired?.getTracks().forEach(t=>t.stop());if(stream===acquired)stream=null;video.srcObject=null;throw cameraError(error)}
+  finally{cameraBusy=false;controls()}
  });
  async function sendFrame(prepared,s,token){
   const {blob,stamp}=prepared,measured={...prepared.timing,queue_ms:performance.now()-prepared.completed};
