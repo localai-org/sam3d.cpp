@@ -1,5 +1,9 @@
 # sam3d.cpp
 
+**Brought to you by the [LocalAI](https://github.com/mudler/LocalAI) team**, the folks behind LocalAI, the open-source AI engine that runs any model (LLMs, vision, voice, image, video) on any hardware, no GPU required.
+
+[![LocalAI](https://img.shields.io/badge/LocalAI-Run_Locally-orange)](https://github.com/mudler/LocalAI)
+
 A C++23/GGML port of Meta's SAM 3D Body and an experimental SAM 3D Objects
 runtime. Native inference runs on CPU or Vulkan without Python, PyTorch, CUDA
 or llama.cpp.
